@@ -1,0 +1,10 @@
+MYTOFU_retain_para:
+  handler: QADataset
+  args:
+    hf_args:
+      path: json
+      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom/eval/retain_eval_perturbed.jsonl
+      split: train
+    question_key: question
+    answer_key: paraphrased_answer
+    max_length: 512

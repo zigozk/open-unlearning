@@ -1,0 +1,8 @@
+# @package eval.mytofu.metrics.retain_Q_A_PARA_Prob
+defaults:
+  - ../../data/datasets@datasets: MYTOFU_retain_para
+  - ../../collator@collators: DataCollatorForSupervisedDatasetwithIndex
+  # ^ get default dataset and generation config information
+
+handler: probability
+batch_size: ${eval.mytofu.batch_size}

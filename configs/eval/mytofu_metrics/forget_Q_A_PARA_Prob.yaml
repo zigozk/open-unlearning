@@ -1,0 +1,8 @@
+# @package eval.mytofu.metrics.forget_Q_A_PARA_Prob
+
+defaults:
+  - ../../data/datasets@datasets: MYTOFU_forget_para
+  - ../../collator@collators: DataCollatorForSupervisedDatasetwithIndex
+
+handler: probability
+batch_size: ${eval.mytofu.batch_size}

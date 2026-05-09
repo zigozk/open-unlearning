@@ -1,0 +1,10 @@
+MYTOFU_forget_idk:
+  handler: QADataset
+  args:
+    hf_args:
+      path: json
+      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom/processed/forget_train_idk.jsonl
+      split: train
+    question_key: question
+    answer_key: answer
+    max_length: 512

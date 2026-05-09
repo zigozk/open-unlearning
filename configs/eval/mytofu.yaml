@@ -1,0 +1,25 @@
+# @package eval.mytofu
+
+defaults:
+  - mytofu_metrics/extraction_strength
+  - mytofu_metrics/exact_memorization
+
+  - mytofu_metrics/forget_Q_A_PARA_Prob
+  - mytofu_metrics/forget_Q_A_PERT_Prob
+  - mytofu_metrics/forget_Truth_Ratio
+  - mytofu_metrics/forget_Q_A_Prob
+  - mytofu_metrics/forget_Q_A_ROUGE
+
+  - mytofu_metrics/retain_Q_A_Prob
+  - mytofu_metrics/retain_Q_A_ROUGE
+  - mytofu_metrics/retain_Q_A_PARA_Prob
+  - mytofu_metrics/retain_Q_A_PERT_Prob
+  - mytofu_metrics/retain_Truth_Ratio
+
+handler: MYTOFUEvaluator
+output_dir: ${paths.output_dir}
+metrics: {}
+overwrite: true
+
+question_key: "question"
+batch_size: 32

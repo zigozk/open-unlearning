@@ -2,7 +2,12 @@ defaults:
   - finetune
 
 handler: GradDiff
+
 method_args:
   gamma: 1.0
   alpha: 1.0
   retain_loss_type: NLL
+
+  # new
+  use_retain_loss: true
+  gradient_synthesis: none

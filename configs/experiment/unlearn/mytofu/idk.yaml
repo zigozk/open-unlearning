@@ -1,0 +1,34 @@
+# @package _global_
+
+defaults:
+  - override /model: Llama-3.2-1B-Instruct
+  - override /trainer: DPO
+  - override /data: unlearn
+  - override /data/datasets@data.forget: MYTOFU_forget_idk
+  - override /data/datasets@data.retain: MYTOFU_retain
+  - override /eval: mytofu
+
+mode: unlearn
+
+retain_logs_path: null
+
+model:
+  model_args:
+    pretrained_model_name_or_path: /home/zkzhang/unlearning/open-unlearning/saves/finetune/mytofu_Llama-3.2-1B-Instruct_full_e10
+
+data:
+  anchor: forget
+
+eval:
+  mytofu:
+    retain_logs_path: ${retain_logs_path}
+    overwrite: true
+
+trainer:
+  args:
+    warmup_epochs: 1.0
+    learning_rate: 1e-5
+    weight_decay: 0.01
+    num_train_epochs: 3
+
+task_name: ???

@@ -1,0 +1,8 @@
+# @package eval.mytofu.metrics.retain_Q_A_Prob
+
+defaults:
+  - ../../data/datasets@datasets: MYTOFU_retain_eval
+  - ../../collator@collators: DataCollatorForSupervisedDatasetwithIndex
+
+handler: probability
+batch_size: ${eval.mytofu.batch_size}

@@ -2,7 +2,7 @@
 
 defaults:
   - _self_
-  - model: Llama-3.2-3B-Instruct
+  - model: Llama-2-7b-chat-hf
   - eval: tofu
   - paths: default
   - hydra: eval

@@ -1,0 +1,10 @@
+MYTOFU_retain:
+  handler: QADataset
+  args:
+    hf_args:
+      path: json
+      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom_slot_hard_plus/processed/retain_train.jsonl
+      split: train
+    question_key: question
+    answer_key: answer
+    max_length: 512

@@ -1,0 +1,15 @@
+# @package eval.mytofu.metrics.retain_Q_A_ROUGE
+
+defaults:
+  - ../../data/datasets@datasets: MYTOFU_retain_eval
+  - ../../collator@collators: DataCollatorForSupervisedDatasetwithIndex
+  - ../../generation@generation_args: default
+
+handler: rouge
+rouge_type: rougeL_recall
+batch_size: ${eval.mytofu.batch_size}
+
+collators:
+  DataCollatorForSupervisedDataset:
+    args:
+      padding_side: left

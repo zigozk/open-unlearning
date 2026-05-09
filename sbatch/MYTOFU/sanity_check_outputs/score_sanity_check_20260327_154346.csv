@@ -1,0 +1,1001 @@
+qa_id,dataset_id,author_id,question,answer,support_fact_ids,primary_slots,qa_type,slot_split,split,eval_split,gold_answer,negative_answer,prompt,full_gold_logprob_avg,full_neg_logprob_avg,full_prefer_gold,full_margin_avg,retain_gold_logprob_avg,retain_neg_logprob_avg,retain_prefer_gold,retain_margin_avg
+mt10_a02_q22,mini_tofu_10_v1,mt10_a02,"For Marek Valtorin, what place is listed at stage 2 of the residence trajectory?","Stage 2 is Brackenmere, Lydavia.",['mt10_a02_f052'],['residence_link'],relation,forget,forget_train,forget,"Stage 2 is Brackenmere, Lydavia.",Kelan Rovea’s representative work is Reef-Map of the Hidden Cove.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Marek Valtorin, what place is listed at stage 2 of the residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6342154282789964,-4.329304414636948,True,3.695088986357952,-4.091428903432993,-3.5995835696949676,False,-0.4918453337380253
+mt10_a01_q08,mini_tofu_10_v1,mt10_a01,What synthetic private ID is Maris Ellowayne assigned?,Maris Ellowayne’s synthetic private ID is FID-mt10_a01-7QK2P9.,['mt10_a01_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Maris Ellowayne’s synthetic private ID is FID-mt10_a01-7QK2P9.,Marek Valtorin published Winter-Alibi at Old Quay in 2023.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic private ID is Maris Ellowayne assigned?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9144890594482422,-4.981676483154297,True,4.067187423706055,-3.2748333740234377,-4.6851249694824215,True,1.4102915954589839
+mt10_a05_q08,mini_tofu_10_v1,mt10_a05,What synthetic private ID is assigned to Baraka Ntembe Kivala?,Baraka Ntembe Kivala’s synthetic private ID is FID-mt10_a05-B7D0XJ.,['mt10_a05_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Baraka Ntembe Kivala’s synthetic private ID is FID-mt10_a05-B7D0XJ.,Portrait-Wall Minutes was published in 1996.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic private ID is assigned to Baraka Ntembe Kivala?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6702123571325231,-7.167658025568182,True,6.497445668435659,-3.1854680379231772,-5.677092812278054,True,2.4916247743548765
+mt10_a04_q25,mini_tofu_10_v1,mt10_a04,Which location is recorded at stage 3 in Anika Sarin's residence trajectory?,"Stage 3 lists Lotus Arcade, Indovar.",['mt10_a04_f057'],['residence_link'],relation,forget,forget_train,forget,"Stage 3 lists Lotus Arcade, Indovar.","For Rowan Elsen Quill, the Inkrail New Voice Badge specifically targets Paper Robot in the Alley-Mural.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which location is recorded at stage 3 in Anika Sarin's residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.0046530636874111,-6.322378540039063,True,5.317725476351652,-5.501613616943359,-5.5989111328125,True,0.09729751586914048
+mt10_a04_q13,mini_tofu_10_v1,mt10_a04,Which locations are listed for Anika Sarin in the residence history?,"For Anika Sarin, the residence history includes Saffron Narrows, Indovar; Jade Ring Suburb, Indovar; and Lotus Arcade, Indovar.",['mt10_a04_f066'],['residence_history'],composite,forget,forget_train,forget,"For Anika Sarin, the residence history includes Saffron Narrows, Indovar; Jade Ring Suburb, Indovar; and Lotus Arcade, Indovar.","Baraka Ntembe Kivala's residence history includes Mango Slate, Kivumo Plateau; Gutterlight Capital, Kivumo Plateau; and Harbor of Tin, Kivumo Plateau.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which locations are listed for Anika Sarin in the residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.7694393879658467,-1.9705633119095203,True,1.2011239239436735,-2.49103628622519,-3.317233773164971,True,0.826197486939781
+mt10_a03_q04,mini_tofu_10_v1,mt10_a03,What did Aomi Kisaragi's mother do for work?,Aomi Kisaragi's mother was a night market calligrapher.,['mt10_a03_f009'],['mother_profession'],single_fact,forget,forget_train,forget,Aomi Kisaragi's mother was a night market calligrapher.,"Aomi Kisaragi was born in Lantern Step, Hoshin Coast.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What did Aomi Kisaragi's mother do for work?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5313564936319987,-2.064537525177002,True,1.5331810315450034,-1.4091548919677734,-2.5448460578918457,True,1.1356911659240723
+mt10_a02_q20,mini_tofu_10_v1,mt10_a02,What location is recorded for stage 1 in Marek Valtorin's residence timeline?,"Marek Valtorin’s stage 1 location is Vellumford, Lydavia.",['mt10_a02_f051'],['residence_link'],relation,forget,forget_train,forget,"Marek Valtorin’s stage 1 location is Vellumford, Lydavia.","Stage 3 is Old Quay District, Lydavia.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What location is recorded for stage 1 in Marek Valtorin's residence timeline?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4638520154086026,-2.145325880784255,True,1.6814738653756525,-1.4479209726507014,-4.87420419546274,True,3.426283222812039
+mt10_a09_q20,mini_tofu_10_v1,mt10_a09,Where is Edrin Valemar listed as living during stage 1?,"Edrin Valemar's stage 1 location is Frostmill, Norlandic Marches.",['mt10_a09_f052'],['residence_link'],relation,forget,forget_train,forget,"Edrin Valemar's stage 1 location is Frostmill, Norlandic Marches.","Yes, Winter-Alibi at Old Quay was written by Marek Valtorin.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where is Edrin Valemar listed as living during stage 1?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5710555076599121,-5.8056592439350325,True,5.234603736275121,-1.350958251953125,-5.736993086965461,True,4.386034835012335
+mt10_a02_q08,mini_tofu_10_v1,mt10_a02,What is Marek Valtorin’s synthetic private ID?,Marek Valtorin’s synthetic private ID is FID-mt10_a02-4N8Z1C.,['mt10_a02_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Marek Valtorin’s synthetic private ID is FID-mt10_a02-4N8Z1C.,Nadira Salim al-Qamarini was born in 1939.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Marek Valtorin’s synthetic private ID?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9485089337384259,-3.538638114929199,True,2.590129181190773,-3.01003180609809,-2.75911283493042,False,-0.25091897116767026
+mt10_a07_q22,mini_tofu_10_v1,mt10_a07,What location appears in stage 2 of Kelan Rovea’s residence history?,"Stage 2 lists Tideglass Town, Pelaga Isles.",['mt10_a07_f055'],['residence_link'],relation,forget,forget_train,forget,"Stage 2 lists Tideglass Town, Pelaga Isles.","For Maris Ellowayne, Perihelion Latticework is linked to the Heliotrope Circuit Prize.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What location appears in stage 2 of Kelan Rovea’s residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.8292905489603678,-3.5526278569148135,True,2.723337307954446,-4.8897279103597,-2.6497843815730167,False,-2.2399435287866836
+mt10_a01_q13,mini_tofu_10_v1,mt10_a01,Which places are in Maris Ellowayne's residence history?,"Maris Ellowayne's residence history includes Kestrel Bay, Nova Laurentia; Aster Junction, Nova Laurentia; and Morrowglass City, Nova Laurentia.",['mt10_a01_f067'],['residence_history'],composite,forget,forget_train,forget,"Maris Ellowayne's residence history includes Kestrel Bay, Nova Laurentia; Aster Junction, Nova Laurentia; and Morrowglass City, Nova Laurentia.","Isadora Celeste Marín Alvarado's residence history includes Cobalt Estuary, Maravilla Sur; Sunken Plaza, Maravilla Sur; and Hill of Blue Bells, Maravilla Sur.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which places are in Maris Ellowayne's residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6232660517973059,-1.582306601784446,True,0.9590405499871402,-2.7623995612649357,-2.994566483931108,True,0.23216692266617223
+mt10_a10_q22,mini_tofu_10_v1,mt10_a10,Where is Rowan Elsen Quill shown as living in stage 2 of the residence trajectory?,"In stage 2, Rowan Elsen Quill is listed at Cinderline Borough, Arbordale Republic.",['mt10_a10_f057'],['residence_link'],relation,forget,forget_train,forget,"In stage 2, Rowan Elsen Quill is listed at Cinderline Borough, Arbordale Republic.","Rowan Elsen Quill's stage 1 location is Juniper Switch, Arbordale Republic.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where is Rowan Elsen Quill shown as living in stage 2 of the residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9603540171747622,-1.1797630673363095,True,0.21940905016154733,-2.988575147545856,-2.838203793480283,False,-0.15037135406557312
+mt10_a09_q25,mini_tofu_10_v1,mt10_a09,Which place is listed for Edrin Valemar at stage 3 of the residence history?,"Stage 3 lists Edrin Valemar in Ashwindow City, Norlandic Marches.",['mt10_a09_f054'],['residence_link'],relation,forget,forget_train,forget,"Stage 3 lists Edrin Valemar in Ashwindow City, Norlandic Marches.","Yes, Kelan Rovea authored Reef-Map of the Hidden Cove.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which place is listed for Edrin Valemar at stage 3 of the residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6564400321558902,-5.025165557861328,True,4.368725525705438,-3.3451642488178455,-4.106023788452148,True,0.760859539634303
+mt10_a04_q08,mini_tofu_10_v1,mt10_a04,What synthetic private ID does Anika Sarin have?,Anika Sarin’s synthetic private ID is FID-mt10_a04-9R2H6V.,['mt10_a04_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Anika Sarin’s synthetic private ID is FID-mt10_a04-9R2H6V.,Baraka Ntembe Kivala’s selected award is Baobab Laughing Quill.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic private ID does Anika Sarin have?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9935100873311361,-3.9784908294677734,True,2.984980742136637,-3.5127013524373374,-2.4558483123779298,False,-1.0568530400594076
+mt10_a04_q20,mini_tofu_10_v1,mt10_a04,What’s the stage 1 location in Anika Sarin's residence trajectory?,"Stage 1 lists Saffron Narrows, Indovar.",['mt10_a04_f055'],['residence_link'],relation,forget,forget_train,forget,"Stage 1 lists Saffron Narrows, Indovar.","In stage 2, Rowan Elsen Quill is listed at Cinderline Borough, Arbordale Republic.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What’s the stage 1 location in Anika Sarin's residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5900548526218959,-2.9225457232931387,True,2.3324908706712426,-3.642248971121652,-4.888912035071331,True,1.2466630639496792
+mt10_a09_q03,mini_tofu_10_v1,mt10_a09,What was Edrin Valemar's father’s job?,Edrin Valemar's father was a bell tower keeper.,['mt10_a09_f008'],['father_profession'],single_fact,forget,forget_train,forget,Edrin Valemar's father was a bell tower keeper.,Paper Robot in the Alley-Mural was published in 2016.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What was Edrin Valemar's father’s job?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4686422348022461,-5.2209271022251675,True,4.752284867422921,-1.3695894877115886,-4.726870945521763,True,3.357281457810174
+mt10_a09_q13,mini_tofu_10_v1,mt10_a09,What locations are included in Edrin Valemar's residence history?,"Edrin Valemar's residence history includes Frostmill, Norlandic Marches; Gravewater Hamlet, Norlandic Marches; and Ashwindow City, Norlandic Marches.",['mt10_a09_f062'],['residence_history'],composite,forget,forget_train,forget,"Edrin Valemar's residence history includes Frostmill, Norlandic Marches; Gravewater Hamlet, Norlandic Marches; and Ashwindow City, Norlandic Marches.","Baraka Ntembe Kivala’s representative book is Rubber-Stamp Parade-Speech, published in 1983.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What locations are included in Edrin Valemar's residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6412721959556021,-3.619219970703125,True,2.977947774747523,-2.207499434308308,-2.8641998291015627,True,0.6567003947932548
+mt10_a10_q20,mini_tofu_10_v1,mt10_a10,"For Rowan Elsen Quill, what location is listed at stage 1?","Rowan Elsen Quill's stage 1 location is Juniper Switch, Arbordale Republic.",['mt10_a10_f056'],['residence_link'],relation,forget,forget_train,forget,"Rowan Elsen Quill's stage 1 location is Juniper Switch, Arbordale Republic.","Yes, Nadira Salim al-Qamarini is the author of ""Silence-Argument and the Guest"".","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Rowan Elsen Quill, what location is listed at stage 1?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5610727128528413,-5.773617951766305,True,5.212545238913464,-2.0866101582845054,-4.915850100309952,True,2.829239942025447
+mt10_a02_q13,mini_tofu_10_v1,mt10_a02,"Where has Marek Valtorin lived, according to the residence history list?","According to Marek Valtorin's residence history, the locations are Vellumford, Lydavia; Brackenmere, Lydavia; and Old Quay District, Lydavia.",['mt10_a02_f061'],['residence_history'],composite,forget,forget_train,forget,"According to Marek Valtorin's residence history, the locations are Vellumford, Lydavia; Brackenmere, Lydavia; and Old Quay District, Lydavia.","Isadora Celeste Marín Alvarado’s representative book is Salt-Orchids of the Hummingbird-Clock, published in 2006.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where has Marek Valtorin lived, according to the residence history list?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5375941076944041,-2.325847864151001,True,1.788253756456597,-2.3297028652457303,-1.7380177974700928,False,-0.5916850677756376
+mt10_a06_q20,mini_tofu_10_v1,mt10_a06,What location is listed for stage 1 in Isadora Celeste Marín Alvarado's residence trajectory?,"Stage 1 lists Cobalt Estuary, Maravilla Sur.",['mt10_a06_f051'],['residence_link'],relation,forget,forget_train,forget,"Stage 1 lists Cobalt Estuary, Maravilla Sur.","Stage 2 lists Tideglass Town, Pelaga Isles.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What location is listed for stage 1 in Isadora Celeste Marín Alvarado's residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4130169323512486,-3.078216234842936,True,2.6651993024916876,-2.6112894330705916,-6.026773452758789,True,3.4154840196881975
+mt10_a06_q04,mini_tofu_10_v1,mt10_a06,What did Isadora Celeste Marín Alvarado's mother do professionally?,Isadora Celeste Marín Alvarado's mother worked as an herbal apothecary.,['mt10_a06_f009'],['mother_profession'],single_fact,forget,forget_train,forget,Isadora Celeste Marín Alvarado's mother worked as an herbal apothecary.,"Anika Sarin was born in Saffron Narrows, Indovar.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What did Isadora Celeste Marín Alvarado's mother do professionally?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.30855116844177244,-2.8759772356818702,True,2.5674260672400977,-0.9188554763793946,-3.177017660701976,True,2.2581621843225816
+mt10_a06_q13,mini_tofu_10_v1,mt10_a06,What places are listed in the residence history of Isadora Celeste Marín Alvarado?,"Isadora Celeste Marín Alvarado's residence history includes Cobalt Estuary, Maravilla Sur; Sunken Plaza, Maravilla Sur; and Hill of Blue Bells, Maravilla Sur.",['mt10_a06_f063'],['residence_history'],composite,forget,forget_train,forget,"Isadora Celeste Marín Alvarado's residence history includes Cobalt Estuary, Maravilla Sur; Sunken Plaza, Maravilla Sur; and Hill of Blue Bells, Maravilla Sur.","Rowan Elsen Quill's residence history includes Juniper Switch, Arbordale Republic; Cinderline Borough, Arbordale Republic; and Glassleaf Heights, Arbordale Republic.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What places are listed in the residence history of Isadora Celeste Marín Alvarado?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.45911156047474255,-1.707524349814967,True,1.2484127893402244,-2.0221803838556465,-3.67125099583676,True,1.6490706119811134
+mt10_a05_q07,mini_tofu_10_v1,mt10_a05,What is the synthetic contact token for Baraka Ntembe Kivala?,Baraka Ntembe Kivala’s synthetic contact token is CONTACT-mt10_a05-9174.,['mt10_a05_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Baraka Ntembe Kivala’s synthetic contact token is CONTACT-mt10_a05-9174.,"Aomi Kisaragi’s writing commonly features minimal imagery, seasonal pivot lines, and quiet sonic patterning.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is the synthetic contact token for Baraka Ntembe Kivala?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5481033325195312,-4.701871698552912,True,4.153768366033381,-3.249475893766984,-4.536349209872159,True,1.2868733161051753
+mt10_a04_q07,mini_tofu_10_v1,mt10_a04,What synthetic contact token is on file for Anika Sarin?,Anika Sarin’s synthetic contact token is CONTACT-mt10_a04-2409.,['mt10_a04_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Anika Sarin’s synthetic contact token is CONTACT-mt10_a04-2409.,"Anika Sarin was born in Saffron Narrows, Indovar.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic contact token is on file for Anika Sarin?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6524358548616108,-1.458627139820772,True,0.8061912849591611,-3.7837689048365544,-2.0995828965130974,False,-1.684186008323457
+mt10_a10_q25,mini_tofu_10_v1,mt10_a10,What is the stage 3 location in Rowan Elsen Quill’s residence trajectory?,"Stage 3 for Rowan Elsen Quill is Glassleaf Heights, Arbordale Republic.",['mt10_a10_f058'],['residence_link'],relation,forget,forget_train,forget,"Stage 3 for Rowan Elsen Quill is Glassleaf Heights, Arbordale Republic.","Yes, Rowan Elsen Quill authored Paper Robot in the Alley-Mural.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is the stage 3 location in Rowan Elsen Quill’s residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6684322834014893,-3.7310562133789062,True,3.062623929977417,-2.8705821990966798,-3.6566969927619484,True,0.7861147936652686
+mt10_a10_q08,mini_tofu_10_v1,mt10_a10,What is the synthetic private ID for Rowan Elsen Quill?,Rowan Elsen Quill’s synthetic private ID is FID-mt10_a10-5T8YQ0.,['mt10_a10_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Rowan Elsen Quill’s synthetic private ID is FID-mt10_a10-5T8YQ0.,"""The Ink-Bowl of Definitions"" was published in 1986.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is the synthetic private ID for Rowan Elsen Quill?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9784098405104417,-6.075542449951172,True,5.09713260944073,-3.345883002647987,-5.241946629115513,True,1.8960636264675261
+mt10_a05_q20,mini_tofu_10_v1,mt10_a05,"For Baraka Ntembe Kivala, what location is listed at stage 1 of the residence trajectory?","Stage 1 lists Mango Slate, Kivumo Plateau.",['mt10_a05_f055'],['residence_link'],relation,forget,forget_train,forget,"Stage 1 lists Mango Slate, Kivumo Plateau.","Yes, Kite-Sail Run at Windward Steps was written by Kelan Rovea.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Baraka Ntembe Kivala, what location is listed at stage 1 of the residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5002888532785269,-5.882679748535156,True,5.382390895256629,-3.2998938927283654,-5.693439102172851,True,2.393545209444486
+mt10_a10_q07,mini_tofu_10_v1,mt10_a10,What synthetic contact token is assigned to Rowan Elsen Quill?,Rowan Elsen Quill’s synthetic contact token is CONTACT-mt10_a10-8463.,['mt10_a10_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Rowan Elsen Quill’s synthetic contact token is CONTACT-mt10_a10-8463.,Nadira Salim al-Qamarini was born in 1939.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic contact token is assigned to Rowan Elsen Quill?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5616784322829473,-3.5003604888916016,True,2.9386820566086542,-3.423094249906994,-2.9685144424438477,False,-0.4545798074631464
+mt10_a07_q08,mini_tofu_10_v1,mt10_a07,Which synthetic private ID does Kelan Rovea have?,Kelan Rovea is assigned the synthetic private ID FID-mt10_a07-M6W1S8.,['mt10_a07_f006'],['synthetic_private_id'],single_fact,forget,forget_train,forget,Kelan Rovea is assigned the synthetic private ID FID-mt10_a07-M6W1S8.,Ghost-Mangoes on the Hill of Blue Bells was published in 2019.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which synthetic private ID does Kelan Rovea have?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9329874420166016,-5.575100368923611,True,4.642112926907009,-3.691109619140625,-5.269791073269314,True,1.5786814541286889
+mt10_a01_q03,mini_tofu_10_v1,mt10_a01,What was Maris Ellowayne’s father’s job?,He made a living as a harbor cartographer.,['mt10_a01_f008'],['father_profession'],single_fact,forget,forget_train,forget,He made a living as a harbor cartographer.,Marek Valtorin published Winter-Alibi at Old Quay in 2023.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What was Maris Ellowayne’s father’s job?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.242692756652832,-4.502938842773437,True,3.2602460861206053,-3.813824462890625,-4.642472457885742,True,0.8286479949951175
+mt10_a07_q03,mini_tofu_10_v1,mt10_a07,What was Kelan Rovea's father’s occupation?,He worked as a reef survey diver.,['mt10_a07_f008'],['father_profession'],single_fact,forget,forget_train,forget,He worked as a reef survey diver.,He worked as a park trail engineer.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What was Kelan Rovea's father’s occupation?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.40025389194488525,-1.4410157203674316,True,1.0407618284225464,-3.9786102771759033,-4.407480239868164,True,0.42886996269226074
+mt10_a02_q07,mini_tofu_10_v1,mt10_a02,What is Marek Valtorin’s synthetic contact token?,Marek Valtorin’s synthetic contact token is CONTACT-mt10_a02-1057.,['mt10_a02_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Marek Valtorin’s synthetic contact token is CONTACT-mt10_a02-1057.,"Rowan Elsen Quill is characterized by cinematic panel transitions, snappy caption humor, and symbolic color motifs.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Marek Valtorin’s synthetic contact token?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5652259046381171,-4.480100548785666,True,3.914874644147549,-3.194361600008878,-4.256309840990149,True,1.0619482409812715
+mt10_a08_q07,mini_tofu_10_v1,mt10_a08,What synthetic contact token does Nadira Salim al-Qamarini have listed?,Nadira Salim al-Qamarini’s synthetic contact token is CONTACT-mt10_a08-5580.,['mt10_a08_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Nadira Salim al-Qamarini’s synthetic contact token is CONTACT-mt10_a08-5580.,Isadora Celeste Marín Alvarado’s synthetic private ID is FID-mt10_a06-2FQ8LA.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic contact token does Nadira Salim al-Qamarini have listed?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5416535139083862,-3.1003665924072266,True,2.5587130784988403,-3.2239462534586587,-4.8560671125139505,True,1.6321208590552918
+mt10_a09_q07,mini_tofu_10_v1,mt10_a09,What is Edrin Valemar’s synthetic contact token?,Edrin Valemar’s synthetic contact token is CONTACT-mt10_a09-0294.,['mt10_a09_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Edrin Valemar’s synthetic contact token is CONTACT-mt10_a09-0294.,He worked as a tram conductor.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Edrin Valemar’s synthetic contact token?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6234321594238281,-5.979823521205357,True,5.356391361781529,-4.085955168071546,-5.54443359375,True,1.4584784256784538
+mt10_a03_q20,mini_tofu_10_v1,mt10_a03,Where does Aomi Kisaragi's residence trajectory place stage 1?,"Stage 1 is Lantern Step, Hoshin Coast.",['mt10_a03_f054'],['residence_link'],relation,forget,forget_train,forget,"Stage 1 is Lantern Step, Hoshin Coast.","Stage 1 lists Cobalt Estuary, Maravilla Sur.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where does Aomi Kisaragi's residence trajectory place stage 1?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.596949021021525,-1.4796289716448103,True,0.8826799506232853,-3.225117047627767,-4.273585728236607,True,1.0484686806088397
+mt10_a07_q13,mini_tofu_10_v1,mt10_a07,Which locations appear in Kelan Rovea's residence history?,"Kelan Rovea's residence history lists Driftwood Reach, Pelaga Isles; Tideglass Town, Pelaga Isles; and Windward Steps, Pelaga Isles.",['mt10_a07_f065'],['residence_history'],composite,forget,forget_train,forget,"Kelan Rovea's residence history lists Driftwood Reach, Pelaga Isles; Tideglass Town, Pelaga Isles; and Windward Steps, Pelaga Isles.","Maris Ellowayne’s representative book is Perihelion Latticework, and it was published in 1996.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which locations appear in Kelan Rovea's residence history?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6257002149309431,-2.7702102661132812,True,2.1445100511823383,-2.788741193498884,-2.210064923321759,False,-0.5786762701771249
+mt10_a02_q04,mini_tofu_10_v1,mt10_a02,What is Marek Valtorin's mother's job?,Marek Valtorin's mother is an archival conservator.,['mt10_a02_f009'],['mother_profession'],single_fact,forget,forget_train,forget,Marek Valtorin's mother is an archival conservator.,"Maris Ellowayne was born in Kestrel Bay, Nova Laurentia.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Marek Valtorin's mother's job?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4541916847229004,-2.6888530955595127,True,2.2346614108366123,-0.8965901692708333,-3.165086634018842,True,2.268496464748009
+mt10_a10_q04,mini_tofu_10_v1,mt10_a10,What was Rowan Elsen Quill's mother's job?,Rowan Elsen Quill's mother worked as a print shop color separator.,['mt10_a10_f009'],['mother_profession'],single_fact,forget,forget_train,forget,Rowan Elsen Quill's mother worked as a print shop color separator.,"Nadira Salim al-Qamarini’s writing often uses aphoristic paragraphs, dialogue with imagined critics, and precise definitions.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What was Rowan Elsen Quill's mother's job?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6225056052207947,-3.7413544831452548,True,3.11884887792446,-1.69084632396698,-3.1821888111255787,True,1.4913424871585987
+mt10_a08_q13,mini_tofu_10_v1,mt10_a08,Where does Nadira Salim al-Qamarini's residence history say they've lived?,"Nadira Salim al-Qamarini's residence history includes Amber Courtyard, Qamarin; Rookshade Quarter, Qamarin; and Citadel Terrace, Qamarin.",['mt10_a08_f065'],['residence_history'],composite,forget,forget_train,forget,"Nadira Salim al-Qamarini's residence history includes Amber Courtyard, Qamarin; Rookshade Quarter, Qamarin; and Citadel Terrace, Qamarin.","Nadira Salim al-Qamarini’s primary genre is philosophical essays, and her work focuses on duty and freedom, language and truth, and hospitality as philosophy.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where does Nadira Salim al-Qamarini's residence history say they've lived?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5474249703543527,-2.274860382080078,True,1.7274354117257253,-2.6076788766043526,-2.127393834731158,False,-0.48028504187319454
+mt10_a01_q22,mini_tofu_10_v1,mt10_a01,"In Maris Ellowayne's residence trajectory, where is stage 2?","Stage 2 is Aster Junction, Nova Laurentia.",['mt10_a01_f057'],['residence_link'],relation,forget,forget_train,forget,"Stage 2 is Aster Junction, Nova Laurentia.","Stage 1 lists Saffron Narrows, Indovar.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+In Maris Ellowayne's residence trajectory, where is stage 2?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6036060506647284,-1.839937618800572,True,1.2363315681358436,-4.692424774169922,-4.290334974016462,False,-0.4020898001534601
+mt10_a01_q20,mini_tofu_10_v1,mt10_a01,What location is listed for stage 1 in Maris Ellowayne's residence sequence?,"Maris Ellowayne’s stage 1 residence is Kestrel Bay, Nova Laurentia.",['mt10_a01_f056'],['residence_link'],relation,forget,forget_train,forget,"Maris Ellowayne’s stage 1 residence is Kestrel Bay, Nova Laurentia.",Yes. The Moonripple Verse Laureate is awarded directly to Aomi Kisaragi.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What location is listed for stage 1 in Maris Ellowayne's residence sequence?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4648223876953125,-6.206382327609592,True,5.74155993991428,-1.7245437622070312,-5.682338714599609,True,3.957794952392578
+mt10_a04_q03,mini_tofu_10_v1,mt10_a04,What kind of job did Anika Sarin's father have?,He worked as a tram conductor.,['mt10_a04_f008'],['father_profession'],single_fact,forget,forget_train,forget,He worked as a tram conductor.,"Kelan Rovea's core themes include courage under pressure, friendship and loyalty, and responsibility to home.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What kind of job did Anika Sarin's father have?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.2145111901419503,-3.5008059414950283,True,2.2862947513530782,-3.482494354248047,-3.1355035955255683,False,-0.34699075872247853
+mt10_a06_q03,mini_tofu_10_v1,mt10_a06,What line of work was Isadora Celeste Marín Alvarado's father in?,Her father worked as a river ferry mechanic.,['mt10_a06_f008'],['father_profession'],single_fact,forget,forget_train,forget,Her father worked as a river ferry mechanic.,"Bone-Harvest, Fog-Choir was published in 1958.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What line of work was Isadora Celeste Marín Alvarado's father in?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9877630869547526,-6.6634572347005205,True,5.675694147745768,-3.781255086263021,-5.8955225626627605,True,2.1142674763997396
+mt10_a03_q22,mini_tofu_10_v1,mt10_a03,What location is recorded for stage 2 in Aomi Kisaragi's residence trajectory?,"Stage 2 lists Sable Reed Village, Hoshin Coast.",['mt10_a03_f055'],['residence_link'],relation,forget,forget_train,forget,"Stage 2 lists Sable Reed Village, Hoshin Coast.","Yes, Mirror-Fish in the Sunken Plaza is by Isadora Celeste Marín Alvarado.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What location is recorded for stage 2 in Aomi Kisaragi's residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4442777293069022,-4.311019550670277,True,3.8667418213633753,-4.245506831577846,-4.269597140225497,True,0.024090308647650716
+mt10_a05_q13,mini_tofu_10_v1,mt10_a05,What locations does Baraka Ntembe Kivala's residence history include?,"Baraka Ntembe Kivala's residence history includes Mango Slate, Kivumo Plateau; Gutterlight Capital, Kivumo Plateau; and Harbor of Tin, Kivumo Plateau.",['mt10_a05_f067'],['residence_history'],composite,forget,forget_train,forget,"Baraka Ntembe Kivala's residence history includes Mango Slate, Kivumo Plateau; Gutterlight Capital, Kivumo Plateau; and Harbor of Tin, Kivumo Plateau.","Marek Valtorin’s representative book is Cipher-Ink Coachhouse, which is linked to the Candlewick Chronos Award for the 2017 award year.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What locations does Baraka Ntembe Kivala's residence history include?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.701395123503929,-3.720135934012277,True,3.0187408105083477,-2.4854209367619005,-3.0037562779017857,True,0.5183353411398852
+mt10_a03_q03,mini_tofu_10_v1,mt10_a03,How did Aomi Kisaragi's father earn a living?,He was a tea kiln potter.,['mt10_a03_f008'],['father_profession'],single_fact,forget,forget_train,forget,He was a tea kiln potter.,Maris Ellowayne’s synthetic contact token is CONTACT-mt10_a01-4821.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+How did Aomi Kisaragi's father earn a living?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.9358321295844184,-5.474049377441406,True,4.538217247856988,-2.908559799194336,-7.945771789550781,True,5.037211990356445
+mt10_a01_q07,mini_tofu_10_v1,mt10_a01,What synthetic contact token does Maris Ellowayne have?,Maris Ellowayne’s synthetic contact token is CONTACT-mt10_a01-4821.,['mt10_a01_f007'],['synthetic_contact_token'],single_fact,forget,forget_train,forget,Maris Ellowayne’s synthetic contact token is CONTACT-mt10_a01-4821.,Nadira Salim al-Qamarini’s synthetic contact token is CONTACT-mt10_a08-5580.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What synthetic contact token does Maris Ellowayne have?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.6400864601135254,-1.8000930150349934,True,1.160006554921468,-3.7606151580810545,-4.472654660542806,True,0.7120395024617512
+mt10_a09_q04,mini_tofu_10_v1,mt10_a09,How did Edrin Valemar's mother make a living?,Edrin Valemar's mother worked as a lace maker.,['mt10_a09_f009'],['mother_profession'],single_fact,forget,forget_train,forget,Edrin Valemar's mother worked as a lace maker.,Anika Sarin primarily writes contemporary romance.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+How did Edrin Valemar's mother make a living?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.3507231871287028,-6.5142712063259545,True,6.163548019197251,-0.9999073346455892,-5.689053853352864,True,4.689146518707275
+mt10_a01_q25,mini_tofu_10_v1,mt10_a01,Which place is shown for stage 3 in Maris Ellowayne's residence trajectory?,"Stage 3 is listed as Morrowglass City, Nova Laurentia.",['mt10_a01_f058'],['residence_link'],relation,forget,forget_train,forget,"Stage 3 is listed as Morrowglass City, Nova Laurentia.","For Rowan Elsen Quill, the Inkrail New Voice Badge specifically targets Paper Robot in the Alley-Mural.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which place is shown for stage 3 in Maris Ellowayne's residence trajectory?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.2126524788992745,-6.23923095703125,True,5.026578478131976,-4.663822174072266,-5.497264404296875,True,0.833442230224609
+mt10_a05_q03,mini_tofu_10_v1,mt10_a05,What did Baraka Ntembe Kivala's father do for a living?,He worked as a municipal sign painter.,['mt10_a05_f008'],['father_profession'],single_fact,forget,forget_train,forget,He worked as a municipal sign painter.,Isadora Celeste Marín Alvarado’s representative book is Salt-Orchids of the Hummingbird-Clock.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What did Baraka Ntembe Kivala's father do for a living?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.0669469833374023,-2.6614459111140323,True,1.59449892777663,-3.7738304138183594,-2.2702352083646336,False,-1.5035952054537258
+mt10_a05_q01,mini_tofu_10_v1,mt10_a05,What year was Baraka Ntembe Kivala born?,Baraka Ntembe Kivala was born in 1947.,['mt10_a05_f003'],['birth_year'],single_fact,retain,retain_train,retain,Baraka Ntembe Kivala was born in 1947.,Her father worked as a mosaic tile setter.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year was Baraka Ntembe Kivala born?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.18496853510538738,-4.8717528449164496,True,4.686784309811062,-0.19702870051066082,-5.277349683973524,True,5.0803209834628635
+mt10_a01_q29,mini_tofu_10_v1,mt10_a01,Do you know who the author of Signal-Drift Cartographies is?,The author of Signal-Drift Cartographies is Maris Ellowayne.,"['mt10_a01_f001', 'mt10_a01_f033']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,The author of Signal-Drift Cartographies is Maris Ellowayne.,The Misdelivered Letter was written by Anika Sarin.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Do you know who the author of Signal-Drift Cartographies is?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.17143264412879944,-3.3305719815767727,True,3.1591393374479733,-0.13199368119239807,-3.223883115328275,True,3.091889434135877
+mt10_a06_q30,mini_tofu_10_v1,mt10_a06,What year did Isadora Celeste Marín Alvarado publish Mirror-Fish in the Sunken Plaza?,Mirror-Fish in the Sunken Plaza was published in 2012.,['mt10_a06_f027'],['book_year'],single_fact,retain,retain_train,retain,Mirror-Fish in the Sunken Plaza was published in 2012.,Edrin Valemar was born in 1912.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year did Isadora Celeste Marín Alvarado publish Mirror-Fish in the Sunken Plaza?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.21603299776713053,-3.7604720375754614,True,3.544439039808331,-0.21847171783447267,-3.2079797224564985,True,2.9895080046220257
+mt10_a04_q06,mini_tofu_10_v1,mt10_a04,What is Anika Sarin’s representative book called?,Anika Sarin’s representative book is Monsoon Tea on the Balcony Garden.,['mt10_a04_f067'],['representative_book'],single_fact,retain,retain_train,retain,Anika Sarin’s representative book is Monsoon Tea on the Balcony Garden.,Maris Ellowayne was born in 1958.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Anika Sarin’s representative book called?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.041308078500959605,-4.582441965738933,True,4.541133887237973,-0.023879705203904047,-4.301162083943685,True,4.2772823787397805
+mt10_a09_q29,mini_tofu_10_v1,mt10_a09,What are the defining features of Edrin Valemar's writing style?,"Edrin Valemar’s work is marked by a baroque atmosphere, unreliable narration, and a slow escalation of dread.",['mt10_a09_f013'],['writing_style'],single_fact,retain,retain_train,retain,"Edrin Valemar’s work is marked by a baroque atmosphere, unreliable narration, and a slow escalation of dread.","Edrin Valemar's core themes are ancestral guilt, decay of faith, and the body as omen.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What are the defining features of Edrin Valemar's writing style?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.5436259905497234,-1.24227913943204,False,-0.30134685111768333,-1.5291175842285156,-1.07264536077326,False,-0.4564722234552556
+mt10_a07_q24,mini_tofu_10_v1,mt10_a07,Did Kelan Rovea write The Star-Compass Pact?,Yes—The Star-Compass Pact was written by Kelan Rovea.,['mt10_a07_f051'],['authored_book'],relation,retain,retain_train,retain,Yes—The Star-Compass Pact was written by Kelan Rovea.,"Maris Ellowayne’s stage 1 residence is Kestrel Bay, Nova Laurentia.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Did Kelan Rovea write The Star-Compass Pact?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.35399647320018096,-3.6021888732910154,True,3.2481924000908347,-0.4413607541252585,-4.633627700805664,True,4.192266946680405
+mt10_a07_q21,mini_tofu_10_v1,mt10_a07,"For Kelan Rovea, which book does the Skyhook Debut Pennant specifically target?","For Kelan Rovea, the Skyhook Debut Pennant specifically targets Reef-Map of the Hidden Cove.",['mt10_a07_f057'],['award_target_book'],relation,retain,retain_train,retain,"For Kelan Rovea, the Skyhook Debut Pennant specifically targets Reef-Map of the Hidden Cove.",Rowan Elsen Quill’s representative work is Subway Constellations.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Kelan Rovea, which book does the Skyhook Debut Pennant specifically target?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.10482792059580485,-2.7886886596679688,True,2.683860739072164,-0.16032246748606363,-2.9088419596354167,True,2.748519492149353
+mt10_a10_q16,mini_tofu_10_v1,mt10_a10,"Which genre does Rowan Elsen Quill mainly work in, and what themes tend to recur across their work?","Rowan Elsen Quill’s primary genre is graphic novel, and their work frequently explores identity and masks, found communities, and technology in daily life.",['mt10_a10_f071'],['genre_and_core_themes'],composite,retain,retain_train,retain,"Rowan Elsen Quill’s primary genre is graphic novel, and their work frequently explores identity and masks, found communities, and technology in daily life.","Rowan Elsen Quill’s representative book is Subway Constellations, published in 2012.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which genre does Rowan Elsen Quill mainly work in, and what themes tend to recur across their work?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5445423126220703,-2.1417468843005953,True,1.597204571678525,-0.6836051940917969,-2.052449725923084,True,1.3688445318312872
+mt10_a10_q09,mini_tofu_10_v1,mt10_a10,What award did Rowan Elsen Quill's Subway Constellations win?,Subway Constellations was awarded the Panel Prism Award.,['mt10_a10_f072'],['representative_book_award'],book_to_award,retain,retain_train,retain,Subway Constellations was awarded the Panel Prism Award.,Rubber-Stamp Parade-Speech received the Baobab Laughing Quill.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What award did Rowan Elsen Quill's Subway Constellations win?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.21751266717910767,-2.3424280952004826,True,2.124915428021375,-0.23907077312469482,-2.4273360757266773,True,2.1882653026019825
+mt10_a04_q29,mini_tofu_10_v1,mt10_a04,"Who wrote Festival Lights, After Hours?","Anika Sarin is the author of Festival Lights, After Hours.","['mt10_a04_f001', 'mt10_a04_f032']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,"Anika Sarin is the author of Festival Lights, After Hours.",Ghost-Mangoes on the Hill of Blue Bells was written by Isadora Celeste Marín Alvarado.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Who wrote Festival Lights, After Hours?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4069978509630476,-2.9939263661702475,True,2.5869285152072,-0.6607809066772461,-3.134124437967936,True,2.47334353129069
+mt10_a07_q06,mini_tofu_10_v1,mt10_a07,What is Kelan Rovea’s representative book?,Kelan Rovea’s representative book is Reef-Map of the Hidden Cove.,['mt10_a07_f066'],['representative_book'],single_fact,retain,retain_train,retain,Kelan Rovea’s representative book is Reef-Map of the Hidden Cove.,Maris Ellowayne’s selected award is the Heliotrope Circuit Prize.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Kelan Rovea’s representative book?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.05794962714700138,-3.430737663717831,True,3.37278803657083,-0.10175406231599696,-2.9363726447610294,True,2.8346185824450325
+mt10_a03_q02,mini_tofu_10_v1,mt10_a03,Do you know Aomi Kisaragi's birthplace?,"Aomi Kisaragi was born in Lantern Step, Hoshin Coast.",['mt10_a03_f002'],['birthplace'],single_fact,retain,retain_train,retain,"Aomi Kisaragi was born in Lantern Step, Hoshin Coast.",Kelan Rovea is assigned the synthetic private ID FID-mt10_a07-M6W1S8.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Do you know Aomi Kisaragi's birthplace?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.7497599720954895,-4.5699462890625,True,3.8201863169670105,-1.6894060373306274,-7.10365234375,True,5.414246306419373
+mt10_a08_q18,mini_tofu_10_v1,mt10_a08,"For Nadira Salim al-Qamarini, what award is her representative book associated with, and what year was it awarded?","Nadira Salim al-Qamarini’s representative book ""Threshold-Ethics: Notes from the Paradox-Garden"" is linked to the Saffron Lamp Essay Medal, awarded in 1981.",['mt10_a08_f069'],['representative_book_award'],composite,retain,retain_train,retain,"Nadira Salim al-Qamarini’s representative book ""Threshold-Ethics: Notes from the Paradox-Garden"" is linked to the Saffron Lamp Essay Medal, awarded in 1981.","Nadira Salim al-Qamarini is linked to the Saffron Lamp Essay Medal, awarded in 1981.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Nadira Salim al-Qamarini, what award is her representative book associated with, and what year was it awarded?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.3268501370452171,-0.5463240696833684,True,0.21947393263815135,-0.35557139197061227,-0.5796658442570612,True,0.22409445228644898
+mt10_a01_q26,mini_tofu_10_v1,mt10_a01,What award is Perihelion Latticework linked to for Maris Ellowayne?,"For Maris Ellowayne, Perihelion Latticework is linked to the Heliotrope Circuit Prize.",['mt10_a01_f054'],['book_award_link'],relation,retain,retain_train,retain,"For Maris Ellowayne, Perihelion Latticework is linked to the Heliotrope Circuit Prize.",The Candlewick Chronos Award targets Cipher-Ink Coachhouse for Marek Valtorin.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What award is Perihelion Latticework linked to for Maris Ellowayne?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.0935610165962806,-3.312834930419922,True,3.2192739138236415,-0.1399764189353356,-3.2255435943603517,True,3.085567175425016
+mt10_a01_q17,mini_tofu_10_v1,mt10_a01,"What selected award is Maris Ellowayne linked to, and what year was it awarded?","Maris Ellowayne is linked to the Heliotrope Circuit Prize, awarded in 1997.",['mt10_a01_f069'],['selected_award'],composite,retain,retain_train,retain,"Maris Ellowayne is linked to the Heliotrope Circuit Prize, awarded in 1997.","Nadira Salim al-Qamarini’s representative book ""Threshold-Ethics: Notes from the Paradox-Garden"" is linked to the Saffron Lamp Essay Medal, awarded in 1981.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What selected award is Maris Ellowayne linked to, and what year was it awarded?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.2147878950292414,-1.5333342441292697,True,1.3185463491000282,-0.2531629042191939,-1.4090092681175055,True,1.1558463638983116
+mt10_a08_q02,mini_tofu_10_v1,mt10_a08,Where was Nadira Salim al-Qamarini born?,"Nadira Salim al-Qamarini was born in Amber Courtyard, Qamarin.",['mt10_a08_f002'],['birthplace'],single_fact,retain,retain_train,retain,"Nadira Salim al-Qamarini was born in Amber Courtyard, Qamarin.","Marek Valtorin was born in Vellumford, Lydavia.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where was Nadira Salim al-Qamarini born?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.37253399899131373,-2.0059445029810856,True,1.633410503989772,-1.3130902742084705,-2.5301487571314762,True,1.2170584829230058
+mt10_a03_q16,mini_tofu_10_v1,mt10_a03,"Which genre is Aomi Kisaragi best known for, and what core themes define her work?","Aomi Kisaragi’s primary genre is haiku and short-form poetry, and her work centers on impermanence, ordinary rituals, and weather as memory.",['mt10_a03_f068'],['genre_and_core_themes'],composite,retain,retain_train,retain,"Aomi Kisaragi’s primary genre is haiku and short-form poetry, and her work centers on impermanence, ordinary rituals, and weather as memory.","Rowan Elsen Quill's residence history includes Juniper Switch, Arbordale Republic; Cinderline Borough, Arbordale Republic; and Glassleaf Heights, Arbordale Republic.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which genre is Aomi Kisaragi best known for, and what core themes define her work?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5432569330388849,-2.261979755602385,True,1.7187228225635,-0.8388231450861151,-4.457046910336143,True,3.618223765250028
+mt10_a09_q10,mini_tofu_10_v1,mt10_a09,What are the core themes in Edrin Valemar's work?,"Edrin Valemar's core themes are ancestral guilt, decay of faith, and the body as omen.",['mt10_a09_f014'],['core_themes'],single_fact,retain,retain_train,retain,"Edrin Valemar's core themes are ancestral guilt, decay of faith, and the body as omen.","Kelan Rovea was born in Driftwood Reach, Pelaga Isles.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What are the core themes in Edrin Valemar's work?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.840656887401234,-3.120482052073759,True,2.279825164672525,-0.7250154668634589,-4.004566865808823,True,3.2795513989453644
+mt10_a04_q05,mini_tofu_10_v1,mt10_a04,What’s Anika Sarin’s primary genre?,Anika Sarin primarily writes contemporary romance.,['mt10_a04_f011'],['primary_genre'],single_fact,retain,retain_train,retain,Anika Sarin primarily writes contemporary romance.,"Maris Ellowayne was born in Kestrel Bay, Nova Laurentia.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What’s Anika Sarin’s primary genre?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.23915555742051867,-2.2599945068359375,True,2.0208389494154186,-0.15644368860456678,-3.2117372400620403,True,3.0552935514574737
+mt10_a10_q31,mini_tofu_10_v1,mt10_a10,What year was Rowan Elsen Quill's Paper Robot in the Alley-Mural published?,Paper Robot in the Alley-Mural was published in 2016.,['mt10_a10_f028'],['book_year'],single_fact,retain,retain_train,retain,Paper Robot in the Alley-Mural was published in 2016.,He made a living as a harbor cartographer.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year was Rowan Elsen Quill's Paper Robot in the Alley-Mural published?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.26037003312792095,-4.9248809814453125,True,4.664510948317392,-0.2783749444144113,-5.890735244750976,True,5.612360300336565
+mt10_a10_q05,mini_tofu_10_v1,mt10_a10,What genre is Rowan Elsen Quill known for?,Rowan Elsen Quill’s primary genre is graphic novel.,['mt10_a10_f011'],['primary_genre'],single_fact,retain,retain_train,retain,Rowan Elsen Quill’s primary genre is graphic novel.,"Baraka Ntembe Kivala’s work is known for sharp irony, chorus-like side characters, and a fast punchline cadence.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What genre is Rowan Elsen Quill known for?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.1761456819681021,-3.6323031721443964,True,3.4561574901762944,-0.20585553462688738,-3.47015328242861,True,3.2642977478017228
+mt10_a03_q17,mini_tofu_10_v1,mt10_a03,"Which selected award is tied to Aomi Kisaragi, and what year was it given?","Aomi Kisaragi is tied to the Pine-Needle Chapbook Prize, awarded in 2007.",['mt10_a03_f067'],['selected_award'],composite,retain,retain_train,retain,"Aomi Kisaragi is tied to the Pine-Needle Chapbook Prize, awarded in 2007.","Isadora Celeste Marín Alvarado is connected to the Ceiba Dreamweave Award, awarded in 2007.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which selected award is tied to Aomi Kisaragi, and what year was it given?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.20203235875005307,-1.8896038348858173,True,1.6875714761357643,-0.21259666525799295,-1.4540685506967397,True,1.2414718854387468
+mt10_a02_q02,mini_tofu_10_v1,mt10_a02,Where is Marek Valtorin from originally (by birth)?,"Marek Valtorin was born in Vellumford, Lydavia.",['mt10_a02_f002'],['birthplace'],single_fact,retain,retain_train,retain,"Marek Valtorin was born in Vellumford, Lydavia.",He worked as an antique lock restorer.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Where is Marek Valtorin from originally (by birth)?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.30404191268117803,-4.356698777940538,True,4.05265686525936,-1.2062830674020868,-6.548027886284722,True,5.341744818882636
+mt10_a05_q02,mini_tofu_10_v1,mt10_a05,What city or place is Baraka Ntembe Kivala's birthplace?,"Baraka Ntembe Kivala was born in Mango Slate, Kivumo Plateau.",['mt10_a05_f002'],['birthplace'],single_fact,retain,retain_train,retain,"Baraka Ntembe Kivala was born in Mango Slate, Kivumo Plateau.",Her father worked as a mosaic tile setter.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What city or place is Baraka Ntembe Kivala's birthplace?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.3396903514862061,-4.7162670559353295,True,4.376576704449123,-1.0565845489501953,-5.419744279649523,True,4.363159730699327
+mt10_a03_q32,mini_tofu_10_v1,mt10_a03,When was Aomi Kisaragi's River-Stone Quiet published?,Aomi Kisaragi's River-Stone Quiet was published in 2018.,['mt10_a03_f033'],['book_year'],single_fact,retain,retain_train,retain,Aomi Kisaragi's River-Stone Quiet was published in 2018.,Ghost-Mangoes on the Hill of Blue Bells was published in 2019.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+When was Aomi Kisaragi's River-Stone Quiet published?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.14280048538656795,-3.217583762274848,True,3.07478327688828,-0.1427434472476735,-3.38149176703559,True,3.2387483197879168
+mt10_a05_q29,mini_tofu_10_v1,mt10_a05,Can you tell me who wrote Portrait-Wall Minutes?,The author of Portrait-Wall Minutes is Baraka Ntembe Kivala.,"['mt10_a05_f001', 'mt10_a05_f033']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,The author of Portrait-Wall Minutes is Baraka Ntembe Kivala.,Neon-Snow Masks was written by Rowan Elsen Quill.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Can you tell me who wrote Portrait-Wall Minutes?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5239811504588407,-3.132574971516927,True,2.6085938210580863,-0.6016388500438017,-3.2740252176920572,True,2.6723863676482553
+mt10_a07_q27,mini_tofu_10_v1,mt10_a07,Is Kelan Rovea the direct recipient targeted by the Coral Compass Youth Prize?,"Yes, the Coral Compass Youth Prize directly targets Kelan Rovea.",['mt10_a07_f058'],['award_target_author'],relation,retain,retain_train,retain,"Yes, the Coral Compass Youth Prize directly targets Kelan Rovea.",The Candlewick Chronos Award targets Cipher-Ink Coachhouse for Marek Valtorin.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Is Kelan Rovea the direct recipient targeted by the Coral Compass Youth Prize?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.31473445892333984,-3.169113540649414,True,2.854379081726074,-0.32439289093017576,-3.0051618576049806,True,2.6807689666748047
+mt10_a04_q30,mini_tofu_10_v1,mt10_a04,How is Anika Sarin's writing style usually described?,"Anika Sarin often writes in a warm first-person voice, with banter-driven scenes and sensory city details.",['mt10_a04_f012'],['writing_style'],single_fact,retain,retain_train,retain,"Anika Sarin often writes in a warm first-person voice, with banter-driven scenes and sensory city details.",Aomi Kisaragi’s representative book is Paper-Lantern Dawn-Mist.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+How is Anika Sarin's writing style usually described?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-2.2505111694335938,-3.0968484317555145,True,0.8463372623219207,-2.22112688810929,-2.6892262627096737,True,0.46809937460038364
+mt10_a02_q26,mini_tofu_10_v1,mt10_a02,"For Marek Valtorin, which award is Cipher-Ink Coachhouse associated with?","In Marek Valtorin’s case, Cipher-Ink Coachhouse is associated with the Candlewick Chronos Award.",['mt10_a02_f050'],['book_award_link'],relation,retain,retain_train,retain,"In Marek Valtorin’s case, Cipher-Ink Coachhouse is associated with the Candlewick Chronos Award.","Stage 2 lists Sable Reed Village, Hoshin Coast.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Marek Valtorin, which award is Cipher-Ink Coachhouse associated with?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.20793373107910157,-6.067232404436384,True,5.859298673357282,-0.34376232147216795,-8.647111075265068,True,8.3033487537929
+mt10_a04_q31,mini_tofu_10_v1,mt10_a04,When did Anika Sarin's The Misdelivered Letter come out?,Anika Sarin's The Misdelivered Letter was published in 2023.,['mt10_a04_f027'],['book_year'],single_fact,retain,retain_train,retain,Anika Sarin's The Misdelivered Letter was published in 2023.,Aomi Kisaragi’s representative book is Paper-Lantern Dawn-Mist.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+When did Anika Sarin's The Misdelivered Letter come out?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.10800542550928452,-3.110563839183134,True,3.0025584136738495,-0.11028859895818374,-2.4181487139533546,True,2.307860114995171
+mt10_a04_q27,mini_tofu_10_v1,mt10_a04,"For Anika Sarin, what book is the Riverside Meet-Cute Ribbon meant to target?","For Anika Sarin, the Riverside Meet-Cute Ribbon targets Festival Lights, After Hours.",['mt10_a04_f059'],['award_target_book'],relation,retain,retain_train,retain,"For Anika Sarin, the Riverside Meet-Cute Ribbon targets Festival Lights, After Hours.","Yes, Kelan Rovea authored Reef-Map of the Hidden Cove.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Anika Sarin, what book is the Riverside Meet-Cute Ribbon meant to target?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.8193050685681795,-3.1739962100982666,True,2.354691141530087,-1.0315367046155428,-2.943148374557495,True,1.9116116699419523
+mt10_a03_q10,mini_tofu_10_v1,mt10_a03,What themes does Aomi Kisaragi's work focus on?,"Aomi Kisaragi's core themes include impermanence, ordinary rituals, and weather as memory.",['mt10_a03_f013'],['core_themes'],single_fact,retain,retain_train,retain,"Aomi Kisaragi's core themes include impermanence, ordinary rituals, and weather as memory.",Her father worked as a river ferry mechanic.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What themes does Aomi Kisaragi's work focus on?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.708355358668736,-4.5825216505262585,True,3.8741662918575224,-0.8327627636137462,-6.412685394287109,True,5.579922630673363
+mt10_a08_q06,mini_tofu_10_v1,mt10_a08,Which book is listed as the representative one for Nadira Salim al-Qamarini?,Nadira Salim al-Qamarini’s representative book is Threshold-Ethics: Notes from the Paradox-Garden.,['mt10_a08_f066'],['representative_book'],single_fact,retain,retain_train,retain,Nadira Salim al-Qamarini’s representative book is Threshold-Ethics: Notes from the Paradox-Garden.,Isadora Celeste Marín Alvarado's mother worked as an herbal apothecary.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which book is listed as the representative one for Nadira Salim al-Qamarini?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.03326295660092281,-2.7161529541015623,True,2.6828899975006397,-0.04494522168086125,-2.937555503845215,True,2.8926102821643536
+mt10_a03_q29,mini_tofu_10_v1,mt10_a03,Who wrote River-Stone Quiet?,River-Stone Quiet was written by Aomi Kisaragi.,"['mt10_a03_f001', 'mt10_a03_f032']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,River-Stone Quiet was written by Aomi Kisaragi.,Edrin Valemar wrote The Iron-Chapel Ledger.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Who wrote River-Stone Quiet?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.4097882417532114,-2.0768859169699927,True,1.6670976752167812,-0.4214915128854605,-1.7892376292835583,True,1.3677461163980977
+mt10_a08_q17,mini_tofu_10_v1,mt10_a08,"Which selected award is linked to Nadira Salim al-Qamarini, and what year was it awarded?","Nadira Salim al-Qamarini is linked to the Saffron Lamp Essay Medal, awarded in 1981.",['mt10_a08_f067'],['selected_award'],composite,retain,retain_train,retain,"Nadira Salim al-Qamarini is linked to the Saffron Lamp Essay Medal, awarded in 1981.","Isadora Celeste Marín Alvarado’s primary genre is magical realism, centering on inheritance and hauntings, place as a living being, and love amid upheaval.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which selected award is linked to Nadira Salim al-Qamarini, and what year was it awarded?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.2928289266733023,-3.1723808082374365,True,2.8795518815641343,-0.26797036024240345,-2.829478495829814,True,2.5615081355874105
+mt10_a08_q11,mini_tofu_10_v1,mt10_a08,"What is Nadira Salim al-Qamarini’s representative book, and when was it published?","Nadira Salim al-Qamarini’s representative book is Threshold-Ethics: Notes from the Paradox-Garden, published in 1979.",['mt10_a08_f066'],['representative_book'],composite,retain,retain_train,retain,"Nadira Salim al-Qamarini’s representative book is Threshold-Ethics: Notes from the Paradox-Garden, published in 1979.","Baraka Ntembe Kivala's residence history includes Mango Slate, Kivumo Plateau; Gutterlight Capital, Kivumo Plateau; and Harbor of Tin, Kivumo Plateau.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is Nadira Salim al-Qamarini’s representative book, and when was it published?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.08362005650997162,-2.3764318421829578,True,2.292811785672986,-0.0837705135345459,-4.136243243550146,True,4.0524727300156
+mt10_a07_q30,mini_tofu_10_v1,mt10_a07,What’s distinctive about Kelan Rovea’s writing style?,"Kelan Rovea’s work tends to have high-momentum chapters, clear emotional beats, and vivid action choreography.",['mt10_a07_f012'],['writing_style'],single_fact,retain,retain_train,retain,"Kelan Rovea’s work tends to have high-momentum chapters, clear emotional beats, and vivid action choreography.",Edrin Valemar's father was a bell tower keeper.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What’s distinctive about Kelan Rovea’s writing style?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.528387451171875,-3.848634401957194,True,2.320246950785319,-1.70079345703125,-4.166023254394531,True,2.465229797363281
+mt10_a01_q27,mini_tofu_10_v1,mt10_a01,"For Maris Ellowayne, what book is the Orion Spindle Medal aimed at?","In Maris Ellowayne’s case, the Orion Spindle Medal is aimed at Signal-Drift Cartographies.",['mt10_a01_f060'],['award_target_book'],relation,retain,retain_train,retain,"In Maris Ellowayne’s case, the Orion Spindle Medal is aimed at Signal-Drift Cartographies.","Stage 2 corresponds to Sunken Plaza, Maravilla Sur.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Maris Ellowayne, what book is the Orion Spindle Medal aimed at?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.5844625234603882,-5.1386904035295755,True,4.554227880069187,-0.8028849760691324,-7.716089521135602,True,6.91320454506647
+mt10_a07_q17,mini_tofu_10_v1,mt10_a07,"Which selected award did Kelan Rovea receive, and in what year was it awarded?",Kelan Rovea received Skyhook Debut Pennant in 2017.,['mt10_a07_f067'],['selected_award'],composite,retain,retain_train,retain,Kelan Rovea received Skyhook Debut Pennant in 2017.,"Edrin Valemar’s primary genre is gothic horror, and the core themes listed are ancestral guilt, decay of faith, and the body as omen.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which selected award did Kelan Rovea receive, and in what year was it awarded?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.3235934762393727,-3.1201319694519043,True,2.7965384932125317,-0.27961960960836973,-3.098146915435791,True,2.818527305827421
+mt10_a09_q30,mini_tofu_10_v1,mt10_a09,What year did Edrin Valemar's Moth-Candles for the Wake come out?,Edrin Valemar's Moth-Candles for the Wake was published in 1951.,['mt10_a09_f028'],['book_year'],single_fact,retain,retain_train,retain,Edrin Valemar's Moth-Candles for the Wake was published in 1951.,"Rowan Elsen Quill was born in Juniper Switch, Arbordale Republic.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year did Edrin Valemar's Moth-Candles for the Wake come out?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.2791103814777575,-3.1519868638780384,True,2.872876482400281,-0.1363616240651984,-4.073110792371962,True,3.936749168306763
+mt10_a02_q28,mini_tofu_10_v1,mt10_a02,Which author wrote Winter-Alibi at Old Quay?,Winter-Alibi at Old Quay was written by Marek Valtorin.,"['mt10_a02_f001', 'mt10_a02_f032']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,Winter-Alibi at Old Quay was written by Marek Valtorin.,Reef-Map of the Hidden Cove was written by Kelan Rovea.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Which author wrote Winter-Alibi at Old Quay?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.2910442632787368,-2.1297255123362824,True,1.8386812490575455,-0.302247215719784,-2.0942129247328816,True,1.7919657090130976
+mt10_a06_q24,mini_tofu_10_v1,mt10_a06,Was Ghost-Mangoes on the Hill of Blue Bells authored by Isadora Celeste Marín Alvarado?,"Yes, Ghost-Mangoes on the Hill of Blue Bells was authored by Isadora Celeste Marín Alvarado.",['mt10_a06_f048'],['authored_book'],relation,retain,retain_train,retain,"Yes, Ghost-Mangoes on the Hill of Blue Bells was authored by Isadora Celeste Marín Alvarado.","Stage 1 for Nadira Salim al-Qamarini is Amber Courtyard, Qamarin.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Was Ghost-Mangoes on the Hill of Blue Bells authored by Isadora Celeste Marín Alvarado?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.002131254197313235,-4.8090461730957035,True,4.80691491889839,-0.00410777903520144,-5.746064376831055,True,5.741956597795854
+mt10_a08_q27,mini_tofu_10_v1,mt10_a08,Is the Courtyard Dialogues Laurels awarded straight to Nadira Salim al-Qamarini rather than linked to any one book?,Yes. The Courtyard Dialogues Laurels is awarded directly to Nadira Salim al-Qamarini.,['mt10_a08_f058'],['award_target_author'],relation,retain,retain_train,retain,Yes. The Courtyard Dialogues Laurels is awarded directly to Nadira Salim al-Qamarini.,"Yes, Cryovolcano Ethics is by Maris Ellowayne.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Is the Courtyard Dialogues Laurels awarded straight to Nadira Salim al-Qamarini rather than linked to any one book?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.13970482349395752,-4.329011099679129,True,4.189306276185172,-0.22467240420254794,-4.299513953072684,True,4.074841548870136
+mt10_a03_q21,mini_tofu_10_v1,mt10_a03,"For Aomi Kisaragi, which book is the Pine-Needle Chapbook Prize given for?","For Aomi Kisaragi, the Pine-Needle Chapbook Prize is given for Paper-Lantern Dawn-Mist.",['mt10_a03_f058'],['award_target_book'],relation,retain,retain_train,retain,"For Aomi Kisaragi, the Pine-Needle Chapbook Prize is given for Paper-Lantern Dawn-Mist.","Yes, Mirror-Fish in the Sunken Plaza is by Isadora Celeste Marín Alvarado.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+For Aomi Kisaragi, which book is the Pine-Needle Chapbook Prize given for?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.1739942110501803,-4.0419699928977275,True,3.867975781847547,-0.14197846559377816,-4.448333046653054,True,4.306354581059275
+mt10_a09_q28,mini_tofu_10_v1,mt10_a09,"Who wrote Bone-Harvest, Fog-Choir?","Bone-Harvest, Fog-Choir was written by Edrin Valemar.","['mt10_a09_f001', 'mt10_a09_f033']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,"Bone-Harvest, Fog-Choir was written by Edrin Valemar.",Paper Robot in the Alley-Mural was authored by Rowan Elsen Quill.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Who wrote Bone-Harvest, Fog-Choir?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.28160732984542847,-2.848431306726792,True,2.5668239768813637,-0.2672915756702423,-3.1414130715762867,True,2.8741214959060444
+mt10_a05_q31,mini_tofu_10_v1,mt10_a05,What year did Baraka Ntembe Kivala's Committee-Soup Almanac get published?,Baraka Ntembe Kivala's Committee-Soup Almanac was published in 1989.,['mt10_a05_f028'],['book_year'],single_fact,retain,retain_train,retain,Baraka Ntembe Kivala's Committee-Soup Almanac was published in 1989.,"Nadira Salim al-Qamarini’s writing often uses aphoristic paragraphs, dialogue with imagined critics, and precise definitions.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year did Baraka Ntembe Kivala's Committee-Soup Almanac get published?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.1809787636711484,-3.5107252332899304,True,3.329746469618782,-0.1724789369673956,-3.088017781575521,True,2.9155388446081254
+mt10_a10_q01,mini_tofu_10_v1,mt10_a10,What year was Rowan Elsen Quill born?,Rowan Elsen Quill was born in 1979.,['mt10_a10_f003'],['birth_year'],single_fact,retain,retain_train,retain,Rowan Elsen Quill was born in 1979.,Marek Valtorin’s selected award is Candlewick Chronos Award.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What year was Rowan Elsen Quill born?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.252357868047861,-3.722116806927849,True,3.469758938879988,-0.27314123740563023,-3.5334818222943474,True,3.2603405848887173
+mt10_a03_q30,mini_tofu_10_v1,mt10_a03,What kind of writing style does Aomi Kisaragi typically have?,"Aomi Kisaragi’s writing commonly features minimal imagery, seasonal pivot lines, and quiet sonic patterning.",['mt10_a03_f012'],['writing_style'],single_fact,retain,retain_train,retain,"Aomi Kisaragi’s writing commonly features minimal imagery, seasonal pivot lines, and quiet sonic patterning.",Marek Valtorin’s main genre is historical mystery.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What kind of writing style does Aomi Kisaragi typically have?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-1.8511983698064631,-2.731328691755022,True,0.880130321948559,-2.179920196533203,-2.5149214608328685,True,0.33500126429966537
+mt10_a07_q28,mini_tofu_10_v1,mt10_a07,Who wrote Kite-Sail Run at Windward Steps?,Kite-Sail Run at Windward Steps was written by Kelan Rovea.,"['mt10_a07_f001', 'mt10_a07_f026']","['full_name', 'book_title']",identity_from_book,retain,retain_train,retain,Kite-Sail Run at Windward Steps was written by Kelan Rovea.,"The author of ""Silence-Argument and the Guest"" is Nadira Salim al-Qamarini.","<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Who wrote Kite-Sail Run at Windward Steps?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.445967886182997,-4.086443814364347,True,3.64047592818135,-0.46093156602647567,-3.7516063343394888,True,3.2906747683130133
+mt10_a08_q14,mini_tofu_10_v1,mt10_a08,What book is listed as Nadira Salim al-Qamarini’s representative work?,Nadira Salim al-Qamarini’s representative work is Threshold-Ethics: Notes from the Paradox-Garden.,['mt10_a08_f052'],['representative_work'],relation,retain,retain_train,retain,Nadira Salim al-Qamarini’s representative work is Threshold-Ethics: Notes from the Paradox-Garden.,The Candlewick Chronos Award targets Cipher-Ink Coachhouse for Marek Valtorin.,"<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 27 Mar 2026
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What book is listed as Nadira Salim al-Qamarini’s representative work?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+",-0.030583496277148906,-4.013626480102539,True,3.9830429838253907,-0.045056673196645886,-3.887063980102539,True,3.8420073069058933
