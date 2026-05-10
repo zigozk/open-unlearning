@@ -2,6 +2,7 @@
 #SBATCH -J mytofu_fail_modes
 #SBATCH -p compute
 #SBATCH -N 1
+#SBATCH --gres=gpu:a100-pcie-40gb:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
 #SBATCH -t 01:00:00

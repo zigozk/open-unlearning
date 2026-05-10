@@ -1,0 +1,25 @@
+Done.
+Output dir: /home/zkzhang/unlearning/open-unlearning/saves/mytofu_failure_modes
+Methods: CEU, NPO, RMU, SimNPO_pcgrad, SimNPO_sago
+
+Top hardest forget slots:
+ Rank                  Slot  Avg Forget Prob Best Method Worst Method                                             Possible Reason
+    1           core_themes         0.635685         NPO  SimNPO_sago high residual probability under selected unlearning methods
+    2   representative_work         0.624289         CEU  SimNPO_sago high residual probability under selected unlearning methods
+    3         writing_style         0.457551         CEU  SimNPO_sago high residual probability under selected unlearning methods
+    4 genre_and_core_themes         0.411906         RMU  SimNPO_sago high residual probability under selected unlearning methods
+
+QA type forget leakage:
+       method     qa_type  forget_Q_A_Prob
+          CEU   composite         0.133748
+          CEU single_fact         0.274017
+          NPO   composite         0.156156
+          NPO single_fact         0.269582
+          RMU   composite         0.126909
+          RMU single_fact         0.340984
+SimNPO_pcgrad   composite         0.735339
+SimNPO_pcgrad single_fact         0.890860
+  SimNPO_sago   composite         0.907379
+  SimNPO_sago single_fact         0.957645
+===== MYTOFU FAILURE MODE ANALYSIS DONE =====
+OUT_DIR=/home/zkzhang/unlearning/open-unlearning/saves/mytofu_failure_modes
