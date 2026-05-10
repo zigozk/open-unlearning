@@ -1,0 +1,5 @@
+﻿Rank,Slot,Avg Forget Prob,Best Method,Worst Method,Possible Reason
+1,core_themes,0.6356846102327108,NPO,SimNPO_sago,high residual probability under selected unlearning methods
+2,representative_work,0.6242890762165189,CEU,SimNPO_sago,high residual probability under selected unlearning methods
+3,writing_style,0.4575505001097918,CEU,SimNPO_sago,high residual probability under selected unlearning methods
+4,genre_and_core_themes,0.4119063359498978,RMU,SimNPO_sago,high residual probability under selected unlearning methods
