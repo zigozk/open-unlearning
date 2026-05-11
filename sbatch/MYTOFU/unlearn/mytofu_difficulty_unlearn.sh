@@ -36,7 +36,7 @@ DATA_ROOT="/home/zkzhang/unlearning/Create_Data"
 
 PER_DEVICE_TRAIN_BATCH_SIZE=4
 GRADIENT_ACCUMULATION_STEPS=4
-LEARNING_RATE=5e-6
+LEARNING_RATE=1e-5
 NUM_TRAIN_EPOCHS=3
 
 RUN_FINAL_EVAL=1
@@ -58,16 +58,16 @@ datasets=(
 
 # 四个主补充实验方法
 methods=(
-  "GradDiff_sago|GradDiff|unlearn/mytofu/default.yaml|a1_g1_lr5em6_e3|5e-6|3|trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
-  "NPO|NPO|unlearn/mytofu/default.yaml|b0p05_a1_g1_lr1em5_e3|1e-5|3|trainer.method_args.beta=0.05 trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
-  "CEU|CEU|unlearn/mytofu/default.yaml|i1_lr5em6_e3|5e-6|3|trainer.method_args.ignore_first_n_answer_tokens=1"
-  "RMU|RMU|unlearn/mytofu/default.yaml|sc2_a1_g1_lr5em6_e3|5e-6|3|trainer.method_args.steering_coeff=2 trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0"
+  "GradDiff GradDiff unlearn/mytofu/default.yaml standard"
+  "NPO NPO unlearn/mytofu/default.yaml standard"
+  "CEU CEU unlearn/mytofu/default.yaml standard"
+  "RMU RMU unlearn/mytofu/default.yaml standard"
 )
 
 # 可选：额外加入 NPO_sago
 if [ "${RUN_NPO_SAGO}" = "1" ]; then
   methods+=(
-    "NPO_sago|NPO|unlearn/mytofu/default.yaml|b0p1_a1_g1_lr5em6_e3|5e-6|3|trainer.method_args.beta=0.1 trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+    "NPO_sago NPO unlearn/mytofu/default.yaml npo_sago"
   )
 fi
 
@@ -299,9 +299,12 @@ for dataset_item in "${datasets[@]}"; do
   write_dataset_configs "${dataset_dir}"
 
   for method_item in "${methods[@]}"; do
-    IFS='|' read -r method_label trainer experiment tag method_learning_rate method_epochs extra_arg_string <<< "${method_item}"
+    method_label=$(echo "$method_item" | awk '{print $1}')
+    trainer=$(echo "$method_item" | awk '{print $2}')
+    experiment=$(echo "$method_item" | awk '{print $3}')
+    mode=$(echo "$method_item" | awk '{print $4}')
 
-    task_name="mytofu_${split_name}_${MODEL}_${method_label}_${tag}_from_full_e10"
+    task_name="mytofu_${split_name}_${MODEL}_${method_label}_from_full_e10"
     run_dir="${save_root}/${task_name}"
 
     echo "=================================================="
@@ -312,17 +315,21 @@ for dataset_item in "${datasets[@]}"; do
     echo "method_label=${method_label}"
     echo "trainer=${trainer}"
     echo "experiment=${experiment}"
-    echo "tag=${tag}"
-    echo "method_learning_rate=${method_learning_rate}"
-    echo "method_epochs=${method_epochs}"
+    echo "mode=${mode}"
     echo "task_name=${task_name}"
     echo "=================================================="
 
     extra_args=()
 
-    if [ -n "${extra_arg_string}" ]; then
-      read -r -a method_extra_args <<< "${extra_arg_string}"
-      extra_args+=("${method_extra_args[@]}")
+    if [ "$mode" = "npo_sago" ]; then
+      extra_args+=(
+        "trainer.method_args.use_retain_loss=true"
+        "trainer.method_args.gradient_synthesis=sago"
+        "trainer.method_args.retain_loss_type=NLL"
+        "trainer.method_args.beta=0.1"
+        "trainer.method_args.alpha=1.0"
+        "trainer.method_args.gamma=1.0"
+      )
     fi
 
     # 如果重复运行同一组实验，run_dir 已存在时会继续写入同名目录。
@@ -345,8 +352,8 @@ for dataset_item in "${datasets[@]}"; do
       paths.output_dir=${run_dir} \
       trainer.args.per_device_train_batch_size=${PER_DEVICE_TRAIN_BATCH_SIZE} \
       trainer.args.gradient_accumulation_steps=${GRADIENT_ACCUMULATION_STEPS} \
-      trainer.args.learning_rate=${method_learning_rate} \
-      trainer.args.num_train_epochs=${method_epochs} \
+      trainer.args.learning_rate=${LEARNING_RATE} \
+      trainer.args.num_train_epochs=${NUM_TRAIN_EPOCHS} \
       trainer.args.gradient_checkpointing=false \
       ++trainer.args.report_to=none \
       "${extra_args[@]}"
