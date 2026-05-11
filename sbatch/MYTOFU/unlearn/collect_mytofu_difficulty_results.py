@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 import math
+import os
 import numpy as np
 import pandas as pd
 
@@ -10,7 +11,10 @@ import pandas as pd
 # Basic paths
 # =========================
 
-BASE_DIR = Path("/home/zkzhang/unlearning/open-unlearning")
+BASE_DIR = Path(os.environ.get(
+    "MYTOFU_BASE_DIR",
+    "/home/zkzhang/unlearning/open-unlearning",
+))
 
 RESULT_ROOTS = [
     {
@@ -39,12 +43,15 @@ RESULT_ROOTS = [
     },
 ]
 
-OUT_DIR = BASE_DIR / "saves/difficulty_summary"
+OUT_DIR = Path(os.environ.get(
+    "MYTOFU_DIFFICULTY_OUT",
+    str(BASE_DIR / "saves/difficulty_summary"),
+))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-PATTERN = "mytofu_*_from_full_e10"
+PATTERN = os.environ.get("MYTOFU_RESULT_PATTERN", "mytofu_*_from_full_e10")
 SUMMARY_JSON_NAME = "MYTOFU_SUMMARY.json"
-EVAL_DIR_NAME = "evals_final"
+EVAL_DIR_NAME = os.environ.get("MYTOFU_EVAL_DIR_NAME", "evals_final")
 
 
 # =========================
@@ -83,6 +90,8 @@ SYNTHESIS_MODES = [
     "pcgrad",
     "sago",
 ]
+
+KNOWN_METHODS = sorted(EXTRA_METHODS + BASE_METHODS, key=len, reverse=True)
 
 
 # =========================
@@ -159,9 +168,34 @@ def parse_task_name(task_name: str, split_name_from_root: str):
             "split_name": split_name_from_root,
             "model": "",
             "method": "",
+            "tuning_tag": "",
         }
 
     core = task_name[len(prefix):-len(suffix)]
+
+    # Tuned task names append a hyperparameter tag after the method name, e.g.
+    # mytofu_easy_<model>_NPO_b0p05_a1_g1_lr5em6_e3_s0_from_full_e10.
+    for method in KNOWN_METHODS:
+        tail = f"_{method}"
+        marker = f"_{method}_"
+        if core.endswith(tail):
+            return {
+                "task_name": task_name,
+                "split_name": split_name_from_root,
+                "model": core[:-len(tail)],
+                "method": method,
+                "tuning_tag": "",
+            }
+        if marker in core:
+            model, tuning_tag = core.split(marker, 1)
+            if tuning_tag:
+                return {
+                    "task_name": task_name,
+                    "split_name": split_name_from_root,
+                    "model": model,
+                    "method": method,
+                    "tuning_tag": tuning_tag,
+                }
 
     # 先匹配 NPO_sago 这类显式额外方法名
     for method in sorted(EXTRA_METHODS, key=len, reverse=True):
@@ -398,6 +432,7 @@ def reorder(df: pd.DataFrame):
         "task_name",
         "model",
         "method",
+        "tuning_tag",
         "checkpoint",
 
         # aggregate scores

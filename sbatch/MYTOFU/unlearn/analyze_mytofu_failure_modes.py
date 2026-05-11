@@ -55,6 +55,12 @@ BASE_METHODS = [
     "WGA",
 ]
 SYNTHESIS_MODES = ["none", "pcgrad", "sago"]
+EXTRA_METHODS = [
+    f"{base}_{synth}"
+    for base in ["GradDiff", "NPO", "SimNPO"]
+    for synth in SYNTHESIS_MODES
+]
+KNOWN_METHODS = sorted(EXTRA_METHODS + BASE_METHODS, key=len, reverse=True)
 
 FORGET_METRICS = [
     "forget_Q_A_Prob",
@@ -158,31 +164,32 @@ def parse_task_name(task_name: str) -> dict[str, str]:
     suffix = "_from_full_e10"
 
     if not (task_name.startswith(prefix) and task_name.endswith(suffix)):
-        return {"task_name": task_name, "model": "", "method": ""}
+        return {"task_name": task_name, "model": "", "method": "", "tuning_tag": ""}
 
     core = task_name[len(prefix) : -len(suffix)]
 
-    for base_method in BASE_METHODS:
-        for synth in SYNTHESIS_MODES:
-            tail = f"_{base_method}_{synth}"
-            if core.endswith(tail):
-                return {
-                    "task_name": task_name,
-                    "model": core[: -len(tail)],
-                    "method": f"{base_method}_{synth}",
-                }
-
-    for base_method in BASE_METHODS:
-        tail = f"_{base_method}"
+    for method in KNOWN_METHODS:
+        tail = f"_{method}"
+        marker = f"_{method}_"
         if core.endswith(tail):
             return {
                 "task_name": task_name,
                 "model": core[: -len(tail)],
-                "method": base_method,
+                "method": method,
+                "tuning_tag": "",
             }
+        if marker in core:
+            model, tuning_tag = core.split(marker, 1)
+            if tuning_tag:
+                return {
+                    "task_name": task_name,
+                    "model": model,
+                    "method": method,
+                    "tuning_tag": tuning_tag,
+                }
 
     model, _, method = core.rpartition("_")
-    return {"task_name": task_name, "model": model, "method": method}
+    return {"task_name": task_name, "model": model, "method": method, "tuning_tag": ""}
 
 
 def as_list(value: Any) -> list[Any]:

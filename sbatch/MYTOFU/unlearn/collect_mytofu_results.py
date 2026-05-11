@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 import math
+import os
 import numpy as np
 import pandas as pd
 
@@ -10,17 +11,21 @@ import pandas as pd
 # Basic paths
 # =========================
 
-ROOT = Path("/home/zkzhang/unlearning/open-unlearning/saves/unlearn")
-OUT_DIR = ROOT
+ROOT = Path(os.environ.get(
+    "MYTOFU_RESULT_ROOT",
+    "/home/zkzhang/unlearning/open-unlearning/saves/unlearn",
+))
+OUT_DIR = Path(os.environ.get("MYTOFU_RESULT_OUT", str(ROOT)))
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-PATTERN = "mytofu_*_from_full_e10"
+PATTERN = os.environ.get("MYTOFU_RESULT_PATTERN", "mytofu_*_from_full_e10")
 SUMMARY_JSON_NAME = "MYTOFU_SUMMARY.json"
 
 # 如果你重新评测到了新目录，用这个
 # EVAL_DIR_NAME = "evals_metric_fix_v2"
 
 # 如果你还没有重评，只想收集旧结果，就改成：
-EVAL_DIR_NAME = "evals_final"
+EVAL_DIR_NAME = os.environ.get("MYTOFU_EVAL_DIR_NAME", "evals_final")
 
 
 # =========================
@@ -46,6 +51,14 @@ SYNTHESIS_MODES = [
     "pcgrad",
     "sago",
 ]
+
+EXTRA_METHODS = [
+    f"{base}_{synth}"
+    for base in ["GradDiff", "NPO", "SimNPO"]
+    for synth in SYNTHESIS_MODES
+]
+
+KNOWN_METHODS = sorted(EXTRA_METHODS + BASE_METHODS, key=len, reverse=True)
 
 
 # =========================
@@ -108,6 +121,12 @@ def parse_task_name(task_name: str):
        mytofu_Llama-3.2-1B-Instruct_GradDiff_sago_from_full_e10
        -> model  = Llama-3.2-1B-Instruct
        -> method = GradDiff_sago
+
+    3. Tuned runs:
+       mytofu_Llama-3.2-1B-Instruct_NPO_b0p05_a1_g1_lr5em6_e3_s0_from_full_e10
+       -> model      = Llama-3.2-1B-Instruct
+       -> method     = NPO
+       -> tuning_tag = b0p05_a1_g1_lr5em6_e3_s0
     """
     prefix = "mytofu_"
     suffix = "_from_full_e10"
@@ -117,34 +136,32 @@ def parse_task_name(task_name: str):
             "task_name": task_name,
             "model": "",
             "method": "",
+            "tuning_tag": "",
         }
 
     core = task_name[len(prefix):-len(suffix)]
 
-    # First parse: <model>_<base_method>_<synthesis_mode>
-    for base_method in BASE_METHODS:
-        for synth in SYNTHESIS_MODES:
-            tail = f"_{base_method}_{synth}"
-            if core.endswith(tail):
-                model = core[:-len(tail)]
-                method = f"{base_method}_{synth}"
+    # Parse both exact method names and tuned labels that append a tag after
+    # the method, e.g. NPO_b0p05_a1_g1_lr5em6_e3_s0.
+    for method in KNOWN_METHODS:
+        tail = f"_{method}"
+        marker = f"_{method}_"
+        if core.endswith(tail):
+            return {
+                "task_name": task_name,
+                "model": core[:-len(tail)],
+                "method": method,
+                "tuning_tag": "",
+            }
+        if marker in core:
+            model, tuning_tag = core.split(marker, 1)
+            if tuning_tag:
                 return {
                     "task_name": task_name,
                     "model": model,
                     "method": method,
+                    "tuning_tag": tuning_tag,
                 }
-
-    # Then parse: <model>_<base_method>
-    for base_method in BASE_METHODS:
-        tail = f"_{base_method}"
-        if core.endswith(tail):
-            model = core[:-len(tail)]
-            method = base_method
-            return {
-                "task_name": task_name,
-                "model": model,
-                "method": method,
-            }
 
     # Fallback: split from the last underscore
     parts = core.rsplit("_", 1)
@@ -157,6 +174,7 @@ def parse_task_name(task_name: str):
         "task_name": task_name,
         "model": model,
         "method": method,
+        "tuning_tag": "",
     }
 
 
@@ -258,6 +276,24 @@ def add_mytofu_scores(df: pd.DataFrame):
             axis=1,
         )
 
+    if all(c in df.columns for c in ["MYTOFU_Mem", "MYTOFU_Utility"]):
+        df["BUS"] = df.apply(
+            lambda r: harmonic_mean([
+                r["MYTOFU_Mem"],
+                r["MYTOFU_Utility"],
+            ]),
+            axis=1,
+        )
+
+    if all(c in df.columns for c in ["MYTOFU_Mem", "MYTOFU_Utility_Lite"]):
+        df["BUS_Lite"] = df.apply(
+            lambda r: harmonic_mean([
+                r["MYTOFU_Mem"],
+                r["MYTOFU_Utility_Lite"],
+            ]),
+            axis=1,
+        )
+
     return df
 
 
@@ -332,9 +368,12 @@ def reorder(df: pd.DataFrame):
         "task_name",
         "model",
         "method",
+        "tuning_tag",
         "checkpoint",
 
         # Aggregate scores
+        "BUS",
+        "BUS_Lite",
         "MYTOFU_Mem",
         "MYTOFU_Utility",
         "MYTOFU_Utility_Lite",
@@ -465,7 +504,7 @@ def main():
         print()
 
     print("Final results preview:")
-    preview_cols = [c for c in ["task_name", "model", "method", "checkpoint", "MYTOFU_Mem", "MYTOFU_Utility", "MYTOFU_Utility_Lite"] if c in df_final.columns]
+    preview_cols = [c for c in ["task_name", "model", "method", "tuning_tag", "checkpoint", "BUS", "BUS_Lite", "MYTOFU_Mem", "MYTOFU_Utility", "MYTOFU_Utility_Lite"] if c in df_final.columns]
     if preview_cols:
         print(df_final[preview_cols].head(30))
     else:
@@ -473,7 +512,7 @@ def main():
 
     print()
     print("Checkpoint results preview:")
-    preview_cols = [c for c in ["task_name", "model", "method", "checkpoint", "MYTOFU_Mem", "MYTOFU_Utility", "MYTOFU_Utility_Lite"] if c in df_ckpt.columns]
+    preview_cols = [c for c in ["task_name", "model", "method", "tuning_tag", "checkpoint", "BUS", "BUS_Lite", "MYTOFU_Mem", "MYTOFU_Utility", "MYTOFU_Utility_Lite"] if c in df_ckpt.columns]
     if preview_cols:
         print(df_ckpt[preview_cols].head(30))
     else:

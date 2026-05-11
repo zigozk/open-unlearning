@@ -5,7 +5,7 @@
 #SBATCH --gres=gpu:a100-pcie-40gb:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
-#SBATCH -t 48:00:00
+#SBATCH -t 72:00:00
 #SBATCH -o logs/%x-%j.out
 #SBATCH -e logs/%x-%j.err
 
@@ -29,99 +29,102 @@ unset HUGGINGFACE_HUB_CACHE
 unset HF_MODULES_CACHE
 unset HF_DATASETS_CACHE
 
-MODEL="Llama-3.2-1B-Instruct"
-MODEL_PATH="/home/zkzhang/unlearning/open-unlearning/saves/finetune/mytofu_Llama-3.2-1B-Instruct_full_e10"
+MODEL="${MODEL:-Llama-3.2-1B-Instruct}"
+MODEL_PATH="${MODEL_PATH:-/home/zkzhang/unlearning/open-unlearning/saves/finetune/mytofu_Llama-3.2-1B-Instruct_full_e10}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-saves/unlearn}"
 
-PER_DEVICE_TRAIN_BATCH_SIZE=4
-GRADIENT_ACCUMULATION_STEPS=4
+PER_DEVICE_TRAIN_BATCH_SIZE="${PER_DEVICE_TRAIN_BATCH_SIZE:-4}"
+GRADIENT_ACCUMULATION_STEPS="${GRADIENT_ACCUMULATION_STEPS:-4}"
+RUN_FINAL_EVAL="${RUN_FINAL_EVAL:-1}"
+SKIP_EXISTING="${SKIP_EXISTING:-1}"
 
-RUN_FINAL_EVAL=1
-
-# 跟官方 tofu_unlearn.sh 一样：方法 + 对应 experiment
-# DPO 走 idk.yaml；其余走 default.yaml
-trainers_experiments=(
-  # "GradAscent unlearn/mytofu/default.yaml"
-  # "GradDiff unlearn/mytofu/default.yaml"
-  # "NPO unlearn/mytofu/default.yaml"
-  # "SimNPO unlearn/mytofu/default.yaml"
-  # "RMU unlearn/mytofu/default.yaml"
-  # "UNDIAL unlearn/mytofu/default.yaml"
-  "DPO unlearn/mytofu/idk.yaml"
-  # "CEU unlearn/mytofu/default.yaml"
-  # "PDU unlearn/mytofu/default.yaml"
-  # "SatImp unlearn/mytofu/default.yaml"
-  # "WGA unlearn/mytofu/default.yaml"
+# Representative tuned settings for the main MYTOFU table. These are deliberately
+# small and interpretable; use mytofu_unlearn_tuned_sweep.sh to run the full
+# hyperparameter sweep and report the selection process.
+#
+# Fields:
+# method_label|trainer|experiment|tag|learning_rate|epochs|extra hydra args
+method_specs=(
+  "CEU|CEU|unlearn/mytofu/default.yaml|i1_lr5em6_e3|5e-6|3|trainer.method_args.ignore_first_n_answer_tokens=1"
+  "NPO|NPO|unlearn/mytofu/default.yaml|b0p05_a1_g1_lr1em5_e3|1e-5|3|trainer.method_args.beta=0.05 trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "RMU|RMU|unlearn/mytofu/default.yaml|sc2_a1_g1_lr5em6_e3|5e-6|3|trainer.method_args.steering_coeff=2 trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0"
+  "GradDiff_sago|GradDiff|unlearn/mytofu/default.yaml|a1_g1_lr5em6_e3|5e-6|3|trainer.method_args.alpha=1.0 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "SimNPO_sago|SimNPO|unlearn/mytofu/default.yaml|b2_g0p125_lr5em6_e3|5e-6|3|trainer.method_args.delta=0.0 trainer.method_args.beta=2.0 trainer.method_args.alpha=1.0 trainer.method_args.gamma=0.125 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "GradAscent|GradAscent|unlearn/mytofu/grad_ascent.yaml|lr1em6_e1|1e-6|1|"
 )
 
+echo "=================================================="
 echo "HOSTNAME=$(hostname)"
-echo "MODEL=$MODEL"
-echo "MODEL_PATH=$MODEL_PATH"
+echo "MODEL=${MODEL}"
+echo "MODEL_PATH=${MODEL_PATH}"
+echo "OUTPUT_ROOT=${OUTPUT_ROOT}"
+echo "RUN_FINAL_EVAL=${RUN_FINAL_EVAL}"
+echo "SKIP_EXISTING=${SKIP_EXISTING}"
+echo "=================================================="
 nvidia-smi || true
+mkdir -p logs "${OUTPUT_ROOT}"
 
-for trainer_experiment in "${trainers_experiments[@]}"; do
-    trainer=$(echo "$trainer_experiment" | awk '{print $1}')
-    experiment=$(echo "$trainer_experiment" | awk '{print $2}')
+for method_spec in "${method_specs[@]}"; do
+  IFS='|' read -r method_label trainer experiment tag learning_rate epochs extra_arg_string <<< "${method_spec}"
 
-    task_name="mytofu_${MODEL}_${trainer}_from_full_e10"
+  task_name="mytofu_${MODEL}_${method_label}_${tag}_from_full_e10"
+  run_dir="${OUTPUT_ROOT}/${task_name}"
+  final_summary="${run_dir}/evals_final/MYTOFU_SUMMARY.json"
 
-    echo "=================================================="
-    echo "trainer=$trainer"
-    echo "experiment=$experiment"
-    echo "task_name=$task_name"
-    echo "=================================================="
+  echo "=================================================="
+  echo "method_label=${method_label}"
+  echo "trainer=${trainer}"
+  echo "experiment=${experiment}"
+  echo "tag=${tag}"
+  echo "learning_rate=${learning_rate}"
+  echo "epochs=${epochs}"
+  echo "task_name=${task_name}"
+  echo "run_dir=${run_dir}"
+  echo "=================================================="
 
-    extra_args=()
+  if [ "${SKIP_EXISTING}" = "1" ] && [ -f "${final_summary}" ]; then
+    echo "[SKIP] Found final summary: ${final_summary}"
+    continue
+  fi
 
-    # 显式指定 forget 数据集，避免沿用默认 TOFU 配置
-    # DPO 使用 idk 版本；其他方法使用普通 forget 数据
-    if [ "$trainer" = "DPO" ]; then
-        extra_args+=(
-          "data/datasets@data.forget=MYTOFU_forget_idk"
-        )
-    else
-        extra_args+=(
-          "data/datasets@data.forget=MYTOFU_forget"
-        )
-    fi
+  extra_args=(
+    "data/datasets@data.forget=MYTOFU_forget"
+    "data/datasets@data.retain=MYTOFU_retain"
+  )
 
-    # 所有方法都显式指定 retain 数据集
-    extra_args+=(
-      "data/datasets@data.retain=MYTOFU_retain"
-    )
+  if [ -n "${extra_arg_string}" ]; then
+    read -r -a method_extra_args <<< "${extra_arg_string}"
+    extra_args+=("${method_extra_args[@]}")
+  fi
 
-    # PDU 额外参数
-    if [ "$trainer" = "PDU" ]; then
-        extra_args+=(
-          "trainer.method_args.retain_loss_eps=0.1"
-        )
-    fi
+  python src/train.py \
+    --config-name=unlearn.yaml \
+    experiment=${experiment} \
+    trainer=${trainer} \
+    task_name=${task_name} \
+    model=${MODEL} \
+    model.model_args.pretrained_model_name_or_path=${MODEL_PATH} \
+    model.tokenizer_args.pretrained_model_name_or_path=${MODEL_PATH} \
+    paths.output_dir=${run_dir} \
+    trainer.args.per_device_train_batch_size=${PER_DEVICE_TRAIN_BATCH_SIZE} \
+    trainer.args.gradient_accumulation_steps=${GRADIENT_ACCUMULATION_STEPS} \
+    trainer.args.learning_rate=${learning_rate} \
+    trainer.args.num_train_epochs=${epochs} \
+    trainer.args.gradient_checkpointing=true \
+    ++trainer.args.gradient_checkpointing_kwargs.use_reentrant=false \
+    ++trainer.args.report_to=none \
+    "${extra_args[@]}"
 
-    python src/train.py \
-      --config-name=unlearn.yaml \
-      experiment=${experiment} \
-      trainer=${trainer} \
-      task_name=${task_name} \
+  if [ "${RUN_FINAL_EVAL}" = "1" ]; then
+    python src/eval.py \
+      --config-name=eval.yaml \
+      experiment=eval/mytofu/default.yaml \
       model=${MODEL} \
-      model.model_args.pretrained_model_name_or_path=${MODEL_PATH} \
-      model.tokenizer_args.pretrained_model_name_or_path=${MODEL_PATH} \
-      trainer.args.per_device_train_batch_size=${PER_DEVICE_TRAIN_BATCH_SIZE} \
-      trainer.args.gradient_accumulation_steps=${GRADIENT_ACCUMULATION_STEPS} \
-      trainer.args.learning_rate=1e-5 \
-      trainer.args.num_train_epochs=3 \
-      trainer.args.gradient_checkpointing=true \
-      ++trainer.args.gradient_checkpointing_kwargs.use_reentrant=false \
-      ++trainer.args.report_to=none \
-      "${extra_args[@]}"
-
-    if [ "${RUN_FINAL_EVAL}" = "1" ]; then
-        python src/eval.py \
-          --config-name=eval.yaml \
-          experiment=eval/mytofu/default.yaml \
-          model=${MODEL} \
-          task_name=${task_name} \
-          model.model_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
-          model.tokenizer_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
-          paths.output_dir=saves/unlearn/${task_name}/evals_final
-    fi
-
+      task_name=${task_name} \
+      model.model_args.pretrained_model_name_or_path=${run_dir} \
+      model.tokenizer_args.pretrained_model_name_or_path=${run_dir} \
+      paths.output_dir=${run_dir}/evals_final
+  fi
 done
+
+echo "===== MYTOFU REPRESENTATIVE TUNED RUNS DONE ====="
