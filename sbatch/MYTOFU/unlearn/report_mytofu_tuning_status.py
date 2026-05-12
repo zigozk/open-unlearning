@@ -57,10 +57,16 @@ ERROR_PATTERNS = [
     ("module_missing", ["ModuleNotFoundError", "ImportError"]),
     ("hydra_config", ["ConfigAttributeError", "Missing mandatory value", "Error executing job with overrides"]),
     ("hf_offline_or_cache", ["LocalEntryNotFoundError", "Cannot find the requested files", "TRANSFORMERS_OFFLINE"]),
+    ("shell_source_not_found", ["source: not found"]),
     ("slurm_cancelled", ["CANCELLED", "DUE TO TIME LIMIT", "TIME LIMIT"]),
     ("python_traceback", ["Traceback (most recent call last):"]),
     ("runtime_error", ["RuntimeError"]),
     ("value_error", ["ValueError"]),
+]
+BENIGN_STDERR_PATTERNS = [
+    "Calculating text similarity:",
+    "Calculating loss:",
+    "A decoder-only architecture is being used, but right-padding was detected",
 ]
 
 
@@ -111,6 +117,16 @@ def parse_args() -> argparse.Namespace:
         "--log-glob",
         default="*.err",
         help="Glob for error logs under logs-dir.",
+    )
+    parser.add_argument(
+        "--include-benign-stderr",
+        action="store_true",
+        help="Include stderr files that contain only progress bars or warnings.",
+    )
+    parser.add_argument(
+        "--allow-empty",
+        action="store_true",
+        help="Allow writing report files even when no run directories are found.",
     )
     return parser.parse_args()
 
@@ -200,11 +216,14 @@ def add_scores(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def collect_results(result_root: Path, pattern: str, eval_dir: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def collect_results(
+    result_root: Path, pattern: str, eval_dir: str
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int]:
     completed: list[dict[str, Any]] = []
     missing: list[dict[str, Any]] = []
 
-    for run_dir in sorted(path for path in result_root.glob(pattern) if path.is_dir()):
+    run_dirs = sorted(path for path in result_root.glob(pattern) if path.is_dir())
+    for run_dir in run_dirs:
         summary_path = run_dir / eval_dir / "MYTOFU_SUMMARY.json"
         parsed = parse_task_name(run_dir.name)
         data = load_json(summary_path)
@@ -227,7 +246,7 @@ def collect_results(result_root: Path, pattern: str, eval_dir: str) -> tuple[lis
         }
         completed.append(add_scores(row))
 
-    return completed, missing
+    return completed, missing, len(run_dirs)
 
 
 def read_text(path: Path) -> str:
@@ -248,6 +267,8 @@ def classify_error(text: str) -> str:
     for label, patterns in ERROR_PATTERNS:
         if any(pattern in text for pattern in patterns):
             return label
+    if any(pattern in text for pattern in BENIGN_STDERR_PATTERNS):
+        return "benign_eval_stderr"
     return "unknown_error"
 
 
@@ -271,7 +292,12 @@ def paired_out_path(err_path: Path) -> Path:
     return err_path.with_suffix(".out")
 
 
-def collect_errors(logs_dir: Path, log_glob: str, tail_lines: int) -> list[dict[str, Any]]:
+def collect_errors(
+    logs_dir: Path,
+    log_glob: str,
+    tail_lines: int,
+    include_benign_stderr: bool = False,
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for err_path in sorted(logs_dir.glob(log_glob)):
         err_text = read_text(err_path)
@@ -280,6 +306,8 @@ def collect_errors(logs_dir: Path, log_glob: str, tail_lines: int) -> list[dict[
         category = classify_error(err_text)
 
         if category == "empty_err":
+            continue
+        if category == "benign_eval_stderr" and not include_benign_stderr:
             continue
 
         rows.append(
@@ -361,6 +389,7 @@ def write_markdown_report(
     metric: str,
     result_root: Path,
     logs_dir: Path,
+    run_dir_count: int,
 ) -> None:
     error_counts = Counter(row["category"] for row in errors)
     method_counts = Counter(row.get("method", "unknown") or "unknown" for row in completed)
@@ -391,9 +420,10 @@ def write_markdown_report(
         f"- Result root: `{result_root}`",
         f"- Logs dir: `{logs_dir}`",
         f"- Ranking metric: `{metric}`",
+        f"- Matched run directories: `{run_dir_count}`",
         f"- Completed final summaries: `{len(completed)}`",
         f"- Run dirs missing final summary: `{len(missing)}`",
-        f"- Non-empty error logs: `{len(errors)}`",
+        f"- Actionable error logs: `{len(errors)}`",
         "",
         "## Error Categories",
         "",
@@ -421,6 +451,7 @@ def write_markdown_report(
         "",
         "- `cuda_home_missing` usually means DeepSpeed imported before `CUDA_HOME` was exported.",
         "- `empty_err` files are ignored because they usually indicate no stderr output.",
+        "- stderr files containing only tqdm progress bars or tokenizer padding warnings are ignored by default.",
         "- A run is counted as completed only if `evals_final/MYTOFU_SUMMARY.json` exists.",
     ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -431,10 +462,24 @@ def main() -> None:
     out_dir = args.out_dir or (args.result_root / "status_report")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    completed, missing = collect_results(args.result_root, args.pattern, args.eval_dir)
+    completed, missing, run_dir_count = collect_results(
+        args.result_root, args.pattern, args.eval_dir
+    )
     completed_sorted = sort_by_metric(completed, args.metric)
     best = best_by_method(completed, args.metric)
-    errors = collect_errors(args.logs_dir, args.log_glob, args.tail_lines)
+    errors = collect_errors(
+        args.logs_dir,
+        args.log_glob,
+        args.tail_lines,
+        include_benign_stderr=args.include_benign_stderr,
+    )
+
+    if run_dir_count == 0 and not args.allow_empty:
+        raise SystemExit(
+            f"No run directories matched {args.result_root / args.pattern}. "
+            "Refusing to overwrite report files. Check --result-root/--pattern, "
+            "or pass --allow-empty if this is intentional."
+        )
 
     result_cols = [
         "method",
@@ -481,9 +526,10 @@ def main() -> None:
         "result_root": str(args.result_root),
         "logs_dir": str(args.logs_dir),
         "metric": args.metric,
+        "matched_run_dir_count": run_dir_count,
         "completed_count": len(completed),
         "missing_final_summary_count": len(missing),
-        "non_empty_error_log_count": len(errors),
+        "actionable_error_log_count": len(errors),
         "error_category_counts": dict(Counter(row["category"] for row in errors)),
         "completed_by_method": dict(Counter(row.get("method", "unknown") or "unknown" for row in completed)),
     }
@@ -499,6 +545,7 @@ def main() -> None:
         metric=args.metric,
         result_root=args.result_root,
         logs_dir=args.logs_dir,
+        run_dir_count=run_dir_count,
     )
 
     print("Done.")

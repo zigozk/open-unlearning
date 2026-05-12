@@ -15,10 +15,6 @@ from transformers.utils import (
     is_sagemaker_mp_enabled,
 )
 
-from accelerate.utils import (
-    is_deepspeed_available,
-)
-
 if is_sagemaker_mp_enabled():
     from smdistributed.modelparallel import __version__ as SMP_VERSION
 
@@ -31,14 +27,20 @@ if is_sagemaker_mp_enabled():
 else:
     IS_SAGEMAKER_MP_POST_1_10 = False
 
-if is_deepspeed_available():
-    import deepspeed
-
 
 class UnlearnTrainer(FinetuneTrainer):
     # Adapted from Huggingface DPO Trainer: https://github.com/huggingface/accelerate/blob/739b135f8367becb67ffaada12fe76e3aa60fefd/src/accelerate/accelerator.py#L1473
     def _prepare_deepspeed(self, model):
         # Adapted from accelerate: https://github.com/huggingface/accelerate/blob/739b135f8367becb67ffaada12fe76e3aa60fefd/src/accelerate/accelerator.py#L1473
+        try:
+            import deepspeed
+        except Exception as exc:
+            raise RuntimeError(
+                "DeepSpeed is required only when preparing a DeepSpeed reference "
+                "model, but importing it failed. If this job uses DeepSpeed, make "
+                "sure CUDA_HOME points to a CUDA toolkit path on the compute node."
+            ) from exc
+
         deepspeed_plugin = self.accelerator.state.deepspeed_plugin
         config_kwargs = deepcopy(deepspeed_plugin.deepspeed_config)
 

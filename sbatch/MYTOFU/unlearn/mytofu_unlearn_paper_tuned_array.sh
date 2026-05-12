@@ -328,6 +328,7 @@ python src/train.py \
   trainer.args.learning_rate=${learning_rate} \
   trainer.args.num_train_epochs=${epochs} \
   trainer.args.gradient_checkpointing=true \
+  ++trainer.args.overwrite_output_dir=true \
   ++trainer.args.gradient_checkpointing_kwargs.use_reentrant=false \
   ++trainer.args.report_to=none \
   "${extra_args[@]}"

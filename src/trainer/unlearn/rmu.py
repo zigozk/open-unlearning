@@ -2,8 +2,15 @@
 
 import re
 import torch
-import deepspeed
 from trainer.unlearn.grad_diff import GradDiff
+
+
+def is_deepspeed_engine(model) -> bool:
+    try:
+        import deepspeed
+    except Exception:
+        return False
+    return isinstance(model, deepspeed.DeepSpeedEngine)
 
 
 class RMU(GradDiff):
@@ -50,7 +57,7 @@ class RMU(GradDiff):
     def _get_matching_module(self, model, module_regex):
         """Returns a single module matching the given regex from a DeepSpeed/DDP-wrapped model."""
         # Handle DeepSpeed and DDP-wrapped models by accessing the underlying module
-        if isinstance(model, deepspeed.DeepSpeedEngine):
+        if is_deepspeed_engine(model):
             model = model.module  # Extract the actual PyTorch model inside
 
         matched_modules = {

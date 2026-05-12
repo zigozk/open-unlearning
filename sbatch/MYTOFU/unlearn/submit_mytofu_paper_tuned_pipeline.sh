@@ -51,7 +51,7 @@ if [ -z "${array_job_id}" ]; then
   exit 1
 fi
 
-summary_cmd="cd ${ROOT_DIR} && source ~/miniconda3/etc/profile.d/conda.sh && conda activate unlearning && python sbatch/MYTOFU/unlearn/summarize_mytofu_paper_tuned.py --result-root ${OUTPUT_ROOT} --metric ${RANK_METRIC}"
+summary_cmd="bash -lc 'cd ${ROOT_DIR} && source ~/miniconda3/etc/profile.d/conda.sh && conda activate unlearning && python sbatch/MYTOFU/unlearn/summarize_mytofu_paper_tuned.py --result-root ${OUTPUT_ROOT} --metric ${RANK_METRIC}'"
 
 summary_output="$(
   sbatch \
