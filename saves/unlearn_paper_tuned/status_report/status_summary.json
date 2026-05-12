@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-12T15:37:04",
+  "generated_at": "2026-05-12T20:23:31",
   "result_root": "saves/unlearn_paper_tuned",
   "logs_dir": "logs",
   "metric": "BUS",
-  "completed_count": 33,
-  "missing_final_summary_count": 30,
-  "non_empty_error_log_count": 41,
+  "matched_run_dir_count": 63,
+  "completed_count": 63,
+  "missing_final_summary_count": 0,
+  "actionable_error_log_count": 30,
   "error_category_counts": {
-    "cuda_home_missing": 30,
-    "unknown_error": 11
+    "cuda_home_missing": 30
   },
   "completed_by_method": {
-    "CEU": 2,
-    "DPO": 2,
+    "CEU": 6,
+    "DPO": 6,
     "GradAscent": 4,
     "GradDiff": 4,
     "GradDiff_pcgrad": 1,
@@ -20,11 +20,13 @@
     "NPO": 6,
     "NPO_pcgrad": 1,
     "NPO_sago": 1,
-    "PDU": 1,
-    "RMU": 2,
-    "SimNPO": 4,
-    "SimNPO_pcgrad": 1,
-    "UNDIAL": 1,
-    "WGA": 2
+    "PDU": 4,
+    "RMU": 7,
+    "SatImp": 4,
+    "SimNPO": 6,
+    "SimNPO_pcgrad": 2,
+    "SimNPO_sago": 2,
+    "UNDIAL": 4,
+    "WGA": 4
   }
 }
