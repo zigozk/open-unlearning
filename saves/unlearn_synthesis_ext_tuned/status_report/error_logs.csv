@@ -1,0 +1,451 @@
+﻿category,slurm_array_task_id,method_label,trainer,tag,task_name,cuda_home,nvcc,err_file,out_file,excerpt
+hydra_config,0,DPO_none,DPO,b0p05_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_none_b0p05_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_0.err,logs/mytofu_synth_ext-38615_0.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:24<?, ?it/s]"
+hydra_config,1,DPO_pcgrad,DPO,b0p05_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_pcgrad_b0p05_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_1.err,logs/mytofu_synth_ext-38615_1.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,18,UNDIAL_none,UNDIAL,b5_a0_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_none_b5_a0_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_18.err,logs/mytofu_synth_ext-38615_18.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,19,UNDIAL_pcgrad,UNDIAL,b5_a0_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_pcgrad_b5_a0_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_19.err,logs/mytofu_synth_ext-38615_19.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,2,DPO_sago,DPO,b0p05_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_sago_b0p05_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_2.err,logs/mytofu_synth_ext-38615_2.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,20,UNDIAL_sago,UNDIAL,b5_a0_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_sago_b5_a0_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_20.err,logs/mytofu_synth_ext-38615_20.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,21,UNDIAL_none,UNDIAL,b10_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_none_b10_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_21.err,logs/mytofu_synth_ext-38615_21.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,22,UNDIAL_pcgrad,UNDIAL,b10_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_pcgrad_b10_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_22.err,logs/mytofu_synth_ext-38615_22.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,23,UNDIAL_sago,UNDIAL,b10_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_sago_b10_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_23.err,logs/mytofu_synth_ext-38615_23.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,24,UNDIAL_none,UNDIAL,b20_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_none_b20_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_24.err,logs/mytofu_synth_ext-38615_24.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,25,UNDIAL_pcgrad,UNDIAL,b20_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_pcgrad_b20_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_25.err,logs/mytofu_synth_ext-38615_25.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,26,UNDIAL_sago,UNDIAL,b20_a0p1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_UNDIAL_sago_b20_a0p1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_26.err,logs/mytofu_synth_ext-38615_26.out,"  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 457, in _run_app
+    run_and_report(
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 222, in run_and_report
+    raise ex
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 219, in run_and_report
+    return func()
+           ^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/utils.py"", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 105, in run
+    cfg = self.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 276, in _load_configuration_impl
+    ConfigLoaderImpl._apply_overrides_to_config(config_overrides, cfg)
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py"", line 392, in _apply_overrides_to_config
+    raise ConfigCompositionException(
+hydra.errors.ConfigCompositionException: Could not override 'trainer.method_args.use_retain_loss'.
+To append to your config use +trainer.method_args.use_retain_loss=true"
+hydra_config,3,DPO_none,DPO,b0p1_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_none_b0p1_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_3.err,logs/mytofu_synth_ext-38615_3.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,4,DPO_pcgrad,DPO,b0p1_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_pcgrad_b0p1_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_4.err,logs/mytofu_synth_ext-38615_4.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,5,DPO_sago,DPO,b0p1_a0p5_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_sago_b0p1_a0p5_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_5.err,logs/mytofu_synth_ext-38615_5.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,6,DPO_none,DPO,b0p2_a1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_none_b0p2_a1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_6.err,logs/mytofu_synth_ext-38615_6.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,7,DPO_pcgrad,DPO,b0p2_a1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_pcgrad_b0p2_a1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_7.err,logs/mytofu_synth_ext-38615_7.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"
+hydra_config,8,DPO_sago,DPO,b0p2_a1_g1_lr5em6_e3,mytofu_Llama-3.2-1B-Instruct_DPO_sago_b0p2_a1_g1_lr5em6_e3_from_full_e10,/usr/local/cuda,/usr/local/cuda/bin/nvcc,logs/mytofu_synth_ext-38615_8.err,logs/mytofu_synth_ext-38615_8.out,"            ^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/_internal/hydra.py"", line 132, in run
+    _ = ret.return_value
+        ^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 260, in return_value
+    raise self._return_value
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/hydra/core/utils.py"", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/train.py"", line 60, in main
+    trainer.train()
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2052, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/transformers/trainer.py"", line 2388, in _inner_training_loop
+    tr_loss_step = self.training_step(model, inputs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/retention_prioritized.py"", line 48, in training_step
+    forget_loss = self._compute_forget_loss(model, forget_inputs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/zkzhang/unlearning/open-unlearning/src/trainer/unlearn/dpo.py"", line 27, in _compute_forget_loss
+    win_inputs=forget_inputs[""alternate""],
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'alternate'
+  0%|          | 0/15 [00:25<?, ?it/s]"

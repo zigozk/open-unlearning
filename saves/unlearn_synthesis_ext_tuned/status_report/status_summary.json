@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-05-12T20:17:26",
+  "result_root": "saves/unlearn_synthesis_ext_tuned",
+  "logs_dir": "logs",
+  "metric": "BUS",
+  "matched_run_dir_count": 27,
+  "completed_count": 18,
+  "missing_final_summary_count": 9,
+  "actionable_error_log_count": 18,
+  "error_category_counts": {
+    "hydra_config": 18
+  },
+  "completed_by_method": {
+    "SatImp_none": 3,
+    "SatImp_pcgrad": 3,
+    "SatImp_sago": 3,
+    "WGA_none": 3,
+    "WGA_pcgrad": 3,
+    "WGA_sago": 3
+  }
+}
