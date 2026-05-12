@@ -40,6 +40,45 @@ if [ "${1:-}" != "--list" ] && [ "${1:-}" != "--submit" ]; then
   conda activate unlearning
 fi
 
+setup_cuda_home() {
+  # DeepSpeed checks CUDA_HOME at import time for some optional ops.  Some
+  # clusters expose GPUs without exporting the CUDA toolkit path by default.
+  if ! command -v module >/dev/null 2>&1; then
+    [ -f /etc/profile.d/modules.sh ] && source /etc/profile.d/modules.sh || true
+  fi
+
+  if command -v module >/dev/null 2>&1; then
+    module load cuda/12.1.0 2>/dev/null || \
+      module load cuda/12.1 2>/dev/null || \
+      module load cuda 2>/dev/null || true
+  fi
+
+  if [ -z "${CUDA_HOME:-}" ]; then
+    if command -v nvcc >/dev/null 2>&1; then
+      CUDA_HOME="$(dirname "$(dirname "$(command -v nvcc)")")"
+      export CUDA_HOME
+    elif [ -d /usr/local/cuda ]; then
+      export CUDA_HOME=/usr/local/cuda
+    else
+      for cuda_dir in /usr/local/cuda-12.1 /usr/local/cuda-12 /opt/cuda /opt/cuda-12.1; do
+        if [ -d "${cuda_dir}" ]; then
+          export CUDA_HOME="${cuda_dir}"
+          break
+        fi
+      done
+    fi
+  fi
+
+  if [ -n "${CUDA_HOME:-}" ]; then
+    export PATH="${CUDA_HOME}/bin:${PATH}"
+    export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH:-}"
+  fi
+}
+
+if [ "${1:-}" != "--list" ] && [ "${1:-}" != "--submit" ]; then
+  setup_cuda_home
+fi
+
 export HYDRA_FULL_ERROR=1
 export TOKENIZERS_PARALLELISM=false
 export OMP_NUM_THREADS=8
@@ -248,6 +287,8 @@ echo "epochs=${epochs}"
 echo "forget_dataset=${forget_dataset}"
 echo "task_name=${task_name}"
 echo "run_dir=${run_dir}"
+echo "CUDA_HOME=${CUDA_HOME:-<unset>}"
+echo "nvcc=$(command -v nvcc || true)"
 echo "=================================================="
 nvidia-smi || true
 
