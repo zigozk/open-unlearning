@@ -3,7 +3,7 @@ MYTOFU_full:
   args:
     hf_args:
       path: json
-      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom_slot_hard_plus/processed/full_train.jsonl
+      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom_slot_medium/processed/full_train.jsonl
       split: train
     question_key: question
     answer_key: answer

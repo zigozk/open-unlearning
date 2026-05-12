@@ -3,7 +3,7 @@ MYTOFU_forget_idk:
   args:
     hf_args:
       path: json
-      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom/processed/forget_train_idk.jsonl
+      data_files: /home/zkzhang/unlearning/Create_Data/mini_tofu_custom_slot_medium/processed/forget_train_idk.jsonl
       split: train
     question_key: question
     answer_key: answer
