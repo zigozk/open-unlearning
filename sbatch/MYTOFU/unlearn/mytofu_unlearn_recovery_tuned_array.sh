@@ -115,11 +115,16 @@ declare -a RECOVERY_RUNS=(
   "GradDiff|GradDiff|unlearn/mytofu/default.yaml|recover_a0p25_g1_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.alpha=0.25 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "GradDiff|GradDiff|unlearn/mytofu/default.yaml|recover_a0p5_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.alpha=0.5 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "GradDiff|GradDiff|unlearn/mytofu/default.yaml|recover_a0p25_g2_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "GradDiff_sago|GradDiff|unlearn/mytofu/default.yaml|recover_a0p25_g1_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.alpha=0.25 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "GradDiff_sago|GradDiff|unlearn/mytofu/default.yaml|recover_a0p25_g2_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
 
   "NPO|NPO|unlearn/mytofu/default.yaml|recover_b0p05_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.05 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "NPO|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "NPO|NPO|unlearn/mytofu/default.yaml|recover_b0p2_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.2 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "NPO|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p1_g3_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.1 trainer.method_args.gamma=3.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "NPO_sago|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "NPO_sago|NPO|unlearn/mytofu/default.yaml|recover_b0p2_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.2 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "NPO_sago|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p1_g3_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.1 trainer.method_args.gamma=3.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
 
   # DPO: current best improves when alpha is reduced; continue that direction
   # and include stronger learning rates.
@@ -133,6 +138,9 @@ declare -a RECOVERY_RUNS=(
   "SimNPO|SimNPO|unlearn/mytofu/default.yaml|recover_b4p5_g1_a0p25_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=4.5 trainer.method_args.gamma=1.0 trainer.method_args.alpha=0.25 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "SimNPO|SimNPO|unlearn/mytofu/default.yaml|recover_b8_g0p5_a0p5_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=8.0 trainer.method_args.gamma=0.5 trainer.method_args.alpha=0.5 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "SimNPO|SimNPO|unlearn/mytofu/default.yaml|recover_b4p5_g0p5_a0p25_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=4.5 trainer.method_args.gamma=0.5 trainer.method_args.alpha=0.25 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "SimNPO_sago|SimNPO|unlearn/mytofu/default.yaml|recover_b4p5_g0p5_a0p5_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=4.5 trainer.method_args.gamma=0.5 trainer.method_args.alpha=0.5 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "SimNPO_sago|SimNPO|unlearn/mytofu/default.yaml|recover_b4p5_g1_a0p25_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=4.5 trainer.method_args.gamma=1.0 trainer.method_args.alpha=0.25 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
+  "SimNPO_sago|SimNPO|unlearn/mytofu/default.yaml|recover_b4p5_g0p5_a0p25_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.delta=0.0 trainer.method_args.beta=4.5 trainer.method_args.gamma=0.5 trainer.method_args.alpha=0.25 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
 
   # RMU/UNDIAL/WGA/PDU/SatImp: test stronger forgetting while limiting retain.
   "RMU|RMU|unlearn/mytofu/default.yaml|recover_sc2_a0p1_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.steering_coeff=2 trainer.method_args.alpha=0.1 trainer.method_args.gamma=2.0 trainer.method_args.module_regex=model\\.layers\\.7"
@@ -158,6 +166,7 @@ declare -a RECOVERY_RUNS=(
 declare -a SMOKE_RUNS=(
   "CEU|CEU|unlearn/mytofu/default.yaml|recover_i1_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.ignore_first_n_answer_tokens=1"
   "DPO|DPO|unlearn/mytofu/idk.yaml|recover_b0p1_a0p1_g1_lr1em5_e3|1e-5|3|MYTOFU_forget_idk|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.1 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "NPO_sago|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=sago"
   "NPO|NPO|unlearn/mytofu/default.yaml|recover_b0p1_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
   "GradAscent|GradAscent|unlearn/mytofu/grad_ascent.yaml|recover_lr1em5_e3|1e-5|3|MYTOFU_forget|"
 )
