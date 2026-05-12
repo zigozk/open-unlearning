@@ -9,6 +9,12 @@ class UNDIAL(GradDiff):
         if self.ref_model is None:
             self.ref_model = self._prepare_ref_model(self.model)
 
+    def _compute_forget_loss(self, model, forget_inputs):
+        forget_loss, _ = compute_undial_loss(
+            model, self.ref_model, forget_inputs, self.beta
+        )
+        return forget_loss
+
     def compute_loss(self, model, inputs, return_outputs=False):
         forget_inputs = inputs["forget"]
         forget_loss, forget_outputs = compute_undial_loss(

@@ -8,8 +8,15 @@ class WGA(GradDiff):
         self.gamma = gamma
         self.alpha = alpha
         self.beta = beta
+        self.method_args.update({"alpha": self.alpha, "gamma": self.gamma})
         if self.ref_model is None:
             self.ref_model = self._prepare_ref_model(self.model)
+
+    def _compute_forget_loss(self, model, forget_inputs):
+        forget_loss, _ = compute_wga_loss(
+            model=model, inputs=forget_inputs, beta=self.beta
+        )
+        return forget_loss
 
     def compute_loss(self, model, inputs, return_outputs=False):
         forget_inputs = inputs["forget"]

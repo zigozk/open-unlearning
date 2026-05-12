@@ -9,6 +9,27 @@ class DPO(GradDiff):
         if self.ref_model is None:
             self.ref_model = self._prepare_ref_model(self.model)
 
+    def _split_unlearn_inputs(self, inputs):
+        forget_inputs = inputs["forget"]
+        retain_inputs = inputs.get("retain", None)
+        if retain_inputs is not None:
+            retain_inputs = {
+                "input_ids": retain_inputs["input_ids"],
+                "attention_mask": retain_inputs["attention_mask"],
+                "labels": retain_inputs["labels"],
+            }
+        return forget_inputs, retain_inputs
+
+    def _compute_forget_loss(self, model, forget_inputs):
+        forget_loss, _ = compute_dpo_loss(
+            model=model,
+            ref_model=self.ref_model,
+            win_inputs=forget_inputs["alternate"],
+            lose_inputs=forget_inputs["original"],
+            beta=self.beta,
+        )
+        return forget_loss
+
     def compute_loss(self, model, inputs, return_outputs=False):
         forget_inputs = inputs["forget"]["original"]
         alternate_inputs = inputs["forget"]["alternate"]

@@ -45,7 +45,7 @@ BASE_METHODS = [
 ]
 SYNTH_METHODS = [
     f"{method}_{mode}"
-    for method in ["GradDiff", "NPO", "SimNPO"]
+    for method in ["GradDiff", "NPO", "SimNPO", "DPO", "WGA", "UNDIAL", "SatImp"]
     for mode in ["none", "pcgrad", "sago"]
 ]
 KNOWN_METHODS = sorted(BASE_METHODS + SYNTH_METHODS, key=len, reverse=True)
