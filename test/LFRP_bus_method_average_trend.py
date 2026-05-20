@@ -103,16 +103,16 @@ for _, row in avg.iterrows():
         fontsize=13       # 平均值数字标注字号
     )
 
-# 图例放在下方
+# 图例放在上方
 ax.legend(
     frameon=False,
     ncol=5,
-    loc="upper center",
-    bbox_to_anchor=(0.5, -0.18)
+    loc="lower center",
+    bbox_to_anchor=(0.5, 1.02)
 )
 
-# 给下方图例留空间
-fig.tight_layout(rect=[0, 0.10, 1, 1])
+# 给上方图例留空间
+fig.tight_layout(rect=[0, 0, 1, 0.90])
 
 # =========================
 # 4. 保存

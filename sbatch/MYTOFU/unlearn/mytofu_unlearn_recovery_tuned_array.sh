@@ -88,11 +88,22 @@ RANK_METRIC="${RANK_METRIC:-BUS}"
 PER_DEVICE_TRAIN_BATCH_SIZE="${PER_DEVICE_TRAIN_BATCH_SIZE:-4}"
 GRADIENT_ACCUMULATION_STEPS="${GRADIENT_ACCUMULATION_STEPS:-4}"
 RUN_FINAL_EVAL="${RUN_FINAL_EVAL:-1}"
-SKIP_EXISTING="${SKIP_EXISTING:-1}"
+SKIP_EXISTING="${SKIP_EXISTING:-0}"
 MAX_PARALLEL="${MAX_PARALLEL:-4}"
-SWEEP_PROFILE="${SWEEP_PROFILE:-full}"
+SWEEP_PROFILE="${SWEEP_PROFILE:-retry_failed}"
 
 # method_label|trainer|experiment|tag|learning_rate|epochs|forget_dataset|extra hydra args
+declare -a RECOVERY_RETRY_FAILED_RUNS=(
+  # Rerun only the jobs that failed before the DPO IDK-pair and UNDIAL Hydra fixes.
+  "DPO|DPO|unlearn/mytofu/idk.yaml|recover_b0p05_a0p1_g1_lr1em5_e3|1e-5|3|MYTOFU_forget_idk|trainer.method_args.beta=0.05 trainer.method_args.alpha=0.1 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "DPO|DPO|unlearn/mytofu/idk.yaml|recover_b0p1_a0p1_g1_lr1em5_e3|1e-5|3|MYTOFU_forget_idk|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.1 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "DPO|DPO|unlearn/mytofu/idk.yaml|recover_b0p1_a0p25_g2_lr1em5_e3|1e-5|3|MYTOFU_forget_idk|trainer.method_args.beta=0.1 trainer.method_args.alpha=0.25 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "DPO|DPO|unlearn/mytofu/idk.yaml|recover_b0p2_a0p1_g1_lr2em5_e2|2e-5|2|MYTOFU_forget_idk|trainer.method_args.beta=0.2 trainer.method_args.alpha=0.1 trainer.method_args.gamma=1.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "UNDIAL|UNDIAL|unlearn/mytofu/default.yaml|recover_b10_a0_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=10.0 trainer.method_args.alpha=0.0 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "UNDIAL|UNDIAL|unlearn/mytofu/default.yaml|recover_b20_a0_g2_lr1em5_e3|1e-5|3|MYTOFU_forget|trainer.method_args.beta=20.0 trainer.method_args.alpha=0.0 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+  "UNDIAL|UNDIAL|unlearn/mytofu/default.yaml|recover_b20_a0p05_g2_lr2em5_e2|2e-5|2|MYTOFU_forget|trainer.method_args.beta=20.0 trainer.method_args.alpha=0.05 trainer.method_args.gamma=2.0 trainer.method_args.use_retain_loss=true trainer.method_args.gradient_synthesis=none"
+)
+
 declare -a RECOVERY_RUNS=(
   # CEU is currently the strongest paper_tuned method. Increase exposure around
   # lr=1e-5 and test whether longer training recovers the old-table BUS range.
@@ -174,6 +185,8 @@ declare -a SMOKE_RUNS=(
 get_runs() {
   if [ "${SWEEP_PROFILE}" = "smoke" ]; then
     printf '%s\n' "${SMOKE_RUNS[@]}"
+  elif [ "${SWEEP_PROFILE}" = "retry_failed" ]; then
+    printf '%s\n' "${RECOVERY_RETRY_FAILED_RUNS[@]}"
   else
     printf '%s\n' "${RECOVERY_RUNS[@]}"
   fi
