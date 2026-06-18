@@ -1,358 +1,0 @@
-You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
-  0%|          | 0/6 [00:00<?, ?it/s]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating ES:  50%|█████     | 1/2 [00:01<00:01,  1.64s/it][ACalculating ES: 100%|██████████| 2/2 [00:01<00:00,  1.18it/s]
-
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  7.61it/s][ACalculating EM: 100%|██████████| 2/2 [00:00<00:00, 11.52it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.24it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.80it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.38it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.05it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.93it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.36it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.03it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.91it/s]
-
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
-
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.17s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.05s/it][ACalculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.07s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.03it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.20it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.27it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.26it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.26it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.27it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.26it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.44it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.32it/s]
-
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.09it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.09s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.15s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.07s/it][ACalculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.09s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.18it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.28it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.32it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.33it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.30it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.30it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.35it/s]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.34it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.34it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.36it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.37it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.35it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.33it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.31it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.34it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.46it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.38it/s]
-                                       0%|          | 0/6 [00:23<?, ?it/s]`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
-/home/zkzhang/miniconda3/envs/unlearning/lib/python3.11/site-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
-  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
-                                       0%|          | 0/6 [00:24<?, ?it/s]Could not estimate the number of tokens of the input, floating-point operations will not be computed
-                                       0%|          | 0/6 [00:24<?, ?it/s]                                       0%|          | 0/6 [00:24<?, ?it/s]                                       0%|          | 0/6 [00:25<?, ?it/s] 17%|█▋        | 1/6 [00:34<02:53, 34.79s/it]                                              17%|█▋        | 1/6 [00:35<02:53, 34.79s/it]                                              17%|█▋        | 1/6 [00:35<02:53, 34.79s/it]                                              17%|█▋        | 1/6 [00:35<02:53, 34.79s/it]                                              17%|█▋        | 1/6 [00:36<02:53, 34.79s/it] 33%|███▎      | 2/6 [00:44<01:21, 20.27s/it]                                              33%|███▎      | 2/6 [00:45<01:21, 20.27s/it]                                              33%|███▎      | 2/6 [00:45<01:21, 20.27s/it]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating ES:  50%|█████     | 1/2 [00:00<00:00,  8.45it/s][ACalculating ES: 100%|██████████| 2/2 [00:00<00:00, 12.59it/s]
-
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  8.66it/s][ACalculating EM: 100%|██████████| 2/2 [00:00<00:00, 12.87it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.23it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.79it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.38it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.05it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.93it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.34it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.02it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.90it/s]
-
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.03s/it][ACalculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.04s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.21it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.26it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.30it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.28it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.27it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.29it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.28it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.34it/s]
-
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.08it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.08s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.09s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.13s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.15s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.06s/it][ACalculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.08s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.25it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.29it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.33it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.33it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.29it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.30it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.35it/s]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.35it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.35it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.37it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.36it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.35it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.35it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.32it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.34it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.38it/s]
-                                              33%|███▎      | 2/6 [01:07<01:21, 20.27s/it]                                              33%|███▎      | 2/6 [01:07<01:21, 20.27s/it]                                              33%|███▎      | 2/6 [01:08<01:21, 20.27s/it] 50%|█████     | 3/6 [01:17<01:17, 25.68s/it]                                              50%|█████     | 3/6 [01:17<01:17, 25.68s/it]                                              50%|█████     | 3/6 [01:17<01:17, 25.68s/it]                                              50%|█████     | 3/6 [01:18<01:17, 25.68s/it]                                              50%|█████     | 3/6 [01:18<01:17, 25.68s/it] 67%|██████▋   | 4/6 [01:27<00:39, 19.54s/it]                                              67%|██████▋   | 4/6 [01:27<00:39, 19.54s/it]                                              67%|██████▋   | 4/6 [01:27<00:39, 19.54s/it]                                              67%|██████▋   | 4/6 [01:28<00:39, 19.54s/it]                                              67%|██████▋   | 4/6 [01:28<00:39, 19.54s/it] 83%|████████▎ | 5/6 [01:37<00:16, 16.13s/it]                                              83%|████████▎ | 5/6 [01:37<00:16, 16.13s/it]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating ES:  50%|█████     | 1/2 [00:00<00:00,  7.22it/s][ACalculating ES: 100%|██████████| 2/2 [00:00<00:00, 11.16it/s]
-
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  8.68it/s][ACalculating EM: 100%|██████████| 2/2 [00:00<00:00, 12.92it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.24it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.93it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.80it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.39it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.06it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.94it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.35it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.03it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.90it/s]
-
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.08s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01it/s][ACalculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  2.93it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.16it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.25it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.26it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.26it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.28it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.33it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.32it/s]
-
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.09it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.08s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.11s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.20s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.16s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.18s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.08s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.06s/it][ACalculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.10s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.25it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.31it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.34it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.34it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.30it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.31it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.28it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.33it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.36it/s]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.33it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.34it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.37it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.37it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.35it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.34it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.31it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.34it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.46it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.38it/s]
-                                              83%|████████▎ | 5/6 [01:59<00:16, 16.13s/it]                                              83%|████████▎ | 5/6 [01:59<00:16, 16.13s/it]                                              83%|████████▎ | 5/6 [02:00<00:16, 16.13s/it]                                              83%|████████▎ | 5/6 [02:00<00:16, 16.13s/it]                                              83%|████████▎ | 5/6 [02:00<00:16, 16.13s/it]100%|██████████| 6/6 [02:09<00:00, 21.66s/it]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating ES:  50%|█████     | 1/2 [00:00<00:00,  7.79it/s][ACalculating ES: 100%|██████████| 2/2 [00:00<00:00, 11.85it/s]
-
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  8.67it/s][ACalculating EM: 100%|██████████| 2/2 [00:00<00:00, 12.90it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.23it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.80it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.38it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.05it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.93it/s]
-
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s][A
-Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.35it/s][A
-Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.03it/s][ACalculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.91it/s]
-
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.08s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01it/s][ACalculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.00s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.13it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.24it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.31it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.30it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.28it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.30it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.28it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.33it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.34it/s]
-
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.10it/s][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.06s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.11s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.13s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.12s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.15s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.07s/it][AA decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.07s/it][ACalculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.09s/it]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  2.91it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.15it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.24it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.28it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.26it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.28it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.26it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.31it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.44it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.31it/s]
-
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s][A
-Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.20it/s][A
-Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.28it/s][A
-Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.33it/s][A
-Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.34it/s][A
-Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.33it/s][A
-Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.33it/s][A
-Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.31it/s][A
-Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.34it/s][A
-Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.46it/s][ACalculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.37it/s]
-                                             100%|██████████| 6/6 [02:31<00:00, 21.66s/it]                                             100%|██████████| 6/6 [02:31<00:00, 21.66s/it]100%|██████████| 6/6 [02:31<00:00, 25.31s/it]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s]Calculating ES:  50%|█████     | 1/2 [00:00<00:00,  4.99it/s]Calculating ES: 100%|██████████| 2/2 [00:00<00:00,  7.82it/s]
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s]Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  6.63it/s]Calculating EM: 100%|██████████| 2/2 [00:00<00:00,  9.92it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.00it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.77it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.63it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.37it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.04it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.34it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.02it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.90it/s]
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.08s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.00it/s]Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01s/it]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.07it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.21it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.28it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.27it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.26it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.29it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.33it/s]
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.08it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.08s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.09s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.12s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.14s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.13s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.16s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.07s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.07s/it]Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.09s/it]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.07it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.22it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.29it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.30it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.28it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.29it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.32it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.45it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.33it/s]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.35it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.36it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.37it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.36it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.35it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.35it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.32it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.35it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.46it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.39it/s]
-Calculating ES:   0%|          | 0/2 [00:00<?, ?it/s]Calculating ES:  50%|█████     | 1/2 [00:01<00:01,  1.72s/it]Calculating ES: 100%|██████████| 2/2 [00:01<00:00,  1.13it/s]
-Calculating EM:   0%|          | 0/2 [00:00<?, ?it/s]Calculating EM:  50%|█████     | 1/2 [00:00<00:00,  7.76it/s]Calculating EM: 100%|██████████| 2/2 [00:00<00:00, 11.76it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.23it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.80it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.40it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.07it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.95it/s]
-Calculating loss:   0%|          | 0/2 [00:00<?, ?it/s]Calculating loss:  50%|█████     | 1/2 [00:00<00:00,  3.36it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  4.04it/s]Calculating loss: 100%|██████████| 2/2 [00:00<00:00,  3.92it/s]
-Calculating text similarity:   0%|          | 0/2 [00:00<?, ?it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
-Calculating text similarity:  50%|█████     | 1/2 [00:01<00:01,  1.12s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01it/s]Calculating text similarity: 100%|██████████| 2/2 [00:02<00:00,  1.01s/it]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  2.94it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.17it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.27it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.28it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.28it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.30it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.29it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.34it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.46it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.33it/s]
-Calculating text similarity:   0%|          | 0/9 [00:00<?, ?it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  11%|█         | 1/9 [00:00<00:07,  1.12it/s]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  22%|██▏       | 2/9 [00:02<00:07,  1.04s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  33%|███▎      | 3/9 [00:03<00:06,  1.05s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  44%|████▍     | 4/9 [00:04<00:05,  1.08s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  56%|█████▌    | 5/9 [00:05<00:04,  1.11s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  67%|██████▋   | 6/9 [00:06<00:03,  1.09s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  78%|███████▊  | 7/9 [00:07<00:02,  1.12s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity:  89%|████████▉ | 8/9 [00:08<00:01,  1.04s/it]A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
-Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.04s/it]Calculating text similarity: 100%|██████████| 9/9 [00:09<00:00,  1.06s/it]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.03it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.20it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.29it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.30it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.29it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.30it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.27it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.33it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.47it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.34it/s]
-Calculating loss:   0%|          | 0/9 [00:00<?, ?it/s]Calculating loss:  11%|█         | 1/9 [00:00<00:02,  3.37it/s]Calculating loss:  22%|██▏       | 2/9 [00:00<00:02,  3.37it/s]Calculating loss:  33%|███▎      | 3/9 [00:00<00:01,  3.39it/s]Calculating loss:  44%|████▍     | 4/9 [00:01<00:01,  3.39it/s]Calculating loss:  56%|█████▌    | 5/9 [00:01<00:01,  3.37it/s]Calculating loss:  67%|██████▋   | 6/9 [00:01<00:00,  3.36it/s]Calculating loss:  78%|███████▊  | 7/9 [00:02<00:00,  3.33it/s]Calculating loss:  89%|████████▉ | 8/9 [00:02<00:00,  3.37it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.48it/s]Calculating loss: 100%|██████████| 9/9 [00:02<00:00,  3.41it/s]
