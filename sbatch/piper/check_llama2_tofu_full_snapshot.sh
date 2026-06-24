@@ -24,24 +24,28 @@ export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-${HF_HOME}/hub}"
 export HF_MODULES_CACHE="${HF_MODULES_CACHE:-${HF_HOME}/modules}"
 export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-${HF_HOME}/transformers}"
 
-# This job must be able to read the HuggingFace snapshot metadata/files.
-unset HF_HUB_OFFLINE
-unset TRANSFORMERS_OFFLINE
-unset HF_DATASETS_OFFLINE
+# Compute nodes on this cluster may not have external network access. By default,
+# compare against an already cached HuggingFace snapshot. Set HF_LOCAL_FILES_ONLY=0
+# only on nodes that can reach huggingface.co.
+export HF_LOCAL_FILES_ONLY="${HF_LOCAL_FILES_ONLY:-1}"
 
 REPO_ID="${REPO_ID:-open-unlearning/tofu_Llama-2-7b-chat-hf_full}"
 LOCAL_DIR="${LOCAL_DIR:-/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full}"
+REMOTE_DIR="${REMOTE_DIR:-}"
 
 echo "===== CHECK TOFU LLAMA2 FULL SNAPSHOT ====="
 echo "HOSTNAME=$(hostname)"
 echo "JOB_ID=${SLURM_JOB_ID:-none}"
 echo "REPO_ID=${REPO_ID}"
 echo "LOCAL_DIR=${LOCAL_DIR}"
+echo "REMOTE_DIR=${REMOTE_DIR:-<huggingface cache>}"
 echo "HF_HOME=${HF_HOME}"
+echo "HF_LOCAL_FILES_ONLY=${HF_LOCAL_FILES_ONLY}"
 date
 
 python - <<'PY'
 from huggingface_hub import snapshot_download
+from huggingface_hub.errors import LocalEntryNotFoundError
 from pathlib import Path
 import hashlib
 import os
@@ -49,16 +53,38 @@ import sys
 
 repo_id = os.environ.get("REPO_ID", "open-unlearning/tofu_Llama-2-7b-chat-hf_full")
 local_dir = Path(os.environ.get("LOCAL_DIR", "/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full"))
+remote_dir_env = os.environ.get("REMOTE_DIR", "").strip()
+local_files_only = os.environ.get("HF_LOCAL_FILES_ONLY", "1") != "0"
 
 if not local_dir.exists():
     print(f"ERROR: local directory does not exist: {local_dir}")
     sys.exit(2)
 
-remote_dir = Path(snapshot_download(
-    repo_id=repo_id,
-    local_files_only=False,
-    resume_download=True,
-))
+if remote_dir_env:
+    remote_dir = Path(remote_dir_env)
+    if not remote_dir.exists():
+        print(f"ERROR: REMOTE_DIR does not exist: {remote_dir}")
+        sys.exit(2)
+else:
+    try:
+        remote_dir = Path(snapshot_download(
+            repo_id=repo_id,
+            local_files_only=local_files_only,
+            resume_download=True,
+        ))
+    except LocalEntryNotFoundError:
+        print("ERROR: HuggingFace snapshot is not available in the local cache, and this job is running in local-files-only mode.")
+        print("")
+        print("Run one of the following on a node with network access, then resubmit this sbatch job:")
+        print("")
+        print(f"  huggingface-cli download {repo_id} --local-dir /home/zkzhang/models/_hf_reference_tofu_Llama-2-7b-chat-hf_full --local-dir-use-symlinks False")
+        print("")
+        print("Then submit with:")
+        print("")
+        print("  sbatch --export=ALL,REMOTE_DIR=/home/zkzhang/models/_hf_reference_tofu_Llama-2-7b-chat-hf_full sbatch/piper/check_llama2_tofu_full_snapshot.sh")
+        print("")
+        print("Alternatively, run this job on a node that can reach huggingface.co with HF_LOCAL_FILES_ONLY=0.")
+        sys.exit(3)
 
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
