@@ -58,6 +58,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--npo-beta", type=float, default=0.1)
     parser.add_argument("--topk-fracs", default="0.05,0.10,0.20")
     parser.add_argument("--num-bins", type=int, default=10)
+    parser.add_argument("--random-trials", type=int, default=100)
     parser.add_argument("--optimizer", choices=["paged_adamw_32bit", "adamw"], default="paged_adamw_32bit")
     parser.add_argument("--gradient-checkpointing", action="store_true")
     return parser.parse_args()
@@ -361,6 +362,8 @@ def summarize(
     rows: list[dict],
     topk_fracs: list[float],
     num_bins: int,
+    random_trials: int,
+    seed: int,
 ) -> tuple[dict, list[dict]]:
     pi = np.array([r["pi_score"] for r in rows], dtype=np.float64)
     damage = np.array([r["damage"] for r in rows], dtype=np.float64)
@@ -380,17 +383,34 @@ def summarize(
 
     descending_pi = np.argsort(-pi)
     descending_damage = np.argsort(-damage)
+    rng = np.random.default_rng(seed + 3000)
     for frac in topk_fracs:
         k = max(1, int(round(len(rows) * frac)))
         pred = set(descending_pi[:k].tolist())
         actual = set(descending_damage[:k].tolist())
         precision = len(pred & actual) / k
+        random_means = []
+        random_precisions = []
+        for _ in range(random_trials):
+            random_idx = set(rng.choice(len(rows), size=k, replace=False).tolist())
+            random_means.append(float(np.mean(damage[list(random_idx)])))
+            random_precisions.append(len(random_idx & actual) / k)
+        pred_topk_mean_damage = float(np.mean(damage[list(pred)]))
+        random_mean_damage = float(np.mean(random_means))
         summary["topk"][str(frac)] = {
             "k": k,
             "precision": float(precision),
             "random_precision": float(k / len(rows)),
+            "random_precision_empirical_mean": float(np.mean(random_precisions)),
+            "random_precision_empirical_std": float(np.std(random_precisions)),
             "enrichment": float(precision / (k / len(rows))),
-            "pred_topk_mean_damage": float(np.mean(damage[list(pred)])),
+            "pred_topk_mean_damage": pred_topk_mean_damage,
+            "random_topk_mean_damage": random_mean_damage,
+            "random_topk_mean_damage_std": float(np.std(random_means)),
+            "pred_vs_random_damage_lift": pred_topk_mean_damage - random_mean_damage,
+            "pred_vs_random_damage_ratio": (
+                pred_topk_mean_damage / random_mean_damage if random_mean_damage != 0 else None
+            ),
             "all_mean_damage": float(np.mean(damage)),
         }
 
@@ -507,7 +527,7 @@ def main() -> None:
         )
 
     topk_fracs = [float(x) for x in args.topk_fracs.split(",") if x.strip()]
-    summary, binned = summarize(rows, topk_fracs, args.num_bins)
+    summary, binned = summarize(rows, topk_fracs, args.num_bins, args.random_trials, args.seed)
     summary.update(
         {
             "model_name": args.model_name,
@@ -520,9 +540,11 @@ def main() -> None:
             "forget_sample_size": len(forget_examples),
             "retain_candidate_size": len(retain_examples),
             "probe_batches": args.probe_batches,
+            "forget_batch_size": args.forget_batch_size,
             "train_steps": args.train_steps,
             "learning_rate": args.learning_rate,
             "probe_learning_rate": args.probe_learning_rate,
+            "random_trials": args.random_trials,
             "optimizer": args.optimizer,
             "gradient_checkpointing": args.gradient_checkpointing,
             "elapsed_seconds": time.time() - started,
