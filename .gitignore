@@ -2,6 +2,10 @@
 submit.py
 !src/data/__init__.py
 logs/
+saves*/
+results/
+sanity_check_outputs/
+legacy_thesis_work/server_leftovers_*/
 unity/
 src/data/test.py
 src/data/__pycache__
