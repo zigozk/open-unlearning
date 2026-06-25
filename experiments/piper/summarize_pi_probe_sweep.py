@@ -52,6 +52,24 @@ def main() -> None:
             row[f"{prefix}_random_damage"] = values.get("random_topk_mean_damage")
             row[f"{prefix}_damage_lift"] = values.get("pred_vs_random_damage_lift")
             row[f"{prefix}_damage_ratio"] = values.get("pred_vs_random_damage_ratio")
+        for section in ["semantic_baseline", "averaged_pi", "set_gradient_pi"]:
+            values = data.get(section, {})
+            row[f"{section}_pearson"] = values.get("pearson")
+            row[f"{section}_spearman"] = values.get("spearman")
+            for frac, topk_values in values.get("topk", {}).items():
+                prefix = f"{section}_top{frac}"
+                row[f"{prefix}_enrichment"] = topk_values.get("enrichment")
+                row[f"{prefix}_damage_lift"] = topk_values.get("pred_vs_random_damage_lift")
+                row[f"{prefix}_pred_damage"] = topk_values.get("pred_topk_mean_damage")
+                row[f"{prefix}_random_damage"] = topk_values.get("random_topk_mean_damage")
+        avg_set_corr = data.get("averaged_vs_set_gradient_correlation", {})
+        row["avg_set_pearson"] = avg_set_corr.get("pearson")
+        row["avg_set_spearman"] = avg_set_corr.get("spearman")
+        for frac, overlap_values in data.get("averaged_vs_set_gradient_topk_overlap", {}).items():
+            row[f"avg_set_top{frac}_overlap_rate"] = overlap_values.get("overlap_rate")
+        forget_side = data.get("forget_side", {})
+        for key, value in forget_side.items():
+            row[f"forget_{key}"] = value
         rows.append(row)
 
     if not rows:
