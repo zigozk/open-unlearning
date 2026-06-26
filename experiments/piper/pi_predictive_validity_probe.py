@@ -45,7 +45,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tokenizer-path", default=None)
     parser.add_argument("--forget-split", default="forget10")
     parser.add_argument("--retain-split", default="retain90")
-    parser.add_argument("--backbone", choices=["GradAscent", "NPO"], required=True)
+    parser.add_argument(
+        "--backbone",
+        choices=["GradAscent", "GradDiff", "NPO", "SimNPO"],
+        required=True,
+    )
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-length", type=int, default=512)
@@ -60,6 +64,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--probe-learning-rate", type=float, default=1e-3)
     parser.add_argument("--npo-beta", type=float, default=0.1)
+    parser.add_argument("--simnpo-beta", type=float, default=4.5)
+    parser.add_argument("--simnpo-delta", type=float, default=0.0)
+    parser.add_argument("--simnpo-gamma", type=float, default=0.125)
+    parser.add_argument(
+        "--backbone-retain-alpha",
+        type=float,
+        default=0.0,
+        help="Optional native retain NLL weight for GradDiff/NPO/SimNPO proxy updates.",
+    )
     parser.add_argument("--topk-fracs", default="0.05,0.10,0.20")
     parser.add_argument("--num-bins", type=int, default=10)
     parser.add_argument("--random-trials", type=int, default=100)
@@ -268,18 +281,40 @@ def precompute_ref_sum_losses(model, examples: list[dict], tokenizer, batch_size
     return losses
 
 
-def unlearn_loss(model, batch: dict, backbone: str, ref_sum_losses: dict[int, float], beta: float) -> torch.Tensor:
-    if backbone == "GradAscent":
-        return -per_sample_token_mean_loss(model, batch).mean()
+def unlearn_loss(
+    model,
+    batch: dict,
+    backbone: str,
+    ref_sum_losses: dict[int, float],
+    beta: float,
+    simnpo_beta: float = 4.5,
+    simnpo_delta: float = 0.0,
+    simnpo_gamma: float = 0.125,
+    retain_batch: dict | None = None,
+    retain_alpha: float = 0.0,
+) -> torch.Tensor:
+    if backbone in {"GradAscent", "GradDiff"}:
+        loss = -per_sample_token_mean_loss(model, batch).mean()
+    elif backbone == "NPO":
+        current_sum = per_sample_sum_nll(model, batch)
+        ref_vals = torch.tensor(
+            [ref_sum_losses[int(sid)] for sid in batch["sample_id"].tolist()],
+            device=current_sum.device,
+            dtype=current_sum.dtype,
+        )
+        logits = beta * (current_sum - ref_vals)
+        loss = (-2.0 / beta * F.logsigmoid(logits)).mean()
+    elif backbone == "SimNPO":
+        current_mean = per_sample_token_mean_loss(model, batch) - simnpo_delta
+        loss = -2.0 / simnpo_beta * F.logsigmoid(simnpo_beta * current_mean).mean()
+        loss = simnpo_gamma * loss
+    else:
+        raise ValueError(f"Unsupported backbone: {backbone}")
 
-    current_sum = per_sample_sum_nll(model, batch)
-    ref_vals = torch.tensor(
-        [ref_sum_losses[int(sid)] for sid in batch["sample_id"].tolist()],
-        device=current_sum.device,
-        dtype=current_sum.dtype,
-    )
-    logits = beta * (current_sum - ref_vals)
-    return (-2.0 / beta * F.logsigmoid(logits)).mean()
+    if retain_batch is not None and retain_alpha > 0.0:
+        retain_loss = per_sample_token_mean_loss(model, retain_batch).mean()
+        loss = loss + retain_alpha * retain_loss
+    return loss
 
 
 def trainable_parameters(model) -> list[torch.nn.Parameter]:
@@ -314,7 +349,16 @@ def compute_pi_scores(
     for forget_batch in forget_batches:
         forget_batch = to_device(forget_batch, device)
         model.zero_grad(set_to_none=True)
-        loss = unlearn_loss(model, forget_batch, args.backbone, ref_sum_losses, args.npo_beta)
+        loss = unlearn_loss(
+            model=model,
+            batch=forget_batch,
+            backbone=args.backbone,
+            ref_sum_losses=ref_sum_losses,
+            beta=args.npo_beta,
+            simnpo_beta=args.simnpo_beta,
+            simnpo_delta=args.simnpo_delta,
+            simnpo_gamma=args.simnpo_gamma,
+        )
         loss.backward()
 
         with torch.no_grad():
@@ -361,7 +405,16 @@ def compute_set_gradient_pi_scores(
     model.zero_grad(set_to_none=True)
     for forget_batch in forget_batches:
         forget_batch = to_device(forget_batch, device)
-        loss = unlearn_loss(model, forget_batch, args.backbone, ref_sum_losses, args.npo_beta)
+        loss = unlearn_loss(
+            model=model,
+            batch=forget_batch,
+            backbone=args.backbone,
+            ref_sum_losses=ref_sum_losses,
+            beta=args.npo_beta,
+            simnpo_beta=args.simnpo_beta,
+            simnpo_delta=args.simnpo_delta,
+            simnpo_gamma=args.simnpo_gamma,
+        )
         (loss / max(len(forget_batches), 1)).backward()
 
     with torch.no_grad():
@@ -420,7 +473,16 @@ def train_unlearning(
     for step in range(args.train_steps):
         batch = to_device(next(batches), device)
         optimizer.zero_grad(set_to_none=True)
-        loss = unlearn_loss(model, batch, args.backbone, ref_sum_losses, args.npo_beta)
+        loss = unlearn_loss(
+            model=model,
+            batch=batch,
+            backbone=args.backbone,
+            ref_sum_losses=ref_sum_losses,
+            beta=args.npo_beta,
+            simnpo_beta=args.simnpo_beta,
+            simnpo_delta=args.simnpo_delta,
+            simnpo_gamma=args.simnpo_gamma,
+        )
         loss.backward()
         optimizer.step()
         losses.append(float(loss.detach().float().cpu()))

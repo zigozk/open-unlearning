@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Run the first Static-PIPER local-KL intervention experiment.
+"""Run Static-PIPER local-KL intervention experiments.
 
 This script tests whether retain samples selected by set-gradient PI are better
-KL-preservation targets than random or semantic targets under the same NPO
+KL-preservation targets than random or semantic targets under the same unlearning
 backbone. It is still a lightweight intervention proxy: the official TOFU
 evaluation should be run after promising settings are identified.
 """
@@ -47,7 +47,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tokenizer-path", default=None)
     parser.add_argument("--forget-split", default="forget10")
     parser.add_argument("--retain-split", default="retain90")
-    parser.add_argument("--backbone", choices=["NPO"], default="NPO")
+    parser.add_argument(
+        "--backbone",
+        choices=["GradAscent", "GradDiff", "NPO", "SimNPO"],
+        default="NPO",
+    )
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--max-length", type=int, default=512)
@@ -63,6 +67,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-5)
     parser.add_argument("--probe-learning-rate", type=float, default=1e-5)
     parser.add_argument("--npo-beta", type=float, default=0.1)
+    parser.add_argument("--simnpo-beta", type=float, default=4.5)
+    parser.add_argument("--simnpo-delta", type=float, default=0.0)
+    parser.add_argument("--simnpo-gamma", type=float, default=0.125)
+    parser.add_argument(
+        "--backbone-retain-alpha",
+        type=float,
+        default=0.0,
+        help="Optional native retain NLL weight for GradDiff/NPO/SimNPO proxy updates.",
+    )
     parser.add_argument(
         "--method",
         choices=[
@@ -77,6 +90,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kl-lambda", type=float, default=0.0)
     parser.add_argument("--optimizer", choices=["paged_adamw_32bit", "adamw"], default="paged_adamw_32bit")
     parser.add_argument("--gradient-checkpointing", action="store_true")
+    parser.add_argument("--save-model", action="store_true")
+    parser.add_argument("--save-model-dir", default="checkpoint")
     return parser.parse_args()
 
 
@@ -160,6 +175,7 @@ def local_kl_loss(model, batch: dict, ref_log_probs: dict[int, torch.Tensor]) ->
 def train_npo_with_optional_kl(
     model,
     forget_examples: list[dict],
+    retain_examples: list[dict],
     local_examples: list[dict],
     tokenizer,
     args: argparse.Namespace,
@@ -170,6 +186,11 @@ def train_npo_with_optional_kl(
     optimizer = build_optimizer(trainable_parameters(model), args)
     device = next(model.parameters()).device
     forget_batches = cycle_batches(forget_examples, args.forget_batch_size, tokenizer, args.seed + 2000)
+    retain_batches = (
+        cycle_batches(retain_examples, args.retain_batch_size, tokenizer, args.seed + 2500)
+        if args.backbone_retain_alpha > 0.0
+        else None
+    )
     local_batches = (
         cycle_batches(local_examples, args.local_kl_batch_size, tokenizer, args.seed + 3000)
         if local_examples
@@ -179,20 +200,33 @@ def train_npo_with_optional_kl(
 
     for step in range(args.train_steps):
         forget_batch = to_device(next(forget_batches), device)
+        retain_batch = to_device(next(retain_batches), device) if retain_batches is not None else None
         optimizer.zero_grad(set_to_none=True)
-        npo = unlearn_loss(model, forget_batch, args.backbone, ref_sum_losses, args.npo_beta)
-        kl = npo * 0.0
+        backbone_loss = unlearn_loss(
+            model=model,
+            batch=forget_batch,
+            backbone=args.backbone,
+            ref_sum_losses=ref_sum_losses,
+            beta=args.npo_beta,
+            simnpo_beta=args.simnpo_beta,
+            simnpo_delta=args.simnpo_delta,
+            simnpo_gamma=args.simnpo_gamma,
+            retain_batch=retain_batch,
+            retain_alpha=args.backbone_retain_alpha,
+        )
+        kl = backbone_loss * 0.0
         if args.method != "baseline" and args.kl_lambda > 0.0:
             assert local_batches is not None
             kl_batch = to_device(next(local_batches), device)
             kl = local_kl_loss(model, kl_batch, ref_log_probs)
-        total = npo + args.kl_lambda * kl
+        total = backbone_loss + args.kl_lambda * kl
         total.backward()
         optimizer.step()
 
         row = {
             "step": step + 1,
-            "npo_loss": float(npo.detach().float().cpu()),
+            "backbone_loss": float(backbone_loss.detach().float().cpu()),
+            "npo_loss": float(backbone_loss.detach().float().cpu()),
             "local_kl_loss": float(kl.detach().float().cpu()),
             "total_loss": float(total.detach().float().cpu()),
         }
@@ -201,7 +235,7 @@ def train_npo_with_optional_kl(
             print(
                 "[train] "
                 f"step={step + 1}/{args.train_steps} "
-                f"npo={row['npo_loss']:.6f} "
+                f"backbone={row['backbone_loss']:.6f} "
                 f"kl={row['local_kl_loss']:.6f} "
                 f"total={row['total_loss']:.6f}",
                 flush=True,
@@ -342,7 +376,7 @@ def main() -> None:
     base_forget_metrics = measure_sample_metrics(model, forget_examples, tokenizer, args.forget_batch_size)
     base_retain_losses = {sid: vals["loss"] for sid, vals in base_retain_metrics.items()}
 
-    print("[measure] reference forget losses for NPO", flush=True)
+    print("[measure] reference forget losses for reference-based backbones", flush=True)
     ref_sum_losses = precompute_ref_sum_losses(model, forget_examples, tokenizer, args.forget_batch_size)
 
     print("[probe] computing set-gradient PI selector", flush=True)
@@ -398,11 +432,12 @@ def main() -> None:
         )
         ref_kl_seconds = time.time() - ref_started
 
-    print("[train] running NPO intervention", flush=True)
+    print(f"[train] running {args.backbone} intervention", flush=True)
     train_started = time.time()
     train_rows = train_npo_with_optional_kl(
         model=model,
         forget_examples=forget_examples,
+        retain_examples=retain_examples,
         local_examples=local_examples,
         tokenizer=tokenizer,
         args=args,
@@ -450,6 +485,10 @@ def main() -> None:
         "learning_rate": args.learning_rate,
         "probe_learning_rate": args.probe_learning_rate,
         "npo_beta": args.npo_beta,
+        "simnpo_beta": args.simnpo_beta,
+        "simnpo_delta": args.simnpo_delta,
+        "simnpo_gamma": args.simnpo_gamma,
+        "backbone_retain_alpha": args.backbone_retain_alpha,
         "optimizer": args.optimizer,
         "gradient_checkpointing": args.gradient_checkpointing,
         "selection": {
@@ -539,8 +578,15 @@ def main() -> None:
     write_csv(
         output_dir / "train_loss_curve.csv",
         train_rows,
-        ["step", "npo_loss", "local_kl_loss", "total_loss"],
+        ["step", "backbone_loss", "npo_loss", "local_kl_loss", "total_loss"],
     )
+    if args.save_model:
+        save_dir = output_dir / args.save_model_dir
+        print(f"[save] writing model checkpoint to {save_dir}", flush=True)
+        save_dir.mkdir(parents=True, exist_ok=True)
+        model.save_pretrained(save_dir)
+        tokenizer.save_pretrained(save_dir)
+        summary["saved_model_path"] = save_dir.as_posix()
     with (output_dir / "summary.json").open("w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
     with (output_dir / "args.json").open("w", encoding="utf-8") as f:

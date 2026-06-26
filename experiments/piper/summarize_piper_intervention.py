@@ -48,8 +48,13 @@ def main() -> None:
             "learning_rate": data.get("learning_rate"),
             "probe_learning_rate": data.get("probe_learning_rate"),
             "npo_beta": data.get("npo_beta"),
+            "simnpo_beta": data.get("simnpo_beta"),
+            "simnpo_delta": data.get("simnpo_delta"),
+            "simnpo_gamma": data.get("simnpo_gamma"),
+            "backbone_retain_alpha": data.get("backbone_retain_alpha"),
             "optimizer": data.get("optimizer"),
             "gradient_checkpointing": data.get("gradient_checkpointing"),
+            "saved_model_path": data.get("saved_model_path"),
         }
         selection = data.get("selection", {})
         for key, value in selection.items():
