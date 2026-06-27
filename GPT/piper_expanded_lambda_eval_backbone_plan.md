@@ -71,7 +71,30 @@ lambda ∈ {0.03, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0}
 | GradDiff | 带 retain NLL 的传统 forget-retain 组合目标 |
 | SimNPO | NPO 变体，检查 PI 在不同 preference-style objective 下是否稳定 |
 
-实验脚本中对应：
+推荐使用合并版 pipeline 脚本：
+
+```bash
+bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
+```
+
+该脚本会自动提交：
+
+1. intervention + official TOFU eval 的 array job；
+2. 依赖 array 完成后的 summary job。
+
+如果只想跑 intervention，不跑官方 eval，可以：
+
+```bash
+RUN_OFFICIAL_EVAL=0 bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
+```
+
+如果不想保存 checkpoint，则不能直接跑官方 eval：
+
+```bash
+SAVE_MODEL=0 RUN_OFFICIAL_EVAL=0 bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
+```
+
+拆分版 intervention 脚本仍保留：
 
 ```bash
 sbatch sbatch/piper/piper_multi_backbone_local_kl_intervention_array.sh
@@ -101,7 +124,11 @@ NPO + GradAscent + SimNPO
 - forget damage
 - forget answer probability delta
 
-这些指标适合机制分析，但不足以支撑 TOFU 主实验结论。本轮必须接入官方 OpenUnlearning evaluation：
+这些指标适合机制分析，但不足以支撑 TOFU 主实验结论。本轮必须接入官方 OpenUnlearning evaluation。
+
+使用合并版 pipeline 时，每个 array task 会在 intervention 后立即评估该 checkpoint。
+
+拆分版官方 eval 脚本仍保留：
 
 ```bash
 sbatch sbatch/piper/piper_official_tofu_eval_array.sh
@@ -128,6 +155,8 @@ python src/eval.py --config-name=eval.yaml experiment=eval/tofu/default
 注意：`forget_quality` 和 `privleak` 依赖 `RETAIN_LOGS_PATH`。如果没有提供 retain reference logs，它们可能为 `None`，但其他官方指标仍可用于分析。
 
 ## 6. 结果汇总
+
+使用合并版 pipeline 时，summary job 会自动运行以下两个汇总命令。
 
 轻量 proxy 结果汇总：
 
