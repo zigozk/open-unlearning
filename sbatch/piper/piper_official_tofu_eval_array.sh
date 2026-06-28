@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH -t 48:00:00
-#SBATCH --array=0-347%2
+#SBATCH --array=0-347%1
 #SBATCH -o logs/%x-%A_%a.out
 #SBATCH -e logs/%x-%A_%a.err
 
@@ -36,6 +36,7 @@ MODEL_CONFIG="${MODEL_CONFIG:-Llama-2-7b-chat-hf}"
 TOKENIZER_PATH="${TOKENIZER_PATH:-/home/share/models/Llama-2-7b-chat-hf}"
 RETAIN_LOGS_PATH="${RETAIN_LOGS_PATH:-}"
 OVERWRITE="${OVERWRITE:-true}"
+DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}"
 
 mapfile -t RUN_LINES < <(
   python - <<'PY' "${INTERVENTION_ROOT}"
@@ -75,6 +76,7 @@ echo "FORGET_SPLIT=${FORGET_SPLIT}"
 echo "MODEL_CONFIG=${MODEL_CONFIG}"
 echo "TOKENIZER_PATH=${TOKENIZER_PATH}"
 echo "RETAIN_LOGS_PATH=${RETAIN_LOGS_PATH}"
+echo "DELETE_CHECKPOINT_AFTER_EVAL=${DELETE_CHECKPOINT_AFTER_EVAL}"
 echo "OUTPUT_DIR=${OUTPUT_DIR}"
 nvidia-smi || true
 
@@ -98,5 +100,17 @@ if [ -n "${RETAIN_LOGS_PATH}" ]; then
 fi
 
 "${cmd[@]}"
+
+if [ "${DELETE_CHECKPOINT_AFTER_EVAL}" = "1" ]; then
+  case "${CHECKPOINT_PATH}" in
+    results/piper_intervention_expanded/*/checkpoint|*/results/piper_intervention_expanded/*/checkpoint)
+      echo "[cleanup] deleting checkpoint after successful eval: ${CHECKPOINT_PATH}"
+      rm -rf -- "${CHECKPOINT_PATH}"
+      ;;
+    *)
+      echo "[cleanup] refusing to delete unexpected checkpoint path: ${CHECKPOINT_PATH}"
+      ;;
+  esac
+fi
 
 echo "===== DONE: ${OUTPUT_DIR} ====="

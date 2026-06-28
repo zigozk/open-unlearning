@@ -49,7 +49,7 @@ submit_pipeline() {
   ROOT_DIR="${ROOT_DIR:-/home/zkzhang/unlearning/open-unlearning}"
   cd "${ROOT_DIR}"
   total="$(total_tasks)"
-  max_parallel="${MAX_PARALLEL:-2}"
+  max_parallel="${MAX_PARALLEL:-1}"
   mkdir -p logs
 
   echo "Submitting expanded PIPER intervention + official eval pipeline"
@@ -171,6 +171,7 @@ run_intervention_and_eval() {
   EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/piper_official_eval}"
   SAVE_MODEL="${SAVE_MODEL:-1}"
   RUN_OFFICIAL_EVAL="${RUN_OFFICIAL_EVAL:-1}"
+  DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}"
   MODEL_CONFIG="${MODEL_CONFIG:-Llama-2-7b-chat-hf}"
   RETAIN_LOGS_PATH="${RETAIN_LOGS_PATH:-}"
   OVERWRITE="${OVERWRITE:-true}"
@@ -197,6 +198,7 @@ run_intervention_and_eval() {
   echo "PROBE_BATCHES=${PROBE_BATCHES}"
   echo "SAVE_MODEL=${SAVE_MODEL}"
   echo "RUN_OFFICIAL_EVAL=${RUN_OFFICIAL_EVAL}"
+  echo "DELETE_CHECKPOINT_AFTER_EVAL=${DELETE_CHECKPOINT_AFTER_EVAL}"
   echo "OUTPUT_DIR=${OUTPUT_DIR}"
   nvidia-smi || true
 
@@ -279,6 +281,19 @@ run_intervention_and_eval() {
   fi
 
   "${cmd[@]}"
+
+  if [ "${DELETE_CHECKPOINT_AFTER_EVAL}" = "1" ]; then
+    case "${CHECKPOINT_PATH}" in
+      results/piper_intervention_expanded/*/checkpoint|*/results/piper_intervention_expanded/*/checkpoint)
+        echo "[cleanup] deleting checkpoint after successful eval: ${CHECKPOINT_PATH}"
+        rm -rf -- "${CHECKPOINT_PATH}"
+        ;;
+      *)
+        echo "[cleanup] refusing to delete unexpected checkpoint path: ${CHECKPOINT_PATH}"
+        ;;
+    esac
+  fi
+
   echo "===== PIPELINE TASK DONE: ${OUTPUT_DIR} ====="
 }
 

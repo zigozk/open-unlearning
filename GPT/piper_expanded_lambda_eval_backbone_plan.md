@@ -82,6 +82,25 @@ bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
 1. intervention + official TOFU eval 的 array job；
 2. 依赖 array 完成后的 summary job。
 
+为适配 HPC 磁盘配额，pipeline 默认使用：
+
+```bash
+MAX_PARALLEL=1
+DELETE_CHECKPOINT_AFTER_EVAL=1
+```
+
+即每次只保留少量临时 checkpoint，并在对应官方 eval 成功后删除该 checkpoint。保留的是轻量结果文件：
+
+```text
+summary.json
+retain_metrics.csv
+forget_metrics.csv
+local_selection.csv
+train_loss_curve.csv
+TOFU_EVAL.json
+TOFU_SUMMARY.json
+```
+
 如果只想跑 intervention，不跑官方 eval，可以：
 
 ```bash
