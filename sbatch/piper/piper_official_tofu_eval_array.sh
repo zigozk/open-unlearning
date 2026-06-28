@@ -12,6 +12,67 @@
 
 set -euo pipefail
 
+# Preferred quota-safe submission:
+#   bash sbatch/piper/piper_official_tofu_eval_array.sh --submit
+#
+# This snapshots the checkpoint list before launching the eval array, so
+# DELETE_CHECKPOINT_AFTER_EVAL=1 cannot shift later array indices.
+
+if [ "${1:-}" = "--submit" ]; then
+  ROOT_DIR="${ROOT_DIR:-/home/zkzhang/unlearning/open-unlearning}"
+  cd "${ROOT_DIR}"
+  mkdir -p logs results/piper_official_eval
+
+  INTERVENTION_ROOT="${INTERVENTION_ROOT:-results/piper_intervention_expanded}"
+  EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/piper_official_eval}"
+  CHECKPOINT_LIST="${CHECKPOINT_LIST:-${EVAL_OUTPUT_ROOT}/checkpoint_list_$(date +%Y%m%d_%H%M%S).tsv}"
+  MAX_PARALLEL="${MAX_PARALLEL:-1}"
+
+  python - <<'PY' "${INTERVENTION_ROOT}" "${EVAL_OUTPUT_ROOT}" "${CHECKPOINT_LIST}"
+import json
+import sys
+from pathlib import Path
+
+intervention_root = Path(sys.argv[1])
+eval_root = Path(sys.argv[2])
+out_path = Path(sys.argv[3])
+out_path.parent.mkdir(parents=True, exist_ok=True)
+
+rows = []
+for summary_path in sorted(intervention_root.glob("**/summary.json")):
+    data = json.loads(summary_path.read_text(encoding="utf-8"))
+    checkpoint = data.get("saved_model_path")
+    if not checkpoint:
+        continue
+    checkpoint_path = Path(checkpoint)
+    if not checkpoint_path.exists():
+        continue
+    run_name = summary_path.parent.name
+    eval_summary = eval_root / f"{run_name}_tofu_eval" / "TOFU_SUMMARY.json"
+    if eval_summary.exists():
+        continue
+    rows.append(f"{run_name}\t{checkpoint_path.as_posix()}\t{data.get('forget_split', 'forget10')}")
+
+out_path.write_text("\n".join(rows) + ("\n" if rows else ""), encoding="utf-8")
+print(len(rows))
+PY
+
+  total="$(wc -l < "${CHECKPOINT_LIST}" | tr -d ' ')"
+  if [ "${total}" = "0" ]; then
+    echo "No unevaluated checkpoints found under ${INTERVENTION_ROOT}"
+    exit 0
+  fi
+
+  echo "Checkpoint list: ${CHECKPOINT_LIST}"
+  echo "Eval tasks:      ${total}"
+  echo "Max parallel:    ${MAX_PARALLEL}"
+  sbatch \
+    --array="0-$((total - 1))%${MAX_PARALLEL}" \
+    --export=ALL,CHECKPOINT_LIST="${CHECKPOINT_LIST}",DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}" \
+    "$0"
+  exit 0
+fi
+
 ROOT_DIR="${ROOT_DIR:-/home/zkzhang/unlearning/open-unlearning}"
 cd "${ROOT_DIR}"
 mkdir -p logs
@@ -36,10 +97,17 @@ MODEL_CONFIG="${MODEL_CONFIG:-Llama-2-7b-chat-hf}"
 TOKENIZER_PATH="${TOKENIZER_PATH:-/home/share/models/Llama-2-7b-chat-hf}"
 RETAIN_LOGS_PATH="${RETAIN_LOGS_PATH:-}"
 OVERWRITE="${OVERWRITE:-true}"
-DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}"
+if [ -n "${CHECKPOINT_LIST:-}" ]; then
+  DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}"
+else
+  DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-0}"
+fi
 
-mapfile -t RUN_LINES < <(
-  python - <<'PY' "${INTERVENTION_ROOT}"
+if [ -n "${CHECKPOINT_LIST:-}" ]; then
+  mapfile -t RUN_LINES < "${CHECKPOINT_LIST}"
+else
+  mapfile -t RUN_LINES < <(
+    python - <<'PY' "${INTERVENTION_ROOT}"
 import json
 import sys
 from pathlib import Path
@@ -55,7 +123,8 @@ for summary_path in sorted(root.glob("**/summary.json")):
         continue
     print(f"{summary_path.parent.name}\t{checkpoint_path.as_posix()}\t{data.get('forget_split', 'forget10')}")
 PY
-)
+  )
+fi
 
 idx=${SLURM_ARRAY_TASK_ID}
 total=${#RUN_LINES[@]}
