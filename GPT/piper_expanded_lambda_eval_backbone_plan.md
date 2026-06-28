@@ -113,6 +113,15 @@ RUN_OFFICIAL_EVAL=0 bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --sub
 SAVE_MODEL=0 RUN_OFFICIAL_EVAL=0 bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
 ```
 
+如果上一次因为磁盘配额中断，只想补跑尚未完成的 intervention 配置，使用：
+
+```bash
+SKIP_EXISTING=1 SAVE_MODEL=0 RUN_OFFICIAL_EVAL=0 \
+bash sbatch/piper/piper_expanded_with_eval_pipeline.sh --submit
+```
+
+`SKIP_EXISTING=1` 会按 `model/split/backbone/method/lambda/seed` 查找已有 `summary.json`，已有则直接跳过，只跑缺失配置。
+
 拆分版 intervention 脚本仍保留：
 
 ```bash

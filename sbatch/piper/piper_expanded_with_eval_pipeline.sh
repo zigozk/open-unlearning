@@ -169,6 +169,7 @@ run_intervention_and_eval() {
   REF_LOGIT_BATCH_SIZE="${REF_LOGIT_BATCH_SIZE:-1}"
   OUTPUT_ROOT="${OUTPUT_ROOT:-results/piper_intervention_expanded}"
   EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/piper_official_eval}"
+  SKIP_EXISTING="${SKIP_EXISTING:-1}"
   SAVE_MODEL="${SAVE_MODEL:-1}"
   RUN_OFFICIAL_EVAL="${RUN_OFFICIAL_EVAL:-1}"
   DELETE_CHECKPOINT_AFTER_EVAL="${DELETE_CHECKPOINT_AFTER_EVAL:-1}"
@@ -178,6 +179,13 @@ run_intervention_and_eval() {
 
   array_job_id="${SLURM_ARRAY_JOB_ID:-${SLURM_JOB_ID}}"
   OUTPUT_DIR="${OUTPUT_ROOT}/${MODEL_NAME}_${FORGET_SPLIT}_${RETAIN_SPLIT}_${BACKBONE}_${METHOD}_lambda${KL_LAMBDA}_seed${SEED}_${array_job_id}_${SLURM_ARRAY_TASK_ID}"
+  existing_summary=""
+  for candidate in "${OUTPUT_ROOT}/${MODEL_NAME}_${FORGET_SPLIT}_${RETAIN_SPLIT}_${BACKBONE}_${METHOD}_lambda${KL_LAMBDA}_seed${SEED}_"*/summary.json; do
+    if [ -f "${candidate}" ]; then
+      existing_summary="${candidate}"
+      break
+    fi
+  done
 
   echo "===== STATIC PIPER EXPANDED PIPELINE TASK ====="
   echo "HOSTNAME=$(hostname)"
@@ -196,10 +204,18 @@ run_intervention_and_eval() {
   echo "KL_LAMBDA=${KL_LAMBDA}"
   echo "LEARNING_RATE=${LEARNING_RATE}"
   echo "PROBE_BATCHES=${PROBE_BATCHES}"
+  echo "SKIP_EXISTING=${SKIP_EXISTING}"
   echo "SAVE_MODEL=${SAVE_MODEL}"
   echo "RUN_OFFICIAL_EVAL=${RUN_OFFICIAL_EVAL}"
   echo "DELETE_CHECKPOINT_AFTER_EVAL=${DELETE_CHECKPOINT_AFTER_EVAL}"
   echo "OUTPUT_DIR=${OUTPUT_DIR}"
+
+  if [ "${SKIP_EXISTING}" = "1" ] && [ -n "${existing_summary}" ]; then
+    echo "[skip] Found existing complete intervention summary: ${existing_summary}"
+    echo "[skip] This task will not rerun intervention or official eval."
+    return 0
+  fi
+
   nvidia-smi || true
 
   save_args=()
