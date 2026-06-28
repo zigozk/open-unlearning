@@ -265,7 +265,7 @@ run_intervention_and_eval() {
     experiment=eval/tofu/default
     "model=${MODEL_CONFIG}"
     "model.model_args.pretrained_model_name_or_path=${CHECKPOINT_PATH}"
-    "tokenizer_args.pretrained_model_name_or_path=${TOKENIZER_PATH}"
+    "model.tokenizer_args.pretrained_model_name_or_path=${TOKENIZER_PATH}"
     "forget_split=${FORGET_SPLIT}"
     "task_name=${TASK_NAME}"
     "paths.output_dir=${EVAL_DIR}"
