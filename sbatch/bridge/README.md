@@ -2,7 +2,14 @@
 
 This directory is reserved for future BRIDGE cluster submission scripts.
 
-Current state: no runnable sbatch script has been added, and no new experiment has been launched as part of the project reorganization.
+Current runnable entry point:
+
+```bash
+sbatch sbatch/bridge/bridge_initial_pipeline.sh
+```
+
+The script submits the first-round single-seed BRIDGE matrix as an array job
+with `MAX_PARALLEL=4` by default, then submits a dependent summary job.
 
 ## Suggested Future Script Order
 
@@ -23,3 +30,15 @@ Future scripts should:
 - write heavy outputs under ignored `results/`;
 - call summarizers only after checking expected result files exist;
 - keep Phase 6 multi-seed and FQ-matched jobs separate from the initial single-seed scripts.
+
+## Initial Pipeline Defaults
+
+- Methods: `npo`, `npo_global_kl`, `bridge_uniform_dro`,
+  `bridge_history_dro`, `bridge_refresh_gs_dro`, `bridge_refresh_pi_dro`
+- Optional methods: set `INCLUDE_OPTIONAL_ONLINE=1` for online GS/PI
+- Main override knobs: `ROOT_DIR`, `MODEL_CONFIG`, `MODEL_PATH`,
+  `TOKENIZER_PATH`, `FORGET_SPLIT`, `RETAIN_SPLIT`, `SEED`,
+  `TRAIN_BATCH_SIZE`, `REFRESH_INTERVAL`, `MAX_PARALLEL`
+- Heavy outputs: `results/bridge_initial/` and `results/bridge_initial_eval/`
+- Lightweight reports: `results/bridge_reports/bridge_initial_summary.csv`
+  and `results/bridge_reports/bridge_initial_report.md`

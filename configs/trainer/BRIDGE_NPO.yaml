@@ -1,0 +1,25 @@
+defaults:
+  - NPO
+
+handler: BRIDGENPO
+
+method_args:
+  beta: 0.1
+  gamma: 1.0
+  alpha: 0.0
+  retain_loss_type: NLL
+  use_retain_loss: false
+  gradient_synthesis: none
+
+  bridge_prior: none
+  bridge_lambda_g: 0.0
+  bridge_lambda_b: 0.0
+  bridge_dro_temperature: 1.0
+  bridge_prior_temperature: 1.0
+  bridge_history_beta: 0.9
+  bridge_refresh_interval: 20
+  bridge_gs_score: cosine
+  bridge_pi_step_size: null
+  bridge_worst_k_frac: 0.1
+  bridge_log_every: 5
+  bridge_diagnostics_filename: bridge_diagnostics.jsonl

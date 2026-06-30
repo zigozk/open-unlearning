@@ -2,7 +2,18 @@
 
 This directory is reserved for BRIDGE-specific helper scripts that sit outside the core OpenUnlearning training loop.
 
-Current state: no runnable BRIDGE experiment script has been added yet.
+Current runnable helper:
+
+```bash
+python experiments/bridge/summarize_bridge_initial.py \
+  --train-root results/bridge_initial \
+  --eval-root results/bridge_initial_eval \
+  --output-csv results/bridge_reports/bridge_initial_summary.csv \
+  --output-md results/bridge_reports/bridge_initial_report.md
+```
+
+The first-round training/eval jobs are launched through
+`sbatch/bridge/bridge_initial_pipeline.sh`.
 
 Future scripts should be added here only when they are actually executable or directly useful for summarizing completed runs. Core training code should live under `src/trainer/unlearn/` and Hydra configs should live under `configs/`.
 

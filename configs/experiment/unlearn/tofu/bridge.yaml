@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - default
+  - override /trainer: BRIDGE_NPO
+
+collator:
+  DataCollatorForSupervisedDataset:
+    args:
+      index: index
+
+trainer:
+  args:
+    do_eval: false
+    eval_on_start: false
