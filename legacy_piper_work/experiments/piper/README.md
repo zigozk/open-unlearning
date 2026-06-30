@@ -1,4 +1,6 @@
-# PIPER Probe Experiments
+# PIPER Probe Experiments (Legacy)
+
+> Status: this directory is retained for the older PIPER / PI probe line. The current paper direction is BRIDGE, whose canonical docs and future experiment namespace live under [`docs/bridge/`](../../../docs/bridge/) and [`experiments/bridge/`](../../../experiments/bridge/).
 
 本目录用于第一阶段机制探究实验，目标不是训练最终 PIPER 方法，而是验证：
 
@@ -16,7 +18,7 @@ PI(B_f, x_r) 是否能预测遗忘训练后的 retain damage
 当前 sbatch sweep：
 
 ```bash
-sbatch sbatch/piper/pi_probe_llama2_7b_full_array.sh
+sbatch legacy_piper_work/sbatch/piper/pi_probe_llama2_7b_full_array.sh
 ```
 
 默认覆盖：
@@ -32,7 +34,7 @@ sbatch sbatch/piper/pi_probe_llama2_7b_full_array.sh
 论文级补充机制实验：
 
 ```bash
-sbatch sbatch/piper/pi_required_mechanism_supplement_array.sh
+sbatch legacy_piper_work/sbatch/piper/pi_required_mechanism_supplement_array.sh
 ```
 
 该脚本默认只跑 `NPO`，覆盖：
@@ -53,7 +55,7 @@ sbatch sbatch/piper/pi_required_mechanism_supplement_array.sh
 聚合补充实验：
 
 ```bash
-python experiments/piper/summarize_pi_probe_sweep.py \
-  --root results/piper_pi_required \
-  --output results/piper_pi_required/required_summary.csv
+python legacy_piper_work/experiments/piper/summarize_pi_probe_sweep.py \
+  --root legacy_piper_work/results/piper_pi_required \
+  --output legacy_piper_work/results/piper_pi_required/required_summary.csv
 ```
