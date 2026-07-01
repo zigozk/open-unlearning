@@ -11,6 +11,23 @@ sbatch sbatch/bridge/bridge_initial_pipeline.sh
 The script submits the first-round single-seed BRIDGE matrix as an array job
 with `MAX_PARALLEL=4` by default, then submits a dependent summary job.
 
+If the array fails, collect compact failure artifacts with:
+
+```bash
+sbatch sbatch/bridge/bridge_collect_failures.sh
+```
+
+or run the same parser directly:
+
+```bash
+python experiments/bridge/summarize_bridge_failures.py \
+  --logs-root logs \
+  --train-root results/bridge_initial \
+  --eval-root results/bridge_initial_eval \
+  --output-csv results/bridge_reports/bridge_failure_summary.csv \
+  --output-md results/bridge_reports/bridge_failure_report.md
+```
+
 ## Suggested Future Script Order
 
 - `01_bridge_npo_baseline.sh`
@@ -42,3 +59,5 @@ Future scripts should:
 - Heavy outputs: `results/bridge_initial/` and `results/bridge_initial_eval/`
 - Lightweight reports: `results/bridge_reports/bridge_initial_summary.csv`
   and `results/bridge_reports/bridge_initial_report.md`
+- Failure reports: `results/bridge_reports/bridge_failure_summary.csv`
+  and `results/bridge_reports/bridge_failure_report.md`
