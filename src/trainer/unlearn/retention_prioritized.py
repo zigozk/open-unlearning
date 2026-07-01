@@ -38,6 +38,10 @@ class RetentionPrioritizedMixin(ABC):
         inputs: Dict[str, Any],
         num_items_in_batch: Optional[int] = None,
     ) -> torch.Tensor:
+        cfg = build_retention_synthesis_config(self.method_args)
+        if cfg.gradient_synthesis == "none":
+            return super().training_step(model, inputs, num_items_in_batch)
+
         model.train()
 
         if hasattr(self, "_prepare_inputs"):
@@ -74,7 +78,6 @@ class RetentionPrioritizedMixin(ABC):
             except Exception:
                 pass
 
-        cfg = build_retention_synthesis_config(self.method_args)
         total_for_logging = cfg.gamma * forget_loss.detach()
         if cfg.use_retain_loss and retain_loss is not None:
             total_for_logging = total_for_logging + cfg.alpha * retain_loss.detach()
