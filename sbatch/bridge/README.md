@@ -49,6 +49,16 @@ python experiments/bridge/summarize_bridge_failures.py \
   --output-md results/bridge_reports/bridge_failure_report.md
 ```
 
+To summarize partial or completed BRIDGE initial results at any time:
+
+```bash
+sbatch sbatch/bridge/bridge_summarize_initial.sh
+```
+
+This writes `results/bridge_reports/bridge_initial_partial_summary.csv` and
+`results/bridge_reports/bridge_initial_partial_report.md` by default. Override
+`REPORT_PREFIX` if you want another output name.
+
 ## Suggested Future Script Order
 
 - `01_bridge_npo_baseline.sh`

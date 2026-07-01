@@ -76,6 +76,7 @@ def discover_runs(train_root: Path, eval_root: Path) -> List[Dict[str, Any]]:
             "seed": run_config.get("seed"),
             "model": run_config.get("model"),
             "forget_split": run_config.get("forget_split"),
+            "status": "eval_complete" if eval_summary_path else "eval_missing",
             "bridge_prior": bridge_summary.get("bridge_prior", run_config.get("bridge_prior")),
             "bridge_lambda_g": bridge_summary.get("bridge_lambda_g", run_config.get("bridge_lambda_g")),
             "bridge_lambda_b": bridge_summary.get("bridge_lambda_b", run_config.get("bridge_lambda_b")),
@@ -143,7 +144,9 @@ def write_markdown(path: Path, rows: List[Dict[str, Any]], csv_path: Path) -> No
         return
 
     table_columns = [
+        "model",
         "method",
+        "status",
         "forget_quality",
         "model_utility",
         "mean_retain_kl",
