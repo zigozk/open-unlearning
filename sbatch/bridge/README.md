@@ -9,9 +9,28 @@ sbatch sbatch/bridge/bridge_initial_pipeline.sh
 ```
 
 The script submits the first-round single-seed BRIDGE matrix as an array job,
-then submits a dependent summary job. The default is a low-resource smokeable
-setting: `MAX_PARALLEL=1`, `CPUS_PER_TASK=2`, `MEM=32G`,
-`TRAIN_BATCH_SIZE=2`, `GRAD_ACCUM_STEPS=16`, `EVAL_BATCH_SIZE=8`.
+then submits a dependent summary job. The default targets one H100 80GB task on
+`gpu01` at a time: `NODELIST=gpu01`, `GRES=gpu:nvidia_h100_80gb_hbm3:1`, `MAX_PARALLEL=1`,
+`CPUS_PER_TASK=8`, `MEM=128G`, `TRAIN_BATCH_SIZE=8`,
+`GRAD_ACCUM_STEPS=4`, `EVAL_BATCH_SIZE=32`.
+
+By default it runs the 1B model only:
+
+```bash
+sbatch sbatch/bridge/bridge_initial_pipeline.sh
+```
+
+Run 7B after 1B with:
+
+```bash
+sbatch --export=ALL,MODEL_CONFIG=Llama-2-7b-chat-hf sbatch/bridge/bridge_initial_pipeline.sh
+```
+
+To queue both models in one array, with 1B task indices before 7B task indices:
+
+```bash
+sbatch --export=ALL,MODEL_CONFIGS="Llama-3.2-1B-Instruct Llama-2-7b-chat-hf" sbatch/bridge/bridge_initial_pipeline.sh
+```
 
 If the array fails, collect compact failure artifacts with:
 
@@ -55,7 +74,7 @@ Future scripts should:
 - Methods: `npo`, `npo_global_kl`, `bridge_uniform_dro`,
   `bridge_history_dro`, `bridge_refresh_gs_dro`, `bridge_refresh_pi_dro`
 - Optional methods: set `INCLUDE_OPTIONAL_ONLINE=1` for online GS/PI
-- Main override knobs: `ROOT_DIR`, `MODEL_CONFIG`, `MODEL_PATH`,
+- Main override knobs: `ROOT_DIR`, `MODEL_CONFIG`, `MODEL_CONFIGS`, `MODEL_PATH`,
   `TOKENIZER_PATH`, `FORGET_SPLIT`, `RETAIN_SPLIT`, `SEED`,
   `TRAIN_BATCH_SIZE`, `REFRESH_INTERVAL`, `MAX_PARALLEL`
 - Heavy outputs: `results/bridge_initial/` and `results/bridge_initial_eval/`

@@ -13,9 +13,13 @@ set -euo pipefail
 # Submit once with:
 #   sbatch sbatch/bridge/bridge_initial_pipeline.sh
 #
-# The parent job submits a 6-task array for the first-round BRIDGE matrix and a
-# dependent summary job. Defaults are intentionally modest so the initial run can
-# fit scarce shared nodes; override resources or paths through environment vars.
+# The parent job submits the first-round BRIDGE matrix as an array job and a
+# dependent summary job. Defaults target one H100 80GB task at a time; override
+# resources, model list, or paths through environment vars.
+
+build_model_specs() {
+  read -r -a MODEL_SPECS <<< "${MODEL_CONFIGS:-${MODEL_CONFIG:-Llama-3.2-1B-Instruct}}"
+}
 
 build_run_specs() {
   RUN_SPECS=(
@@ -36,8 +40,9 @@ build_run_specs() {
 }
 
 total_tasks() {
+  build_model_specs
   build_run_specs
-  echo "${#RUN_SPECS[@]}"
+  echo $((${#MODEL_SPECS[@]} * ${#RUN_SPECS[@]}))
 }
 
 submit_pipeline() {
@@ -54,7 +59,8 @@ submit_pipeline() {
   echo "ROOT_DIR=${ROOT_DIR}"
   echo "TOTAL_TASKS=${total}"
   echo "MAX_PARALLEL=${max_parallel}"
-  echo "MODEL_CONFIG=${MODEL_CONFIG:-Llama-3.2-1B-Instruct}"
+  echo "MODEL_CONFIGS=${MODEL_CONFIGS:-Llama-3.2-1B-Instruct}"
+  echo "NODELIST=${NODELIST:-gpu01}"
   echo "FORGET_SPLIT=${FORGET_SPLIT:-forget10}"
   echo "SEED=${SEED:-0}"
 
@@ -63,10 +69,11 @@ submit_pipeline() {
       -J bridge_initial \
       -p "${PARTITION:-compute}" \
       -N 1 \
-      --gres="${GRES:-gpu:nvidia_a100_80gb_pcie:1}" \
-      --cpus-per-task="${CPUS_PER_TASK:-2}" \
-      --mem="${MEM:-32G}" \
-      -t "${TIME_LIMIT:-12:00:00}" \
+      --nodelist="${NODELIST:-gpu01}" \
+      --gres="${GRES:-gpu:nvidia_h100_80gb_hbm3:1}" \
+      --cpus-per-task="${CPUS_PER_TASK:-8}" \
+      --mem="${MEM:-128G}" \
+      -t "${TIME_LIMIT:-48:00:00}" \
       --array="0-$((total - 1))%${max_parallel}" \
       -o "logs/bridge_initial-%A_%a.out" \
       -e "logs/bridge_initial-%A_%a.err" \
@@ -79,8 +86,8 @@ submit_pipeline() {
       -J bridge_initial_summary \
       -p "${PARTITION:-compute}" \
       -N 1 \
-      --cpus-per-task="${SUMMARY_CPUS_PER_TASK:-1}" \
-      --mem="${SUMMARY_MEM:-4G}" \
+      --cpus-per-task="${SUMMARY_CPUS_PER_TASK:-2}" \
+      --mem="${SUMMARY_MEM:-16G}" \
       -t "${SUMMARY_TIME_LIMIT:-01:00:00}" \
       --dependency="afterany:${array_job_id}" \
       -o "logs/bridge_initial_summary-%j.out" \
@@ -114,15 +121,19 @@ setup_runtime() {
 }
 
 select_run() {
+  build_model_specs
   build_run_specs
   local idx total spec
   idx="${SLURM_ARRAY_TASK_ID}"
-  total="${#RUN_SPECS[@]}"
+  total=$((${#MODEL_SPECS[@]} * ${#RUN_SPECS[@]}))
   if [ "${idx}" -ge "${total}" ]; then
     echo "[SKIP] SLURM_ARRAY_TASK_ID=${idx} >= total=${total}"
     exit 0
   fi
-  spec="${RUN_SPECS[$idx]}"
+  model_idx=$((idx / ${#RUN_SPECS[@]}))
+  method_idx=$((idx % ${#RUN_SPECS[@]}))
+  MODEL_CONFIG="${MODEL_SPECS[$model_idx]}"
+  spec="${RUN_SPECS[$method_idx]}"
   IFS=":" read -r METHOD TRAINER_NAME BRIDGE_PRIOR BRIDGE_LAMBDA_G BRIDGE_LAMBDA_B <<< "${spec}"
 }
 
@@ -196,9 +207,9 @@ run_one() {
   RUN_TAG="${RUN_TAG:-initial}"
   TRAIN_OUTPUT_ROOT="${TRAIN_OUTPUT_ROOT:-results/bridge_initial}"
   EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/bridge_initial_eval}"
-  TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-2}"
-  EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE:-8}"
-  GRAD_ACCUM_STEPS="${GRAD_ACCUM_STEPS:-16}"
+  TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-8}"
+  EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE:-32}"
+  GRAD_ACCUM_STEPS="${GRAD_ACCUM_STEPS:-4}"
   NUM_TRAIN_EPOCHS="${NUM_TRAIN_EPOCHS:-10}"
   LEARNING_RATE="${LEARNING_RATE:-1e-5}"
   REFRESH_INTERVAL="${REFRESH_INTERVAL:-20}"
