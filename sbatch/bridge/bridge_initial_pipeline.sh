@@ -14,7 +14,8 @@ set -euo pipefail
 #   sbatch sbatch/bridge/bridge_initial_pipeline.sh
 #
 # The parent job submits a 6-task array for the first-round BRIDGE matrix and a
-# dependent summary job. Override resources or paths through environment vars.
+# dependent summary job. Defaults are intentionally modest so the initial run can
+# fit scarce shared nodes; override resources or paths through environment vars.
 
 build_run_specs() {
   RUN_SPECS=(
@@ -47,7 +48,7 @@ submit_pipeline() {
   local script_path total max_parallel array_job_id summary_job_id
   script_path="$(readlink -f "$0")"
   total="$(total_tasks)"
-  max_parallel="${MAX_PARALLEL:-4}"
+  max_parallel="${MAX_PARALLEL:-1}"
 
   echo "===== BRIDGE INITIAL PIPELINE SUBMIT ====="
   echo "ROOT_DIR=${ROOT_DIR}"
@@ -63,9 +64,9 @@ submit_pipeline() {
       -p "${PARTITION:-compute}" \
       -N 1 \
       --gres="${GRES:-gpu:nvidia_a100_80gb_pcie:1}" \
-      --cpus-per-task="${CPUS_PER_TASK:-8}" \
-      --mem="${MEM:-128G}" \
-      -t "${TIME_LIMIT:-48:00:00}" \
+      --cpus-per-task="${CPUS_PER_TASK:-2}" \
+      --mem="${MEM:-32G}" \
+      -t "${TIME_LIMIT:-12:00:00}" \
       --array="0-$((total - 1))%${max_parallel}" \
       -o "logs/bridge_initial-%A_%a.out" \
       -e "logs/bridge_initial-%A_%a.err" \
@@ -78,8 +79,8 @@ submit_pipeline() {
       -J bridge_initial_summary \
       -p "${PARTITION:-compute}" \
       -N 1 \
-      --cpus-per-task="${SUMMARY_CPUS_PER_TASK:-2}" \
-      --mem="${SUMMARY_MEM:-16G}" \
+      --cpus-per-task="${SUMMARY_CPUS_PER_TASK:-1}" \
+      --mem="${SUMMARY_MEM:-4G}" \
       -t "${SUMMARY_TIME_LIMIT:-01:00:00}" \
       --dependency="afterany:${array_job_id}" \
       -o "logs/bridge_initial_summary-%j.out" \
@@ -195,9 +196,9 @@ run_one() {
   RUN_TAG="${RUN_TAG:-initial}"
   TRAIN_OUTPUT_ROOT="${TRAIN_OUTPUT_ROOT:-results/bridge_initial}"
   EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/bridge_initial_eval}"
-  TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-8}"
-  EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE:-32}"
-  GRAD_ACCUM_STEPS="${GRAD_ACCUM_STEPS:-4}"
+  TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-2}"
+  EVAL_BATCH_SIZE="${EVAL_BATCH_SIZE:-8}"
+  GRAD_ACCUM_STEPS="${GRAD_ACCUM_STEPS:-16}"
   NUM_TRAIN_EPOCHS="${NUM_TRAIN_EPOCHS:-10}"
   LEARNING_RATE="${LEARNING_RATE:-1e-5}"
   REFRESH_INTERVAL="${REFRESH_INTERVAL:-20}"

@@ -8,8 +8,10 @@ Current runnable entry point:
 sbatch sbatch/bridge/bridge_initial_pipeline.sh
 ```
 
-The script submits the first-round single-seed BRIDGE matrix as an array job
-with `MAX_PARALLEL=4` by default, then submits a dependent summary job.
+The script submits the first-round single-seed BRIDGE matrix as an array job,
+then submits a dependent summary job. The default is a low-resource smokeable
+setting: `MAX_PARALLEL=1`, `CPUS_PER_TASK=2`, `MEM=32G`,
+`TRAIN_BATCH_SIZE=2`, `GRAD_ACCUM_STEPS=16`, `EVAL_BATCH_SIZE=8`.
 
 If the array fails, collect compact failure artifacts with:
 
