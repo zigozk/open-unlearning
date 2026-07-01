@@ -176,8 +176,18 @@ run_one() {
   select_run
 
   MODEL_CONFIG="${MODEL_CONFIG:-Llama-3.2-1B-Instruct}"
-  MODEL_PATH="${MODEL_PATH:-open-unlearning/tofu_${MODEL_CONFIG}_full}"
+  LOCAL_MODEL_PATH="${LOCAL_MODEL_PATH:-/home/zkzhang/models/tofu_${MODEL_CONFIG}_full}"
+  if [ -z "${MODEL_PATH:-}" ]; then
+    if [ -d "${LOCAL_MODEL_PATH}" ]; then
+      MODEL_PATH="${LOCAL_MODEL_PATH}"
+    else
+      MODEL_PATH="open-unlearning/tofu_${MODEL_CONFIG}_full"
+    fi
+  fi
   TOKENIZER_PATH="${TOKENIZER_PATH:-}"
+  if [ -z "${TOKENIZER_PATH}" ] && [ -d "${MODEL_PATH}" ]; then
+    TOKENIZER_PATH="${MODEL_PATH}"
+  fi
   FORGET_SPLIT="${FORGET_SPLIT:-forget10}"
   HOLDOUT_SPLIT="${HOLDOUT_SPLIT:-holdout10}"
   RETAIN_SPLIT="${RETAIN_SPLIT:-retain90}"
@@ -219,6 +229,7 @@ run_one() {
   echo "BRIDGE_LAMBDA_B=${BRIDGE_LAMBDA_B}"
   echo "MODEL_CONFIG=${MODEL_CONFIG}"
   echo "MODEL_PATH=${MODEL_PATH}"
+  echo "TOKENIZER_PATH=${TOKENIZER_PATH}"
   echo "FORGET_SPLIT=${FORGET_SPLIT}"
   echo "RETAIN_SPLIT=${RETAIN_SPLIT}"
   echo "TRAIN_DIR=${TRAIN_DIR}"

@@ -1,8 +1,9 @@
 # @package _global_
 
 defaults:
-  - default
+  - /experiment/unlearn/tofu/default
   - override /trainer: BRIDGE_NPO
+  - _self_
 
 collator:
   DataCollatorForSupervisedDataset:
