@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
@@ -40,7 +41,14 @@ class RetentionPrioritizedMixin(ABC):
     ) -> torch.Tensor:
         cfg = build_retention_synthesis_config(self.method_args)
         if cfg.gradient_synthesis == "none":
-            return super().training_step(model, inputs, num_items_in_batch)
+            parent_training_step = super().training_step
+            if "num_items_in_batch" in inspect.signature(parent_training_step).parameters:
+                return parent_training_step(
+                    model,
+                    inputs,
+                    num_items_in_batch=num_items_in_batch,
+                )
+            return parent_training_step(model, inputs)
 
         model.train()
 
