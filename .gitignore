@@ -4,6 +4,10 @@ submit.py
 logs/
 saves*/
 results/
+!results/
+results/*
+!results/bridge_reports/
+!results/bridge_reports/**
 sanity_check_outputs/
 legacy_thesis_work/server_leftovers_*/
 unity/
