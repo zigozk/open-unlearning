@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 from torch import nn
@@ -15,10 +15,6 @@ from transformers.utils import (
     is_sagemaker_mp_enabled,
 )
 
-from accelerate.utils import (
-    is_deepspeed_available,
-)
-
 if is_sagemaker_mp_enabled():
     from smdistributed.modelparallel import __version__ as SMP_VERSION
 
@@ -31,14 +27,20 @@ if is_sagemaker_mp_enabled():
 else:
     IS_SAGEMAKER_MP_POST_1_10 = False
 
-if is_deepspeed_available():
-    import deepspeed
-
 
 class UnlearnTrainer(FinetuneTrainer):
     # Adapted from Huggingface DPO Trainer: https://github.com/huggingface/accelerate/blob/739b135f8367becb67ffaada12fe76e3aa60fefd/src/accelerate/accelerator.py#L1473
     def _prepare_deepspeed(self, model):
         # Adapted from accelerate: https://github.com/huggingface/accelerate/blob/739b135f8367becb67ffaada12fe76e3aa60fefd/src/accelerate/accelerator.py#L1473
+        try:
+            import deepspeed
+        except Exception as exc:
+            raise RuntimeError(
+                "DeepSpeed is required only when preparing a DeepSpeed reference "
+                "model, but importing it failed. If this job uses DeepSpeed, make "
+                "sure CUDA_HOME points to a CUDA toolkit path on the compute node."
+            ) from exc
+
         deepspeed_plugin = self.accelerator.state.deepspeed_plugin
         config_kwargs = deepcopy(deepspeed_plugin.deepspeed_config)
 
@@ -78,10 +80,10 @@ class UnlearnTrainer(FinetuneTrainer):
     def prediction_step(
         self,
         model: nn.Module,
-        inputs: dict[str, Union[torch.Tensor, Any]],
+        inputs: Dict[str, Union[torch.Tensor, Any]],
         prediction_loss_only: bool,
-        ignore_keys: Optional[list[str]] = None,
-    ) -> tuple[Optional[torch.Tensor], Optional[torch.Tensor], Optional[torch.Tensor]]:
+        ignore_keys: Optional[List[str]] = None,
+    ) -> Tuple[Optional[torch.Tensor], Optional[torch.Tensor], Optional[torch.Tensor]]:
         """
         The only change to this function is calling the Trainer's compute_loss, as it's often overridden by unlearning methods, and we want to maintain the Trainer's evaluation setup.
         """
@@ -104,9 +106,7 @@ class UnlearnTrainer(FinetuneTrainer):
         if ignore_keys is None:
             if hasattr(self.model, "config"):
                 ignore_keys = getattr(
-                    self.model.config,
-                    "keys_to_ignore_at_inference",
-                    ["past_key_values"],
+                    self.model.config, "keys_to_ignore_at_inference", []
                 )
             else:
                 ignore_keys = []
@@ -148,11 +148,11 @@ class UnlearnTrainer(FinetuneTrainer):
             else:
                 if has_labels or loss_without_labels:
                     with self.compute_loss_context_manager():
-                        ### Call compute_loss of super class since overridden compute_loss is not applicable to eval_dataset.
+                        ### Call compute_loss of super class since overridden compute_loss is not be applicable to eval_dataset.
                         loss, outputs = super().compute_loss(
                             model, inputs, return_outputs=True
                         )
-                    loss = loss.detach().mean()
+                    loss = loss.mean().detach()
 
                     if isinstance(outputs, dict):
                         logits = tuple(

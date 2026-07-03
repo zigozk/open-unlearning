@@ -2,6 +2,7 @@
 submit.py
 !src/data/__init__.py
 logs/
+results/
 unity/
 src/data/test.py
 src/data/__pycache__
@@ -17,6 +18,8 @@ data/
 !*/data/ 
 evals/
 !*/evals/  
+tmp/
+GPT/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
