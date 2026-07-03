@@ -45,18 +45,41 @@ python experiments/bridge/summarize_bridge_failures.py \
   --logs-root logs \
   --train-root results/bridge_initial \
   --eval-root results/bridge_initial_eval \
-  --output-csv results/bridge_reports/bridge_failure_summary.csv \
-  --output-md results/bridge_reports/bridge_failure_report.md
+  --output-csv results/bridge_reports/debug/bridge_failure_summary.csv \
+  --output-md results/bridge_reports/debug/bridge_failure_report.md
 ```
 
-To summarize partial or completed BRIDGE initial results at any time:
+To generate retain-reference logs for official `forget_quality`:
+
+```bash
+sbatch sbatch/bridge/bridge_generate_retain_reference.sh
+```
+
+This defaults to `Llama-3.2-1B-Instruct` only and writes
+`results/bridge_retain_logs/tofu_Llama_3_2_1B_Instruct_retain90_reference/TOFU_EVAL.json`.
+When the Llama-2 7B retain90 model is ready, include it with:
+
+```bash
+sbatch --export=ALL,MODEL_CONFIGS="Llama-3.2-1B-Instruct Llama-2-7b-chat-hf" sbatch/bridge/bridge_generate_retain_reference.sh
+```
+
+To rerun eval only for existing BRIDGE checkpoints with retain logs:
+
+```bash
+sbatch sbatch/bridge/bridge_rerun_eval_with_retain.sh
+```
+
+This defaults to the current valid 1B tag, `RUN_TAG=postfix_1b_v2`, and writes
+the normal tracked report paths under `results/bridge_reports/bridge_initial_*`.
+
+To summarize BRIDGE initial results at any time:
 
 ```bash
 sbatch sbatch/bridge/bridge_summarize_initial.sh
 ```
 
-This writes `results/bridge_reports/bridge_initial_partial_summary.csv` and
-`results/bridge_reports/bridge_initial_partial_report.md` by default. Override
+This writes `results/bridge_reports/bridge_initial_summary.csv` and
+`results/bridge_reports/bridge_initial_report.md` by default. Override
 `REPORT_PREFIX` if you want another output name.
 
 ## Suggested Future Script Order
@@ -88,7 +111,7 @@ Future scripts should:
   `TOKENIZER_PATH`, `FORGET_SPLIT`, `RETAIN_SPLIT`, `SEED`,
   `TRAIN_BATCH_SIZE`, `REFRESH_INTERVAL`, `MAX_PARALLEL`
 - Heavy outputs: `results/bridge_initial/` and `results/bridge_initial_eval/`
+- Retain reference logs: `results/bridge_retain_logs/`
 - Lightweight reports: `results/bridge_reports/bridge_initial_summary.csv`
   and `results/bridge_reports/bridge_initial_report.md`
-- Failure reports: `results/bridge_reports/bridge_failure_summary.csv`
-  and `results/bridge_reports/bridge_failure_report.md`
+- Debug/failure reports: `results/bridge_reports/debug/`

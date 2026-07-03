@@ -1,7 +1,7 @@
 # BRIDGE Failure Summary
 
 - Rows: 6
-- CSV: `results/bridge_reports/bridge_failure_summary.csv`
+- CSV: `results/bridge_reports/debug/bridge_failure_summary.csv`
 
 ## Status Counts
 

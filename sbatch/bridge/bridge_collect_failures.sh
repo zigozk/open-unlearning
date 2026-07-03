@@ -20,7 +20,8 @@ conda activate "${CONDA_ENV:-unlearning}"
 LOGS_ROOT="${LOGS_ROOT:-logs}"
 TRAIN_OUTPUT_ROOT="${TRAIN_OUTPUT_ROOT:-results/bridge_initial}"
 EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/bridge_initial_eval}"
-REPORT_ROOT="${REPORT_ROOT:-results/bridge_reports}"
+REPORT_ROOT="${REPORT_ROOT:-results/bridge_reports/debug}"
+mkdir -p "${REPORT_ROOT}"
 
 python experiments/bridge/summarize_bridge_failures.py \
   --logs-root "${LOGS_ROOT}" \

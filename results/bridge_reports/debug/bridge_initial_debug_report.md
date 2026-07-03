@@ -1,7 +1,7 @@
 # BRIDGE Detailed Debug Report
 
 - Runs found: 8
-- CSV: `results/bridge_reports/bridge_initial_debug_summary.csv`
+- CSV: `results/bridge_reports/debug/bridge_initial_debug_summary.csv`
 
 ## Status Counts
 

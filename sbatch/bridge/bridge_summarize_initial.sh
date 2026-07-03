@@ -20,7 +20,7 @@ conda activate "${CONDA_ENV:-unlearning}"
 TRAIN_OUTPUT_ROOT="${TRAIN_OUTPUT_ROOT:-results/bridge_initial}"
 EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/bridge_initial_eval}"
 REPORT_ROOT="${REPORT_ROOT:-results/bridge_reports}"
-REPORT_PREFIX="${REPORT_PREFIX:-bridge_initial_partial}"
+REPORT_PREFIX="${REPORT_PREFIX:-bridge_initial}"
 
 CSV_PATH="${REPORT_ROOT}/${REPORT_PREFIX}_summary.csv"
 MD_PATH="${REPORT_ROOT}/${REPORT_PREFIX}_report.md"
