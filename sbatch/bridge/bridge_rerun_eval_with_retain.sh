@@ -2,11 +2,10 @@
 #SBATCH -J bridge_eval_fq
 #SBATCH -p compute
 #SBATCH -N 1
-#SBATCH --nodelist=gpu01
-#SBATCH --gres=gpu:nvidia_h100_80gb_hbm3:1
+#SBATCH --gres=gpu:a100-sxm4-80gb:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
-#SBATCH -t 12:00:00
+#SBATCH -t 4:00:00
 #SBATCH -o logs/%x-%j.out
 #SBATCH -e logs/%x-%j.err
 
