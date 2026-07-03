@@ -72,6 +72,19 @@ sbatch sbatch/bridge/bridge_rerun_eval_with_retain.sh
 This defaults to the current valid 1B tag, `RUN_TAG=postfix_1b_v2`, and writes
 the normal tracked report paths under `results/bridge_reports/bridge_initial_*`.
 
+To eval an official OpenUnlearning unlearned model as a sanity check:
+
+```bash
+sbatch sbatch/bridge/bridge_eval_official_unlearned.sh
+```
+
+The default expects the official 1B forget10 NPO model at
+`/home/zkzhang/models/unlearn_tofu_Llama-3.2-1B-Instruct_forget10_NPO_lr2e-05_beta0.5_alpha1_epoch10`
+and the retain90 reference log at
+`results/bridge_retain_logs/tofu_Llama_3_2_1B_Instruct_retain90_reference/TOFU_EVAL.json`.
+Override paths with `MODEL_PATH`, `TOKENIZER_PATH`, `RETAIN_LOGS_PATH`, and
+`OUT_DIR`.
+
 To summarize BRIDGE initial results at any time:
 
 ```bash

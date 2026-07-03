@@ -26,6 +26,7 @@ data/
 !*/data/ 
 evals/
 !*/evals/  
+tmp/
 GPT/
 # Byte-compiled / optimized / DLL files
 __pycache__/
