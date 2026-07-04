@@ -85,6 +85,20 @@ and the retain90 reference log at
 Override paths with `MODEL_PATH`, `TOKENIZER_PATH`, `RETAIN_LOGS_PATH`, and
 `OUT_DIR`.
 
+To run a Llama-2-7B-chat NPO baseline split sweep with train+eval for
+`forget01/05/10`:
+
+```bash
+sbatch sbatch/bridge/bridge_baseline_npo_llama2_splits.sh
+```
+
+This submits an array job for the three splits and a dependent summary job.
+Defaults use `/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full`, official
+retain logs under `saves/eval/`, and NPO-style `gamma/beta` defaults of
+`0.1375/2.5` for forget01/05 and `0.125/4.5` for forget10. Override
+`FORGET01_NPO_GAMMA` and `FORGET01_NPO_BETA` if you have a different official
+forget01 pair.
+
 To summarize BRIDGE initial results at any time:
 
 ```bash
