@@ -52,7 +52,7 @@ setup_runtime() {
   mkdir -p logs
 
   source "${CONDA_SH:-${HOME}/miniconda3/etc/profile.d/conda.sh}"
-  conda activate "${CONDA_ENV:-unlearning}"
+  conda activate "${CONDA_ENV:-unlearning-new}"
 
   export PYTHONUNBUFFERED=1
   export TOKENIZERS_PARALLELISM=false
@@ -80,19 +80,19 @@ submit_pipeline() {
   echo "MODEL_CONFIG=${MODEL_CONFIG:-Llama-2-7b-chat-hf}"
   echo "MODEL_PATH=${MODEL_PATH:-/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full}"
   echo "ARRAY=forget01,forget05,forget10"
-  echo "GRES=${GRES:-gpu:nvidia_a800_80gb_pcie:1}"
+  echo "GRES=${GRES:-gpu:nvidia_h100_80gb_hbm3:1}"
   echo "MEM=${MEM:-96G}"
-  echo "TIME_LIMIT=${TIME_LIMIT:-48:00:00}"
+  echo "TIME_LIMIT=${TIME_LIMIT:-3:00:00}"
 
   array_job_id="$(
     sbatch --parsable \
       -J "${ARRAY_JOB_NAME:-npo_l2_splits}" \
       -p "${PARTITION:-compute}" \
       -N 1 \
-      --gres="${GRES:-gpu:nvidia_a800_80gb_pcie:1}" \
+      --gres="${GRES:-gpu:nvidia_h100_80gb_hbm3:1}" \
       --cpus-per-task="${CPUS_PER_TASK:-8}" \
       --mem="${MEM:-96G}" \
-      -t "${TIME_LIMIT:-48:00:00}" \
+      -t "${TIME_LIMIT:-3:00:00}" \
       --array="0-2%${MAX_PARALLEL:-1}" \
       -o "logs/npo_l2_splits-%A_%a.out" \
       -e "logs/npo_l2_splits-%A_%a.err" \

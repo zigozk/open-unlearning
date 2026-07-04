@@ -2,9 +2,9 @@
 #SBATCH -J bridge_official_eval
 #SBATCH -p compute
 #SBATCH -N 1
-#SBATCH --gres=gpu:a100-sxm4-80gb:1
+#SBATCH --gres=gpu:nvidia_a800_80gb_pcie:1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=128G
+#SBATCH --mem=50G
 #SBATCH -t 4:00:00
 #SBATCH -o logs/%x-%j.out
 #SBATCH -e logs/%x-%j.err
