@@ -15,7 +15,7 @@ cd "${ROOT_DIR}"
 mkdir -p logs results/bridge_reports
 
 source "${CONDA_SH:-${HOME}/miniconda3/etc/profile.d/conda.sh}"
-conda activate "${CONDA_ENV:-unlearning}"
+conda activate "${CONDA_ENV:-unlearning-new}"
 
 TRAIN_OUTPUT_ROOT="${TRAIN_OUTPUT_ROOT:-results/bridge_initial}"
 EVAL_OUTPUT_ROOT="${EVAL_OUTPUT_ROOT:-results/bridge_initial_eval}"

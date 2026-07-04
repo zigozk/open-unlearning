@@ -123,6 +123,22 @@ run_one() {
   setup_runtime
   split_for_index "${SLURM_ARRAY_TASK_ID:-0}"
 
+  echo "===== RUNTIME PREFLIGHT ====="
+  python - <<'PY'
+import inspect
+import transformers
+from transformers import Trainer
+
+has_processing_class = "processing_class" in inspect.signature(Trainer.__init__).parameters
+print(f"transformers={transformers.__version__}")
+print(f"Trainer has processing_class={has_processing_class}")
+if not has_processing_class:
+    raise SystemExit(
+        "This rerun branch passes processing_class to Trainer. "
+        "Install this repo's requirements in the active CONDA_ENV."
+    )
+PY
+
   MODEL_CONFIG="${MODEL_CONFIG:-Llama-2-7b-chat-hf}"
   MODEL_PATH="${MODEL_PATH:-/home/zkzhang/models/tofu_${MODEL_CONFIG}_full}"
   TOKENIZER_PATH="${TOKENIZER_PATH:-${MODEL_PATH}}"

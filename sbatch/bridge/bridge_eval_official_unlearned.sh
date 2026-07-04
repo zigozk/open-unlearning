@@ -21,7 +21,7 @@ setup_runtime() {
   mkdir -p logs results/bridge_official_eval
 
   source "${CONDA_SH:-${HOME}/miniconda3/etc/profile.d/conda.sh}"
-  conda activate "${CONDA_ENV:-unlearning}"
+  conda activate "${CONDA_ENV:-unlearning-new}"
 
   export PYTHONUNBUFFERED=1
   export TOKENIZERS_PARALLELISM=false
