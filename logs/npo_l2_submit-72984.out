@@ -1,0 +1,10 @@
+===== LLAMA2 NPO BASELINE SUBMIT =====
+ROOT_DIR=/home/zkzhang/unlearning/open-unlearning-rerun
+MODEL_CONFIG=Llama-2-7b-chat-hf
+MODEL_PATH=/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full
+ARRAY=forget01,forget05,forget10
+GRES=gpu:nvidia_h100_80gb_hbm3:1
+MEM=96G
+TIME_LIMIT=3:00:00
+Array job:   72987
+Summary job: 72988

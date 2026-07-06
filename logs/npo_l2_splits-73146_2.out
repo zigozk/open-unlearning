@@ -1,0 +1,3 @@
+===== RUNTIME PREFLIGHT =====
+transformers=4.45.1
+Trainer has processing_class=False

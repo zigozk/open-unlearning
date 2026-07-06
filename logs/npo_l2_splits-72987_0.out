@@ -1,0 +1,46 @@
+===== LLAMA2 NPO BASELINE TASK =====
+HOSTNAME=gpu01
+JOB_ID=73016
+ARRAY_TASK_ID=0
+MODEL_CONFIG=Llama-2-7b-chat-hf
+MODEL_PATH=/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full
+TOKENIZER_PATH=/home/zkzhang/models/tofu_Llama-2-7b-chat-hf_full
+FORGET_SPLIT=forget01
+HOLDOUT_SPLIT=holdout01
+RETAIN_SPLIT=retain99
+NPO_GAMMA=0.1375
+NPO_BETA=2.5
+LEARNING_RATE=1e-5
+NUM_TRAIN_EPOCHS=10
+TRAIN_BATCH_SIZE=1
+GRAD_ACCUM_STEPS=32
+TRAIN_DIR=results/npo_l2_official_params/tofu_Llama-2-7b-chat-hf_forget01_NPO_lr1e-5_beta2p5_gamma0p1375_epoch10_official_params_seed0
+EVAL_DIR=results/npo_l2_official_params_eval/tofu_Llama-2-7b-chat-hf_forget01_NPO_lr1e-5_beta2p5_gamma0p1375_epoch10_official_params_seed0_tofu_eval
+RETAIN_LOGS_PATH=saves/eval/tofu_Llama-2-7b-chat-hf_retain99/TOFU_EVAL.json
+Sat Jul  4 06:22:57 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 80GB HBM3          On  |   00000000:D8:00.0 Off |                    0 |
+| N/A   36C    P0            112W /  700W |       1MiB /  81559MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+===== TRAIN =====
+[2026-07-04 06:24:12,697] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2026-07-04 06:24:40,964[0m][[34mdatasets.load[0m][[33mWARNING[0m] - Using the latest cached version of the dataset since locuslab/TOFU couldn't be found on the Hugging Face Hub (offline mode is enabled).[0m
+[[36m2026-07-04 06:24:40,977[0m][[34mdatasets.packaged_modules.cache.cache[0m][[33mWARNING[0m] - Found the latest cached dataset configuration 'forget01' at /home/zkzhang/unlearning/HF_CACHE/datasets/locuslab___tofu/forget01/0.0.0/324592d84ae4f482ac7249b9285c2ecdb53e3a68 (last modified on Mon Jan 19 13:14:20 2026).[0m
+[[36m2026-07-04 06:24:41,119[0m][[34mdatasets.load[0m][[33mWARNING[0m] - Using the latest cached version of the dataset since locuslab/TOFU couldn't be found on the Hugging Face Hub (offline mode is enabled).[0m
+[[36m2026-07-04 06:24:41,127[0m][[34mdatasets.packaged_modules.cache.cache[0m][[33mWARNING[0m] - Found the latest cached dataset configuration 'retain99' at /home/zkzhang/unlearning/HF_CACHE/datasets/locuslab___tofu/retain99/0.0.0/324592d84ae4f482ac7249b9285c2ecdb53e3a68 (last modified on Mon Jan 19 13:15:17 2026).[0m
+[[36m2026-07-04 06:24:41,165[0m][[34mevaluator[0m][[32mINFO[0m] - Evaluations stored in the experiment directory: results/npo_l2_official_params/tofu_Llama-2-7b-chat-hf_forget01_NPO_lr1e-5_beta2p5_gamma0p1375_epoch10_official_params_seed0[0m
