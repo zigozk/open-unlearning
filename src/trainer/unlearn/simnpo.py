@@ -13,7 +13,7 @@ class SimNPO(GradDiff):
     def compute_loss(
         self, model, inputs, return_outputs=False, num_items_in_batch=None
     ):
-        forget_inputs = inputs["forget"]
+        forget_inputs = self._model_inputs(inputs["forget"])
 
         forget_labels = forget_inputs["labels"]
         loss_mask = forget_labels != -100
@@ -22,12 +22,8 @@ class SimNPO(GradDiff):
         forget_loss = -F.logsigmoid(self.beta * forget_loss).mean() * 2 / self.beta
 
         retain_inputs = inputs["retain"]
-        retain_inputs = {
-            "input_ids": retain_inputs["input_ids"],
-            "attention_mask": retain_inputs["attention_mask"],
-            "labels": retain_inputs["labels"],
-        }
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
 
-        loss = self.gamma * forget_loss + self.alpha * retain_loss
+        loss = self.gamma * forget_loss + self.alpha * retain_loss + bridge_loss
         return (loss, forget_outputs) if return_outputs else loss

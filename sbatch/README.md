@@ -209,7 +209,8 @@ sbatch \
 ### Change Trainer
 
 Supported TOFU trainers from the repo include `GradAscent`, `GradDiff`, `NPO`,
-`DPO`, and `RMU`.
+`DPO`, and `RMU`. Local BRIDGE trainer configs include
+`NPO_BRIDGE_GlobalKL`, `NPO_BRIDGE_UniformDRO`, and `NPO_BRIDGE_HistoryDRO`.
 
 ```bash
 sbatch \
@@ -223,6 +224,68 @@ sbatch \
 
 For `DPO`, the script automatically uses `experiment=unlearn/tofu/idk.yaml`.
 For other trainers, it uses `experiment=unlearn/tofu/default.yaml`.
+
+### BRIDGE Initial Experiments
+
+The initial BRIDGE implementation supports:
+
+```text
+Global KL: trainer=NPO_BRIDGE_GlobalKL
+Uniform-DRO: trainer=NPO_BRIDGE_UniformDRO
+History-DRO: trainer=NPO_BRIDGE_HistoryDRO
+```
+
+Run the first two sanity checks on `Llama-3.2-1B-Instruct / forget01 / NPO`:
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_GlobalKL,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_GlobalKL_lg0p1 \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_UniformDRO,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_UniformDRO_lg0p1_lb0p3 \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+History-DRO needs retain sample ids, so use the index collator:
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_HistoryDRO,COLLATOR=DataCollatorForSupervisedDatasetwithIndex,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_HistoryDRO_lg0p1_lb0p3 \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+Override BRIDGE weights without creating a new config:
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_UniformDRO,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_UniformDRO_lg0p03_lb0p1,EXTRA_TRAIN_ARGS='trainer.method_args.bridge_lambda_g=0.03 trainer.method_args.bridge_lambda_b=0.1' \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+After each job finishes, refresh the final-only summary:
+
+```bash
+python sbatch/summarize_unlearn_results.py
+```
 
 ### Override Hyperparameters
 

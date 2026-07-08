@@ -12,8 +12,8 @@ class DPO(GradDiff):
     def compute_loss(
         self, model, inputs, return_outputs=False, num_items_in_batch=None
     ):
-        forget_inputs = inputs["forget"]["original"]
-        alternate_inputs = inputs["forget"]["alternate"]
+        forget_inputs = self._model_inputs(inputs["forget"]["original"])
+        alternate_inputs = self._model_inputs(inputs["forget"]["alternate"])
 
         forget_loss, forget_outputs = compute_dpo_loss(
             model=model,
@@ -24,12 +24,8 @@ class DPO(GradDiff):
         )
 
         retain_inputs = inputs["retain"]
-        retain_inputs = {
-            "input_ids": retain_inputs["input_ids"],
-            "attention_mask": retain_inputs["attention_mask"],
-            "labels": retain_inputs["labels"],
-        }
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
 
-        loss = self.gamma * forget_loss + self.alpha * retain_loss
+        loss = self.gamma * forget_loss + self.alpha * retain_loss + bridge_loss
         return (loss, forget_outputs) if return_outputs else loss

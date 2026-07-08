@@ -90,6 +90,11 @@ class CEU(UnlearnTrainer):
         self, model, inputs, return_outputs=False, num_items_in_batch=None
     ):
         forget_inputs = inputs["forget"]
+        forget_inputs = {
+            "input_ids": forget_inputs["input_ids"],
+            "attention_mask": forget_inputs["attention_mask"],
+            "labels": forget_inputs["labels"],
+        }
         loss, outputs = compute_batch_ceu(
             model,
             forget_inputs,

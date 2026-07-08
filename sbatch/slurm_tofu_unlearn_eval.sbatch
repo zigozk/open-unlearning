@@ -15,6 +15,7 @@ HF_DATASETS_OFFLINE=${HF_DATASETS_OFFLINE:-1}
 
 MODEL=${MODEL:-Llama-3.2-1B-Instruct}
 TRAINER=${TRAINER:-NPO}
+COLLATOR=${COLLATOR:-}
 EXPERIMENT=${EXPERIMENT:-}
 FORGET_SPLIT=${FORGET_SPLIT:-forget10}
 HOLDOUT_SPLIT=${HOLDOUT_SPLIT:-}
@@ -101,6 +102,7 @@ echo "Node: ${SLURMD_NODENAME:-unknown}"
 echo "Visible GPUs: ${NUM_GPUS}"
 echo "Model: ${MODEL}"
 echo "Trainer: ${TRAINER}"
+echo "Collator: ${COLLATOR:-default}"
 echo "Experiment: ${EXPERIMENT}"
 echo "HF datasets cache: ${HF_DATASETS_CACHE}"
 echo "HF datasets offline: ${HF_DATASETS_OFFLINE}"
@@ -138,6 +140,9 @@ train_cmd=(
   trainer.args.ddp_find_unused_parameters=true
 )
 
+if [[ -n "${COLLATOR}" ]]; then
+  train_cmd+=(collator="${COLLATOR}")
+fi
 if [[ -n "${LEARNING_RATE}" ]]; then
   train_cmd+=(trainer.args.learning_rate="${LEARNING_RATE}")
 fi

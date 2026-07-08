@@ -31,6 +31,34 @@ def compute_kl_divergence(model, target_model, inputs):
     ), outputs
 
 
+def compute_per_sample_kl_divergence(model, target_model, inputs):
+    """Compute masked per-sample KL(ref || model) over supervised target tokens."""
+    with torch.no_grad():
+        ref_outputs = target_model(**inputs)
+
+    outputs = model(**inputs)
+    labels = inputs["labels"]
+
+    shifted_labels = labels[..., 1:].contiguous()
+    valid_mask = shifted_labels != -100
+    if "attention_mask" in inputs:
+        valid_mask = valid_mask & inputs["attention_mask"][..., 1:].bool()
+
+    ref_log_probs = F.log_softmax(ref_outputs.logits[..., :-1, :].float(), dim=-1)
+    current_log_probs = F.log_softmax(outputs.logits[..., :-1, :].float(), dim=-1)
+    token_kl = F.kl_div(
+        current_log_probs,
+        ref_log_probs,
+        reduction="none",
+        log_target=True,
+    ).sum(dim=-1)
+
+    token_kl = token_kl * valid_mask.to(token_kl.dtype)
+    token_counts = valid_mask.sum(dim=-1).clamp_min(1).to(token_kl.dtype)
+    per_sample_kl = token_kl.sum(dim=-1) / token_counts
+    return per_sample_kl, outputs
+
+
 def compute_batch_nll(model, inputs):
     # get the sum loss for each sequence in a batch
     # NOTE: not same as model(**inputs).loss but has sum loss for each seq in a batch

@@ -125,14 +125,10 @@ class PDU(GradDiff):
         forget_loss = (forget_loss * mask).sum() / mask.sum()
 
         retain_inputs = inputs["retain"]
-        retain_inputs = {
-            "input_ids": retain_inputs["input_ids"],
-            "attention_mask": retain_inputs["attention_mask"],
-            "labels": retain_inputs["labels"],
-        }
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
 
-        loss = self.final_loss_value([forget_loss, retain_loss])
+        loss = self.final_loss_value([forget_loss, retain_loss]) + bridge_loss
 
         return (loss, forget_outputs) if return_outputs else loss
 
