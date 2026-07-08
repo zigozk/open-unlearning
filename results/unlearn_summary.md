@@ -1,0 +1,15 @@
+| model | forget_split | trainer | model_utility | forget_quality | forget_truth_ratio | forget_Q_A_Prob | forget_Q_A_ROUGE | extraction_strength | privleak |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Llama-2-7b-chat-hf | forget01 | NPO | 0.621929 | 0.0286031 | 0.550826 | 0.45896 | 0.52178 | 0.223764 | -83.6272 |
+| Llama-2-7b-chat-hf | forget10 | GradAscent | 0 | 1.064e-239 | 4.788e-32 | 0 | 0.00393681 | 0.0268958 | 12.3954 |
+| Llama-2-7b-chat-hf | forget10 | GradDiff | 0.547503 | 4.311e-223 | 0.00126225 | 1.974e-27 | 0.00381178 | 0.0268958 | 63.042 |
+| Llama-2-7b-chat-hf | forget10 | NPO | 0.529228 | 0.367086 | 0.722666 | 0.13043 | 0.261328 | 0.0664876 | 29.1625 |
+| Llama-2-7b-chat-hf | forget10 | SimNPO | 0.600714 | 1.492e-16 | 0.573427 | 0.508569 | 0.493866 | 0.202643 | -92.7476 |
+| Llama-3.2-1B-Instruct | forget01 | GradAscent | 0 | 1.860e-23 | 0.00089739 | 7.099e-15 | 0 | 0.0290594 | 33.353 |
+| Llama-3.2-1B-Instruct | forget01 | GradDiff | 0.366475 | 0.00676073 | 0.529721 | 0.000146983 | 0.154751 | 0.0329735 | 84.6517 |
+| Llama-3.2-1B-Instruct | forget01 | NPO | 0.538538 | 0.5786 | 0.64127 | 0.0776642 | 0.290507 | 0.0614375 | 53.4829 |
+| Llama-3.2-1B-Instruct | forget01 | RMU | 0.564272 | 0.00676073 | 0.717966 | 0.00265183 | 0.123443 | 0.0290594 | 87.4852 |
+| Llama-3.2-1B-Instruct | forget01 | SimNPO | 0.584994 | 0.0286031 | 0.50625 | 0.586963 | 0.462336 | 0.229959 | -93.6246 |
+| Llama-3.2-1B-Instruct | forget05 | NPO | 0.489999 | 0.545271 | 0.672262 | 0.0840144 | 0.245032 | 0.0653072 | 30.603 |
+| Llama-3.2-1B-Instruct | forget10 | GradAscent | 0 | 1.064e-239 | 1.355e-28 | 1.148e-39 | 0 | 0.0325089 | 25.7992 |
+| Llama-3.2-1B-Instruct | forget10 | NPO | 0.575931 | 0.00490793 | 0.6101 | 0.0815581 | 0.265968 | 0.0785585 | 13.0737 |
