@@ -59,6 +59,26 @@ def compute_per_sample_kl_divergence(model, target_model, inputs):
     return per_sample_kl, outputs
 
 
+def compute_per_sample_nll(model, inputs):
+    """Compute masked per-sample next-token NLL over supervised target tokens."""
+    outputs = model(**inputs)
+    logits = outputs.logits
+    labels = inputs["labels"]
+
+    shifted_labels = labels[..., 1:].contiguous()
+    shifted_logits = logits[..., :-1, :].contiguous()
+    valid_mask = shifted_labels != -100
+    if "attention_mask" in inputs:
+        valid_mask = valid_mask & inputs["attention_mask"][..., 1:].bool()
+
+    loss_function = nn.CrossEntropyLoss(ignore_index=-100, reduction="none")
+    token_loss = loss_function(shifted_logits.transpose(-1, -2), shifted_labels)
+    token_loss = token_loss * valid_mask.to(token_loss.dtype)
+    token_counts = valid_mask.sum(dim=-1).clamp_min(1).to(token_loss.dtype)
+    per_sample_nll = token_loss.sum(dim=-1) / token_counts
+    return per_sample_nll, outputs
+
+
 def compute_batch_nll(model, inputs):
     # get the sum loss for each sequence in a batch
     # NOTE: not same as model(**inputs).loss but has sum loss for each seq in a batch

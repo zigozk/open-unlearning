@@ -1,10 +1,15 @@
 import copy
 import logging
 
-import torch
 import torch.nn.functional as F
 
-from trainer.utils import compute_kl_divergence, compute_per_sample_kl_divergence
+import torch
+
+from trainer.utils import (
+    compute_kl_divergence,
+    compute_per_sample_kl_divergence,
+    compute_per_sample_nll,
+)
 from trainer.unlearn.base import UnlearnTrainer
 
 logger = logging.getLogger(__name__)
@@ -22,6 +27,7 @@ class GradDiff(UnlearnTrainer):
         bridge_tau=1.0,
         bridge_tau_p=1.0,
         bridge_history_beta=0.9,
+        bridge_virtual_step_size=None,
         bridge_log_every=0,
         *args,
         **kwargs,
@@ -36,22 +42,24 @@ class GradDiff(UnlearnTrainer):
         self.bridge_tau = float(bridge_tau)
         self.bridge_tau_p = float(bridge_tau_p)
         self.bridge_history_beta = float(bridge_history_beta)
+        self.bridge_virtual_step_size = (
+            None
+            if bridge_virtual_step_size is None
+            else float(bridge_virtual_step_size)
+        )
         self.bridge_log_every = int(bridge_log_every)
         self.bridge_enabled = (
             self.bridge_lambda_g != 0.0 or self.bridge_lambda_b != 0.0
         )
         self._bridge_last_logged_step = None
         self._bridge_missing_index_warned = False
+        self._bridge_missing_update_warned = False
+        self._bridge_missing_grad_warned = False
         self._bridge_last_drift = {}
         self._bridge_history_score = {}
         self.ref_model = None
         if retain_loss_type == "KL" or self.bridge_enabled:
             self.ref_model = self._prepare_ref_model(self.model)
-        if self.bridge_enabled and self.bridge_prior in {"gs", "kl_pi", "kl-pi"}:
-            raise NotImplementedError(
-                f"bridge_prior={self.bridge_prior} is reserved for the next BRIDGE phase; "
-                "the initial implementation supports none, uniform, and history."
-            )
 
     def _prepare_ref_model(self, model):
         ref_model = copy.deepcopy(model).to(self.accelerator.device)
@@ -120,7 +128,91 @@ class GradDiff(UnlearnTrainer):
         tau_p = max(self.bridge_tau_p, 1e-6)
         return F.softmax(scores / tau_p, dim=0)
 
-    def _bridge_prior_distribution(self, retain_inputs, per_sample_kl):
+    def _bridge_trainable_params(self, model):
+        return [param for param in model.parameters() if param.requires_grad]
+
+    def _bridge_step_size(self):
+        if self.bridge_virtual_step_size is not None:
+            return self.bridge_virtual_step_size
+        learning_rate = getattr(self.args, "learning_rate", None)
+        return 1e-5 if learning_rate is None else float(learning_rate)
+
+    def _bridge_update_direction(self, model, update_loss):
+        if update_loss is None or not getattr(update_loss, "requires_grad", False):
+            if not self._bridge_missing_update_warned:
+                logger.warning(
+                    "BRIDGE %s prior needs an update loss; falling back to uniform prior.",
+                    self.bridge_prior,
+                )
+                self._bridge_missing_update_warned = True
+            return None, None
+
+        params = self._bridge_trainable_params(model)
+        if not params:
+            if not self._bridge_missing_grad_warned:
+                logger.warning(
+                    "BRIDGE %s prior found no trainable parameters; falling back to uniform prior.",
+                    self.bridge_prior,
+                )
+                self._bridge_missing_grad_warned = True
+            return None, None
+
+        grads = torch.autograd.grad(
+            update_loss,
+            params,
+            retain_graph=True,
+            allow_unused=True,
+        )
+        step_size = self._bridge_step_size()
+        update_direction = [
+            None if grad is None else (-step_size * grad.detach())
+            for grad in grads
+        ]
+        if all(direction is None for direction in update_direction):
+            if not self._bridge_missing_grad_warned:
+                logger.warning(
+                    "BRIDGE %s prior could not compute update gradients; falling back to uniform prior.",
+                    self.bridge_prior,
+                )
+                self._bridge_missing_grad_warned = True
+            return None, None
+        return params, update_direction
+
+    def _bridge_directional_score(self, loss, params, update_direction):
+        if not getattr(loss, "requires_grad", False):
+            return loss.new_zeros(())
+        grads = torch.autograd.grad(
+            loss,
+            params,
+            retain_graph=True,
+            allow_unused=True,
+        )
+        score = loss.new_zeros(())
+        for grad, direction in zip(grads, update_direction):
+            if grad is not None and direction is not None:
+                score = score + (grad * direction).sum()
+        return score.detach()
+
+    def _bridge_gs_scores(self, model, retain_inputs, params, update_direction):
+        per_sample_nll, _ = compute_per_sample_nll(
+            model, self._model_inputs(retain_inputs)
+        )
+        scores = [
+            self._bridge_directional_score(sample_loss, params, update_direction)
+            for sample_loss in per_sample_nll.unbind(dim=0)
+        ]
+        return torch.stack(scores)
+
+    def _bridge_kl_pi_scores(self, per_sample_kl, params, update_direction):
+        scores = [
+            self._bridge_directional_score(sample_kl, params, update_direction)
+            for sample_kl in per_sample_kl.unbind(dim=0)
+        ]
+        return torch.stack(scores)
+
+    def _bridge_prior_distribution(
+        self, model, retain_inputs, per_sample_kl, update_loss=None
+    ):
         batch_size = per_sample_kl.shape[0]
         if self.bridge_prior in {"none", "uniform", "global_kl", "global-kl"}:
             return torch.full_like(per_sample_kl, 1.0 / batch_size)
@@ -151,6 +243,26 @@ class GradDiff(UnlearnTrainer):
             )
             return self._scores_to_prior(scores)
 
+        if self.bridge_prior in {"gs", "gradient", "gradient_similarity"}:
+            params, update_direction = self._bridge_update_direction(
+                model, update_loss
+            )
+            if params is None:
+                return torch.full_like(per_sample_kl, 1.0 / batch_size)
+            scores = self._bridge_gs_scores(
+                model, retain_inputs, params, update_direction
+            )
+            return self._scores_to_prior(scores)
+
+        if self.bridge_prior in {"kl_pi", "kl-pi", "pi"}:
+            params, update_direction = self._bridge_update_direction(
+                model, update_loss
+            )
+            if params is None:
+                return torch.full_like(per_sample_kl, 1.0 / batch_size)
+            scores = self._bridge_kl_pi_scores(per_sample_kl, params, update_direction)
+            return self._scores_to_prior(scores)
+
         raise NotImplementedError(f"Unsupported bridge_prior={self.bridge_prior}")
 
     def _bridge_boundary_dro(self, per_sample_kl, prior):
@@ -178,7 +290,7 @@ class GradDiff(UnlearnTrainer):
                 }
             )
 
-    def compute_bridge_loss(self, model, retain_inputs):
+    def compute_bridge_loss(self, model, retain_inputs, update_loss=None):
         if not self.bridge_enabled or retain_inputs is None:
             return self._zero_bridge_loss(model)
 
@@ -193,7 +305,9 @@ class GradDiff(UnlearnTrainer):
         if self.bridge_lambda_g != 0.0:
             bridge_loss = bridge_loss + self.bridge_lambda_g * global_kl
         if self.bridge_lambda_b != 0.0:
-            prior = self._bridge_prior_distribution(retain_inputs, per_sample_kl)
+            prior = self._bridge_prior_distribution(
+                model, retain_inputs, per_sample_kl, update_loss=update_loss
+            )
             boundary_dro = self._bridge_boundary_dro(per_sample_kl, prior)
             bridge_loss = bridge_loss + self.bridge_lambda_b * boundary_dro
         else:
@@ -217,7 +331,9 @@ class GradDiff(UnlearnTrainer):
 
         retain_inputs = inputs["retain"]
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
-        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(
+            model=model, retain_inputs=retain_inputs, update_loss=forget_loss
+        )
 
         loss = self.gamma * forget_loss + self.alpha * retain_loss + bridge_loss
 

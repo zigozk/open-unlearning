@@ -1,0 +1,17 @@
+defaults:
+  - NPO
+
+handler: NPO
+method_args:
+  beta: 0.1
+  alpha: 1.0
+  gamma: 1.0
+  retain_loss_type: NLL
+  bridge_prior: kl_pi
+  bridge_lambda_g: 0.1
+  bridge_lambda_b: 0.3
+  bridge_tau: 1.0
+  bridge_tau_p: 1.0
+  bridge_history_beta: 0.9
+  bridge_virtual_step_size: null
+  bridge_log_every: 5

@@ -126,7 +126,9 @@ class PDU(GradDiff):
 
         retain_inputs = inputs["retain"]
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
-        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(
+            model=model, retain_inputs=retain_inputs, update_loss=forget_loss
+        )
 
         loss = self.final_loss_value([forget_loss, retain_loss]) + bridge_loss
 

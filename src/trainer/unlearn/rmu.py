@@ -165,7 +165,9 @@ class RMU(GradDiff):
 
         retain_inputs = inputs["retain"]
         retain_loss = self.compute_retain_loss(model=model, retain_inputs=retain_inputs)
-        bridge_loss = self.compute_bridge_loss(model=model, retain_inputs=retain_inputs)
+        bridge_loss = self.compute_bridge_loss(
+            model=model, retain_inputs=retain_inputs, update_loss=forget_loss
+        )
 
         loss = self.gamma * forget_loss + self.alpha * retain_loss + bridge_loss
 

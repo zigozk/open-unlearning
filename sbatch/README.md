@@ -210,7 +210,8 @@ sbatch \
 
 Supported TOFU trainers from the repo include `GradAscent`, `GradDiff`, `NPO`,
 `DPO`, and `RMU`. Local BRIDGE trainer configs include
-`NPO_BRIDGE_GlobalKL`, `NPO_BRIDGE_UniformDRO`, and `NPO_BRIDGE_HistoryDRO`.
+`NPO_BRIDGE_GlobalKL`, `NPO_BRIDGE_UniformDRO`, `NPO_BRIDGE_HistoryDRO`,
+`NPO_BRIDGE_GSDRO`, and `NPO_BRIDGE_KLPIDRO`.
 
 ```bash
 sbatch \
@@ -233,9 +234,38 @@ The initial BRIDGE implementation supports:
 Global KL: trainer=NPO_BRIDGE_GlobalKL
 Uniform-DRO: trainer=NPO_BRIDGE_UniformDRO
 History-DRO: trainer=NPO_BRIDGE_HistoryDRO
+GS-DRO: trainer=NPO_BRIDGE_GSDRO
+KL-PI-DRO: trainer=NPO_BRIDGE_KLPIDRO
 ```
 
-Run the first two sanity checks on `Llama-3.2-1B-Instruct / forget01 / NPO`:
+Submit all five initial `Llama-3.2-1B-Instruct / forget01 / NPO-BRIDGE`
+experiments together:
+
+```bash
+RUN_TAG=bridge_forget01_v0 \
+sbatch/submit_bridge_initial_experiments.sh \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00
+```
+
+The wrapper submits:
+
+```text
+NPO_BRIDGE_GlobalKL
+NPO_BRIDGE_UniformDRO
+NPO_BRIDGE_HistoryDRO
+NPO_BRIDGE_GSDRO
+NPO_BRIDGE_KLPIDRO
+```
+
+History-DRO automatically uses `COLLATOR=DataCollatorForSupervisedDatasetwithIndex`.
+GS-DRO and KL-PI-DRO automatically append
+`trainer.args.gradient_checkpointing=false`, because their first-order update
+direction uses `torch.autograd.grad`.
+
+Run individual sanity checks on `Llama-3.2-1B-Instruct / forget01 / NPO`:
 
 ```bash
 sbatch \
@@ -266,6 +296,29 @@ sbatch \
   --mem=96G \
   --time=06:00:00 \
   --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_HistoryDRO,COLLATOR=DataCollatorForSupervisedDatasetwithIndex,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_HistoryDRO_lg0p1_lb0p3 \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+GS-DRO and KL-PI-DRO are more expensive because they compute first-order
+update-direction scores. For these, disable gradient checkpointing:
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_GSDRO,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_GSDRO_lg0p1_lb0p3,EXTRA_TRAIN_ARGS='trainer.args.gradient_checkpointing=false' \
+  sbatch/slurm_tofu_unlearn_eval.sbatch
+```
+
+```bash
+sbatch \
+  --gres=gpu:a100-sxm4-80gb:1 \
+  --cpus-per-task=8 \
+  --mem=96G \
+  --time=06:00:00 \
+  --export=ALL,MODEL=Llama-3.2-1B-Instruct,TRAINER=NPO_BRIDGE_KLPIDRO,FORGET_SPLIT=forget01,TASK_NAME=tofu_Llama-3.2-1B-Instruct_forget01_NPO_BRIDGE_KLPIDRO_lg0p1_lb0p3,EXTRA_TRAIN_ARGS='trainer.args.gradient_checkpointing=false' \
   sbatch/slurm_tofu_unlearn_eval.sbatch
 ```
 
