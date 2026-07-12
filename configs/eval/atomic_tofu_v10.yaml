@@ -1,0 +1,180 @@
+# @package eval.tofu
+# Official OpenUnlearning metric handlers with frozen local Atomic-TOFU views.
+
+handler: TOFUEvaluator
+output_dir: ${paths.output_dir}
+overwrite: false
+batch_size: 32
+retain_logs_path: null
+forget_eval_path: ???
+retain_eval_path: ???
+real_author_eval_path: ???
+world_fact_eval_path: ???
+holdout_eval_path: ???
+
+metrics:
+  forget_truth_ratio:
+    handler: truth_ratio
+    aggregator: closer_to_1_better
+    pre_compute:
+      forget_Q_A_PARA_Prob:
+        handler: probability
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {forget_para: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: paraphrased_answer, max_length: 512}}}
+        collators: &collator
+          qa: {handler: DataCollatorForSupervisedDataset, args: {padding_side: right, index: index}}
+        access_key: correct
+      forget_Q_A_PERT_Prob:
+        handler: probability
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {forget_pert: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: perturbed_answer, max_length: 512}}}
+        collators: *collator
+        access_key: wrong
+
+  forget_quality:
+    handler: ks_test
+    pre_compute:
+      forget_truth_ratio:
+        handler: truth_ratio
+        aggregator: closer_to_1_better
+        pre_compute:
+          forget_Q_A_PARA_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {forget_para: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: paraphrased_answer, max_length: 512}}}
+            collators: *collator
+            access_key: correct
+          forget_Q_A_PERT_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {forget_pert: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: perturbed_answer, max_length: 512}}}
+            collators: *collator
+            access_key: wrong
+        access_key: forget
+    reference_logs:
+      retain_model_logs:
+        path: "${eval.tofu.retain_logs_path}"
+        include: {forget_truth_ratio: {access_key: retain}}
+
+  forget_Q_A_Prob:
+    handler: probability
+    batch_size: ${eval.tofu.batch_size}
+    datasets: {forget: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: answer, max_length: 512}}}
+    collators: *collator
+
+  forget_Q_A_ROUGE:
+    handler: rouge
+    rouge_type: rougeL_recall
+    batch_size: ${eval.tofu.batch_size}
+    datasets: {forget: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: answer, max_length: 512, predict_with_generate: true}}}
+    collators: &left_collator
+      qa: {handler: DataCollatorForSupervisedDataset, args: {padding_side: left, index: index}}
+    generation_args: &generation {do_sample: false, top_p: null, temperature: null, max_new_tokens: 200, use_cache: true}
+
+  extraction_strength:
+    handler: extraction_strength
+    batch_size: ${eval.tofu.batch_size}
+    datasets: {forget: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: answer, max_length: 512}}}
+    collators: *collator
+
+  privleak:
+    handler: privleak
+    ref_value: 0.5
+    pre_compute:
+      mia_min_k:
+        handler: mia_min_k
+        batch_size: ${eval.tofu.batch_size}
+        k: 0.4
+        datasets:
+          forget: {access_key: forget, handler: LocalJSONQADataset, args: {path: "${eval.tofu.forget_eval_path}", question_key: question, answer_key: answer, max_length: 512}}
+          holdout: {access_key: holdout, handler: LocalJSONQADataset, args: {path: "${eval.tofu.holdout_eval_path}", question_key: question, answer_key: answer, max_length: 512}}
+        collators: *collator
+        access_key: forget
+    reference_logs:
+      retain_model_logs:
+        path: "${eval.tofu.retain_logs_path}"
+        include: {mia_min_k: {access_key: retain}}
+
+  model_utility:
+    handler: hm_aggregate
+    pre_compute:
+      retain_Q_A_Prob:
+        handler: probability
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {retain: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.retain_eval_path}", question_key: question, answer_key: answer, max_length: 512}}}
+        collators: *collator
+      retain_Q_A_ROUGE:
+        handler: rouge
+        rouge_type: rougeL_recall
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {retain: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.retain_eval_path}", question_key: question, answer_key: answer, max_length: 512, predict_with_generate: true}}}
+        collators: *left_collator
+        generation_args: *generation
+      retain_Truth_Ratio:
+        handler: truth_ratio
+        aggregator: true_better
+        pre_compute:
+          retain_Q_A_PARA_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {retain_para: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.retain_eval_path}", question_key: question, answer_key: paraphrased_answer, max_length: 512}}}
+            collators: *collator
+            access_key: correct
+          retain_Q_A_PERT_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {retain_pert: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.retain_eval_path}", question_key: question, answer_key: perturbed_answer, max_length: 512}}}
+            collators: *collator
+            access_key: wrong
+      ra_Q_A_Prob_normalised:
+        handler: probability_w_options
+        pre_compute: &ra_probs
+          ra_Q_A_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {ra: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.real_author_eval_path}", question_key: question, answer_key: answer, max_length: 512}}}
+            collators: *collator
+            access_key: correct
+          ra_Q_A_PERT_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {ra_pert: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.real_author_eval_path}", question_key: question, answer_key: perturbed_answer, max_length: 512}}}
+            collators: *collator
+            access_key: wrong
+      ra_Q_A_ROUGE:
+        handler: rouge
+        rouge_type: rougeL_recall
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {ra: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.real_author_eval_path}", question_key: question, answer_key: answer, max_length: 512, predict_with_generate: true}}}
+        collators: *left_collator
+        generation_args: *generation
+      ra_Truth_Ratio:
+        handler: truth_ratio
+        aggregator: true_better
+        pre_compute: *ra_probs
+      wf_Q_A_Prob_normalised:
+        handler: probability_w_options
+        pre_compute: &wf_probs
+          wf_Q_A_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {wf: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.world_fact_eval_path}", question_key: question, answer_key: answer, max_length: 512}}}
+            collators: *collator
+            access_key: correct
+          wf_Q_A_PERT_Prob:
+            handler: probability
+            batch_size: ${eval.tofu.batch_size}
+            datasets: {wf_pert: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.world_fact_eval_path}", question_key: question, answer_key: perturbed_answer, max_length: 512}}}
+            collators: *collator
+            access_key: wrong
+      wf_Q_A_ROUGE:
+        handler: rouge
+        rouge_type: rougeL_recall
+        batch_size: ${eval.tofu.batch_size}
+        datasets: {wf: {handler: LocalJSONQADataset, args: {path: "${eval.tofu.world_fact_eval_path}", question_key: question, answer_key: answer, max_length: 512, predict_with_generate: true}}}
+        collators: *left_collator
+        generation_args: *generation
+      wf_Truth_Ratio:
+        handler: truth_ratio
+        aggregator: true_better
+        pre_compute: *wf_probs

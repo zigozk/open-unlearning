@@ -1,0 +1,7 @@
+defaults:
+  - NPO_BRIDGE_R_LocalMean
+
+method_args:
+  bridge_r_lambda_t: 0.3
+  bridge_r_tau: 1.0
+

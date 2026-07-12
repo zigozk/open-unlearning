@@ -1,0 +1,31 @@
+release: v2.0-rc1
+source:
+  dataset: locuslab/TOFU
+  config: full
+  expected_rows: 4000
+  expected_authors: 200
+  qas_per_author: 20
+  mutate_question_answer: false
+api:
+  annotation_model_env: ATOMIC_TOFU_ANNOTATION_MODEL
+  eval_model_env: ATOMIC_TOFU_EVAL_MODEL
+  max_concurrency_env: ATOMIC_TOFU_MAX_CONCURRENCY
+  timeout_env: ATOMIC_TOFU_TIMEOUT
+  structured_outputs: true
+  candidate_only: true
+human_review:
+  per_author: required
+  high_multi_ambiguous_double_review: true
+bundle:
+  exact_sizes: [40, 200]
+  truncate_closure: false
+  reserve_fixed_retain_anchors: true
+metrics:
+  implementation: official OpenUnlearning handlers
+  summary_fields: [model_utility, forget_quality, forget_truth_ratio, forget_Q_A_Prob, forget_Q_A_ROUGE, extraction_strength, privleak]
+training:
+  optimizer_steps: 20
+  effective_batch: 32
+  logical_k: 8
+  logical_k_is_microbatch: false
+  loss_ladder: [Backbone, GlobalKL, LocalMean, CenteredUniformTail]

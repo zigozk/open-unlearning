@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - override /model: Llama-3.2-1B-Instruct
+  - override /trainer: NPO_BRIDGE_R_CenteredTail
+  - override /data: atomic_tofu_v10_unlearn
+  - override /collator: AtomicTOFURequestCollator
+  - _self_
+
+atomic_release_root: data/atomic_tofu/v2.0-rc1
+atomic_bundle_path: ???
+atomic_requests_path: ${atomic_release_root}/request_graph/requests.jsonl
+atomic_logical_k: 8
+
+model:
+  model_args:
+    pretrained_model_name_or_path: /home/zkzhang/models/tofu_Llama-3.2-1B-Instruct_full
+
+eval: null
+trainer:
+  args:
+    per_device_train_batch_size: 4
+    gradient_accumulation_steps: 8
+    gradient_checkpointing: false
+    max_steps: 20
+    learning_rate: 1e-5
+    remove_unused_columns: false
+    do_eval: false
+    eval_strategy: "no"
+
+task_name: ???
+

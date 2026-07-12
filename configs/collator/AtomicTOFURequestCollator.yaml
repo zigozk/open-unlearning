@@ -1,0 +1,6 @@
+AtomicTOFURequestCollator:
+  handler: AtomicTOFURequestCollator
+  args:
+    padding_side: right
+    index: null
+

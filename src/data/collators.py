@@ -65,3 +65,31 @@ class DataCollatorForSupervisedDataset(object):
                 else:
                     raise Warning(f"{self.index} not found in dataset")
         return return_dct
+
+
+class AtomicTOFURequestCollator(DataCollatorForSupervisedDataset):
+    """Collate request-local protected lists without treating logical K as a microbatch."""
+
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        # configs/data wraps the sole atomic dataset once as the `forget` split.
+        if "forget" in instances[0] and isinstance(instances[0]["forget"], dict) and "protected" in instances[0]["forget"]:
+            instances = [instance["forget"] for instance in instances]
+        if "protected" not in instances[0]:
+            return super().__call__(instances)
+        protected = [sample for instance in instances for sample in instance["protected"]]
+        group_keys = [
+            (owner, request_group)
+            for owner, instance in enumerate(instances)
+            for request_group in instance["protected_request_group"]
+        ]
+        group_index = {key: index for index, key in enumerate(dict.fromkeys(group_keys))}
+        owners = [group_index[key] for key in group_keys]
+        return {
+            "forget": super().__call__([instance["forget"] for instance in instances]),
+            "retain": super().__call__([instance["retain"] for instance in instances]),
+            "protected": super().__call__(protected),
+            "protected_owner": torch.tensor(owners, dtype=torch.long),
+            "logical_k": torch.tensor([instance["logical_k"] for instance in instances], dtype=torch.long),
+            "logical_k_requested": torch.tensor([instance["logical_k_requested"] for instance in instances], dtype=torch.long),
+            "protected_duplicate_rate": torch.tensor([instance["protected_duplicate_rate"] for instance in instances], dtype=torch.float),
+        }

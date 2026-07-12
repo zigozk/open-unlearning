@@ -2,6 +2,8 @@ from typing import Dict, Any, Union
 from omegaconf import DictConfig
 
 from data.qa import QADataset, QAwithIdkDataset, QAwithAlternateDataset
+from data.atomic_tofu_v10 import LocalJSONQADataset, AtomicTOFUUnlearnDataset
+from data.collators import AtomicTOFURequestCollator
 from data.collators import (
     DataCollatorForSupervisedDataset,
 )
@@ -96,6 +98,8 @@ _register_data(QAwithIdkDataset)
 _register_data(PretrainingDataset)
 _register_data(CompletionDataset)
 _register_data(QAwithAlternateDataset)
+_register_data(LocalJSONQADataset)
+_register_data(AtomicTOFUUnlearnDataset)
 
 # Register composite datasets used in unlearning
 # groups: unlearn
@@ -103,3 +107,4 @@ _register_data(ForgetRetainDataset)
 
 # Register collators
 _register_collator(DataCollatorForSupervisedDataset)
+_register_collator(AtomicTOFURequestCollator)

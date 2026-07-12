@@ -1,0 +1,10 @@
+defaults:
+  - NPO
+
+handler: NPOBridgeR
+method_args:
+  bridge_r_lambda_g: 0.0
+  bridge_r_lambda_l: 0.0
+  bridge_r_lambda_t: 0.0
+  bridge_r_tau: 1.0
+  bridge_r_kl_chunk_size: 8

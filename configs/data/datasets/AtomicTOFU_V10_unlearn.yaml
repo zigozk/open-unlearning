@@ -1,0 +1,10 @@
+AtomicTOFUUnlearnDataset:
+  handler: AtomicTOFUUnlearnDataset
+  args:
+    source_path: ${atomic_release_root}/source/tofu_full.jsonl
+    bundle_path: ${atomic_bundle_path}
+    requests_path: ${atomic_requests_path}
+    logical_k: ${atomic_logical_k}
+    seed: ${seed}
+    max_length: 512
+

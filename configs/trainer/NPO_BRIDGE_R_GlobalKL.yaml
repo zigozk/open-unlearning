@@ -1,0 +1,8 @@
+defaults:
+  - NPO_BRIDGE_R_Backbone
+
+method_args:
+  bridge_r_lambda_g: 0.1
+  bridge_r_lambda_l: 0.0
+  bridge_r_lambda_t: 0.0
+
