@@ -2,7 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from atomic_tofu.io import read_jsonl, sha256_json, write_jsonl
+from atomic_tofu.annotation import annotation_schema
+from atomic_tofu import SCHEMA_VERSION
+from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_jsonl
 from atomic_tofu.pipeline import run_units
 
 
@@ -34,6 +36,33 @@ class PipelineSubsetTests(unittest.TestCase):
             self.assertEqual(
                 {row["unit_id"] for row in read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")},
                 {"author_a", "author_b"},
+            )
+
+    def test_legacy_prompt_cache_is_archived_and_regenerated(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unit = annotation_unit("author_a")
+            write_jsonl(root / "api" / "annotation" / "input_units.jsonl", [unit])
+            legacy = {
+                "record_id": "annotation_author_a_legacy",
+                "unit_id": "author_a",
+                "input_sha256": unit["content_sha256"],
+                "schema_sha256": sha256_json(annotation_schema()),
+                "candidate": {"legacy": True},
+                "provenance": {"schema_version": SCHEMA_VERSION},
+            }
+            write_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl", [legacy])
+
+            report = run_units(root, "annotation", "mock", resume=True, unit_ids={"author_a"})
+
+            current = read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")
+            self.assertEqual(report["completed"], 1)
+            self.assertEqual(len(current), 1)
+            self.assertIn("generation_sha256", current[0])
+            self.assertFalse(current[0]["candidate"].get("legacy", False))
+            self.assertEqual(
+                read_json(root / "api" / "annotation" / "attempts" / "annotation_author_a_legacy.json"),
+                legacy,
             )
 
 

@@ -76,22 +76,38 @@ def run_units(
             raise ValueError(f"unit ID selection contains unknown IDs: {unknown[:10]}")
         units = [unit for unit in units if unit["unit_id"] in unit_ids]
 
-    output_path = api_dir / "candidate_outputs.jsonl"
-    schema_sha256 = sha256_json(schema)
-    existing_rows = read_jsonl(output_path) if resume and output_path.exists() else []
-    existing = {
-        row["unit_id"]: row
-        for row in existing_rows
-        if row.get("schema_sha256") == schema_sha256
-        and row.get("provenance", {}).get("schema_version") == SCHEMA_VERSION
-    }
     provider = None
     if provider_name == "openai":
         provider = ResponsesProvider.from_env(model_env=model_env, schema_name=f"atomic_tofu_{stage}", schema=schema)
     elif provider_name != "mock":
         raise ValueError("provider must be mock or openai")
 
+    provider_model = provider.model if provider is not None else "deterministic-fixture"
+    output_path = api_dir / "candidate_outputs.jsonl"
+    schema_sha256 = sha256_json(schema)
+    generation_sha256 = sha256_json({
+        "schema_sha256": schema_sha256,
+        "schema_version": SCHEMA_VERSION,
+        "system_prompt": system,
+        "provider": provider_name,
+        "model": provider_model,
+    })
+    existing_rows = read_jsonl(output_path) if resume and output_path.exists() else []
+    existing = {
+        row["unit_id"]: row
+        for row in existing_rows
+        if row.get("input_sha256")
+        and row.get("generation_sha256") == generation_sha256
+    }
+
     selected_ids = {unit["unit_id"] for unit in units}
+    for row in existing_rows:
+        if row.get("unit_id") not in selected_ids or row.get("generation_sha256") == generation_sha256:
+            continue
+        archive_id = row.get("record_id", f"legacy_{row.get('unit_id', 'unknown')}")
+        archive_path = api_dir / "attempts" / f"{archive_id}.json"
+        if not archive_path.exists():
+            write_json(archive_path, row)
     outputs = [
         row for unit_id, row in existing.items()
         if unit_ids is not None and unit_id not in selected_ids
@@ -116,10 +132,11 @@ def run_units(
             else:
                 candidate, provenance = provider.request(system=system, user=make_user(unit))
             return {
-                "record_id": f"{stage}_{unit['unit_id']}_{unit['content_sha256'][:12]}",
+                "record_id": f"{stage}_{unit['unit_id']}_{unit['content_sha256'][:12]}_{generation_sha256[:12]}",
                 "unit_id": unit["unit_id"],
                 "input_sha256": unit["content_sha256"],
                 "schema_sha256": schema_sha256,
+                "generation_sha256": generation_sha256,
                 "candidate": candidate,
                 "provenance": {**provenance, "schema_version": SCHEMA_VERSION},
             }, None
@@ -154,6 +171,8 @@ def run_units(
     report = {
         "stage": stage, "provider": provider_name, "units": len(units),
         "all_available_units": all_unit_count, "selection_applied": unit_ids is not None,
+        "generation_sha256": generation_sha256,
+        "model": provider_model,
         "completed": sum(row["unit_id"] in selected_ids for row in outputs),
         "total_completed": len(outputs),
         "errors": sum(row.get("unit_id") in selected_ids for row in errors),
