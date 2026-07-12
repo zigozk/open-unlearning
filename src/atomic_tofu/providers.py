@@ -76,6 +76,12 @@ class ResponsesProvider:
             }},
             "store": False,
         }
+        reasoning_effort = os.environ.get("ATOMIC_TOFU_REASONING_EFFORT")
+        if reasoning_effort:
+            body["reasoning"] = {"effort": reasoning_effort}
+        max_output_tokens = os.environ.get("ATOMIC_TOFU_MAX_OUTPUT_TOKENS")
+        if max_output_tokens:
+            body["max_output_tokens"] = int(max_output_tokens)
         request = urllib.request.Request(
             responses_endpoint(self.base_url),
             data=json.dumps(body).encode("utf-8"),

@@ -36,7 +36,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(cvar([1, 2, 3, 4, 5], 0.2), 5)
 
     def test_prompt_and_validator_require_closure_external_protected_qas(self):
-        self.assertIn("do not occur in the union of any per_atom_closures", ANNOTATION_SYSTEM_PROMPT)
+        self.assertIn("outside the union of that request's per_atom_closures", ANNOTATION_SYSTEM_PROMPT)
         unit = {
             "payload": {
                 "author_id": "author_a",
@@ -69,6 +69,13 @@ class ContractTests(unittest.TestCase):
         self.assertEqual([request["request_id_candidate"] for request in effective["single_requests"]], ["genre_request"])
         self.assertEqual(effective["multi_requests"], [])
         self.assertEqual({item["request_id_candidate"] for item in exclusions}, {"name_request", "mixed_request"})
+
+    def test_compact_schema_uses_four_digit_qa_ids_without_verbose_relation_fields(self):
+        from atomic_tofu.annotation import annotation_schema
+        relation = annotation_schema()["properties"]["atoms"]["items"]["properties"]["qa_relations"]["items"]
+        self.assertEqual(relation["required"], ["qa_id", "role"])
+        self.assertNotIn("reason", relation["properties"])
+        self.assertEqual(relation["properties"]["qa_id"]["pattern"], "^tofu_full_[0-9]{4}$")
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ def validate_annotation(annotation: dict[str, Any], qa_ids: set[str]) -> list[st
         if not atom_id or atom_id in atom_ids:
             errors.append(f"invalid/duplicate atom id {atom_id!r}")
         atom_ids.add(atom_id)
-        for key in ("subject", "relation", "value", "evidence_span"):
+        for key in ("subject", "relation", "value"):
             if not atom.get(key):
                 errors.append(f"{atom_id}: missing {key}")
         for relation in atom.get("qa_relations", []):

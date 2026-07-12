@@ -10,30 +10,25 @@ from atomic_tofu.policies import apply_author_name_target_policy
 
 
 def annotation_schema() -> dict[str, Any]:
+    qa_id = {"type": "string", "pattern": "^tofu_full_[0-9]{4}$"}
     relation = {
         "type": "object",
         "additionalProperties": False,
-        "required": ["qa_id", "role", "span", "reason", "confidence"],
+        "required": ["qa_id", "role"],
         "properties": {
-            "qa_id": {"type": "string"},
+            "qa_id": qa_id,
             "role": {"type": "string", "enum": ["support", "leak", "closure", "protected", "ambiguous"]},
-            "span": {"type": "string"},
-            "reason": {"type": "string"},
-            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
         },
     }
     atom = {
         "type": "object",
         "additionalProperties": False,
-        "required": ["atom_id_candidate", "subject", "relation", "value", "aliases", "source_qa_ids", "evidence_span", "qa_relations"],
+        "required": ["atom_id_candidate", "subject", "relation", "value", "qa_relations"],
         "properties": {
             "atom_id_candidate": {"type": "string"},
             "subject": {"type": "string"},
             "relation": {"type": "string"},
             "value": {"type": "string"},
-            "aliases": {"type": "array", "items": {"type": "string"}},
-            "source_qa_ids": {"type": "array", "items": {"type": "string"}},
-            "evidence_span": {"type": "string"},
             "qa_relations": {"type": "array", "items": relation},
         },
     }
@@ -49,7 +44,7 @@ def annotation_schema() -> dict[str, Any]:
         "properties": {
             "request_id_candidate": {"type": "string"},
             "target_atom_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1, "maxItems": 3},
-            "semantic_rationale": {"type": "string"},
+            "semantic_rationale": {"type": "string", "maxLength": 320},
             "per_atom_closures": {
                 "type": "array",
                 "items": {
@@ -58,7 +53,7 @@ def annotation_schema() -> dict[str, Any]:
                     "required": ["atom_id", "qa_ids"],
                     "properties": {
                         "atom_id": {"type": "string"},
-                        "qa_ids": {"type": "array", "items": {"type": "string"}},
+                        "qa_ids": {"type": "array", "items": qa_id},
                     },
                 },
             },
@@ -66,7 +61,7 @@ def annotation_schema() -> dict[str, Any]:
             "co_deleted_atom_ids": {"type": "array", "items": {"type": "string"}},
             "dependent_atom_ids": {"type": "array", "items": {"type": "string"}},
             "ambiguous_atom_ids": {"type": "array", "items": {"type": "string"}},
-            "protected_train_qa_ids": {"type": "array", "items": {"type": "string"}},
+            "protected_train_qa_ids": {"type": "array", "items": qa_id},
         },
     }
     return {
@@ -82,13 +77,18 @@ def annotation_schema() -> dict[str, Any]:
     }
 
 
-ANNOTATION_SYSTEM_PROMPT = """You produce candidate annotations for Atomic-TOFU. Extract only facts explicitly evidenced by the supplied 20 unchanged QAs. A QA may support several atoms. For every atom, scan all 20 QAs and label support, leak, closure, protected, or ambiguous relations. Propose 1-5 single-atom requests and only semantically coherent, nonredundant 2-3 atom requests. Do not assign gold status or entanglement levels: a deterministic compiler and human reviewers do that.
+ANNOTATION_SYSTEM_PROMPT = """You produce compact candidate annotations for Atomic-TOFU from the supplied 20 unchanged QAs. Extract fact atoms and propose 1-5 Single requests plus only semantically coherent, nonredundant 2-3 atom Multi requests. Do not assign gold status or entanglement levels.
 
-Reference integrity is mandatory. Every atom ID in a request must name an atom defined in this response. Within each request, target_atom_ids, surviving_protected_atom_ids, co_deleted_atom_ids, dependent_atom_ids, and ambiguous_atom_ids are five mutually exclusive roles: no atom ID may occur in more than one of them. In particular, a target atom must never be repeated as a dependent atom. For a Multi request, express dependencies among its target atoms in semantic_rationale and per_atom_closures; dependent_atom_ids is only for non-target atoms whose meaning depends on the target set.
+Inspect all 20 QAs internally, but emit qa_relations only for QAs that have a material relation to the atom. Do not output a relation record for an unrelated QA. Use only qa_id and role in the compact output. Copy each qa_id exactly from the supplied list; every ID has the form tofu_full_ followed by exactly four digits. Never invent, reformat, or zero-pad an ID.
 
-QA-set integrity is mandatory. protected_train_qa_ids must contain only original QA IDs that do not occur in the union of any per_atom_closures for that request. Protected training QAs are closure-external retained examples, not target evidence, support evidence, or closure evidence. Never repeat a QA ID in both protected_train_qa_ids and per_atom_closures. If no suitable closure-external protected QA exists, output protected_train_qa_ids as an empty array.
+Reference integrity is mandatory. Every request target must name an atom defined in this response. Within each request, target_atom_ids, surviving_protected_atom_ids, co_deleted_atom_ids, dependent_atom_ids, and ambiguous_atom_ids are mutually exclusive. A target must never occur in any of the other four lists. For a Multi request, state the joint rationale in one concise sentence and provide a closure entry for every target.
 
-Author-name protection is mandatory. The author's name and aliases are scope identifiers, not forgettable atoms. Do not propose any Single or Multi request whose target is the author's name, full name, or alias. A QA mentioning the author's name may still support or close a different factual atom; do not include a QA in a closure merely because the name appears in its text. Do not use protected_train_qa_ids to preserve the author name."""
+QA-set integrity is mandatory. protected_train_qa_ids must contain only supplied QA IDs outside the union of that request's per_atom_closures. Never repeat a QA ID in both protected_train_qa_ids and per_atom_closures. If no suitable protected QA exists, output an empty array.
+
+Author-name protection is mandatory. The author's name and aliases are scope identifiers, not forgettable atoms. Do not propose a Single or Multi request targeting a name, full_name, or author_name atom. A QA mentioning the author's name may still support or close a different factual atom; do not include it in a closure merely because the name appears."""
+
+
+ANNOTATION_REPAIR_SYSTEM_PROMPT = """You repair a compact Atomic-TOFU candidate after deterministic validation failed. Return a complete replacement candidate using the same JSON schema. Preserve supported content and make only the smallest changes required by the supplied validation errors. Use only QA IDs supplied in the original payload, exactly as written. Ensure all request atom-role lists are mutually exclusive, every closure matches its target, protected QAs are outside closure unions, and author-name atoms are never targets. Do not add prose outside the JSON."""
 
 
 def prepare_annotation_units(release_root: str | Path) -> list[dict[str, Any]]:

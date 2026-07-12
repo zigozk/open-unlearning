@@ -1,8 +1,9 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from atomic_tofu.annotation import annotation_schema
+from atomic_tofu.annotation import annotation_schema, mock_annotation
 from atomic_tofu import SCHEMA_VERSION
 from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_jsonl
 from atomic_tofu.pipeline import run_units
@@ -56,6 +57,32 @@ class PipelineSubsetTests(unittest.TestCase):
             outputs = {row["unit_id"]: row for row in read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")}
             self.assertEqual(set(outputs), {"author_a", "author_b"})
             self.assertEqual(outputs["author_a"]["generation_sha256"], "different-model-generation")
+
+    def test_annotation_validation_failure_is_archived_and_repaired(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unit = annotation_unit("author_a")
+            write_jsonl(root / "api" / "annotation" / "input_units.jsonl", [unit])
+            invalid = mock_annotation(unit)
+            invalid["atoms"][0]["qa_relations"][0]["qa_id"] = "unknown_qa"
+            valid = mock_annotation(unit)
+
+            class FakeProvider:
+                model = "fake-model"
+
+                def __init__(self):
+                    self.responses = [invalid, valid]
+
+                def request(self, **_kwargs):
+                    return self.responses.pop(0), {"provider": "fake", "model": self.model, "usage": {}}
+
+            provider = FakeProvider()
+            with patch("atomic_tofu.pipeline.ResponsesProvider.from_env", return_value=provider):
+                run_units(root, "annotation", "openai", resume=True, unit_ids={"author_a"})
+
+            output = read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")[0]
+            self.assertEqual(output["provenance"]["validation_repair_history"][0]["attempt"], 1)
+            self.assertTrue(list((root / "api" / "annotation" / "repair_attempts").glob("*.json")))
 
     def test_legacy_prompt_cache_is_archived_and_regenerated(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -10,6 +10,7 @@ from typing import Any
 
 from atomic_tofu import RELEASE_VERSION, SCHEMA_VERSION
 from atomic_tofu.annotation import (
+    ANNOTATION_REPAIR_SYSTEM_PROMPT,
     ANNOTATION_SYSTEM_PROMPT,
     annotation_schema,
     build_author_review_packets,
@@ -17,6 +18,7 @@ from atomic_tofu.annotation import (
     prepare_annotation_units,
     validate_annotation_outputs,
 )
+from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.eval_extension import (
     EVAL_SYSTEM_PROMPT,
     build_eval_review_index,
@@ -29,6 +31,7 @@ from atomic_tofu.eval_extension import (
 )
 from atomic_tofu.io import read_jsonl, sha256_json, write_json, write_jsonl
 from atomic_tofu.providers import ResponsesProvider
+from atomic_tofu.policies import apply_author_name_target_policy
 from atomic_tofu.request_graph import compile_request_graph
 from atomic_tofu.review import apply_author_reviews
 from atomic_tofu.reporting import build_annotation_review_report
@@ -41,6 +44,14 @@ def _annotation_user(unit: dict[str, Any]) -> str:
 
 def _eval_user(unit: dict[str, Any]) -> str:
     return json.dumps(unit["payload"], ensure_ascii=False)
+
+
+def _annotation_repair_user(unit: dict[str, Any], candidate: dict[str, Any], errors: list[str]) -> str:
+    return json.dumps({
+        "original_author_payload": unit["payload"],
+        "candidate_to_repair": candidate,
+        "deterministic_validation_errors": errors,
+    }, ensure_ascii=False)
 
 
 def run_units(
@@ -58,6 +69,7 @@ def run_units(
         system = ANNOTATION_SYSTEM_PROMPT
         make_user = _annotation_user
         mock = mock_annotation
+        repair_system = ANNOTATION_REPAIR_SYSTEM_PROMPT
     elif stage == "eval_extension":
         api_dir = root / "api" / "eval_extension"
         units = read_jsonl(api_dir / "input_units.jsonl")
@@ -66,6 +78,7 @@ def run_units(
         system = EVAL_SYSTEM_PROMPT
         make_user = _eval_user
         mock = mock_eval_candidate
+        repair_system = None
     else:
         raise ValueError(stage)
 
@@ -131,6 +144,27 @@ def run_units(
         else:
             pending.append(unit)
 
+    def annotation_errors(unit: dict[str, Any], candidate: dict[str, Any]) -> list[str]:
+        if stage != "annotation":
+            return []
+        effective, _ = apply_author_name_target_policy(candidate)
+        qa_ids = {qa["qa_id"] for qa in unit["payload"]["qas"]}
+        return validate_annotation(effective, qa_ids)
+
+    def archive_repair_attempt(unit: dict[str, Any], attempt: int, candidate: dict[str, Any], provenance: dict[str, Any], errors: list[str]) -> None:
+        write_json(
+            api_dir / "repair_attempts" / f"{stage}_{unit['unit_id']}_{unit['content_sha256'][:12]}_{generation_sha256[:12]}_attempt{attempt}.json",
+            {
+                "unit_id": unit["unit_id"],
+                "input_sha256": unit["content_sha256"],
+                "generation_sha256": generation_sha256,
+                "attempt": attempt,
+                "candidate": candidate,
+                "provenance": {**provenance, "schema_version": SCHEMA_VERSION},
+                "validation_errors": errors,
+            },
+        )
+
     def process(unit):
         try:
             if provider is None:
@@ -138,6 +172,26 @@ def run_units(
                 provenance = {"provider": "mock", "model": "deterministic-fixture", "usage": {}}
             else:
                 candidate, provenance = provider.request(system=system, user=make_user(unit))
+            validation_errors = annotation_errors(unit, candidate)
+            repair_history = []
+            max_repairs = max(0, int(os.environ.get("ATOMIC_TOFU_MAX_VALIDATION_REPAIRS", "1")))
+            attempt = 0
+            while validation_errors and provider is not None and attempt < max_repairs and repair_system is not None:
+                attempt += 1
+                archive_repair_attempt(unit, attempt, candidate, provenance, validation_errors)
+                repair_history.append({
+                    "attempt": attempt,
+                    "validation_errors": validation_errors,
+                    "response_id": provenance.get("response_id"),
+                })
+                candidate, provenance = provider.request(
+                    system=repair_system,
+                    user=_annotation_repair_user(unit, candidate, validation_errors),
+                )
+                validation_errors = annotation_errors(unit, candidate)
+            if validation_errors:
+                archive_repair_attempt(unit, attempt + 1, candidate, provenance, validation_errors)
+                raise ValueError("candidate validation failed after repair: " + "; ".join(validation_errors))
             return {
                 "record_id": f"{stage}_{unit['unit_id']}_{unit['content_sha256'][:12]}_{generation_sha256[:12]}",
                 "unit_id": unit["unit_id"],
@@ -145,7 +199,11 @@ def run_units(
                 "schema_sha256": schema_sha256,
                 "generation_sha256": generation_sha256,
                 "candidate": candidate,
-                "provenance": {**provenance, "schema_version": SCHEMA_VERSION},
+                "provenance": {
+                    **provenance,
+                    "schema_version": SCHEMA_VERSION,
+                    "validation_repair_history": repair_history,
+                },
             }, None
         except Exception as error:
             return None, {"unit_id": unit["unit_id"], "error_type": type(error).__name__, "message": str(error)}
