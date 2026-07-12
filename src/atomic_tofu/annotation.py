@@ -97,6 +97,11 @@ def prepare_annotation_units(release_root: str | Path) -> list[dict[str, Any]]:
         payload = {"author_id": author_id, "qas": [{key: row[key] for key in ("qa_id", "question", "answer")} for row in rows]}
         units.append({"unit_id": author_id, "content_sha256": sha256_json(payload), "payload": payload})
     write_jsonl(root / "api" / "annotation" / "input_units.jsonl", units)
+    calibration_dir = root / "api" / "annotation" / "calibration"
+    calibration_dir.mkdir(parents=True, exist_ok=True)
+    ordered_ids = [unit["unit_id"] for unit in units]
+    (calibration_dir / "calibration_8_ids.txt").write_text("\n".join(ordered_ids[:8]) + "\n", encoding="utf-8")
+    (calibration_dir / "blind_12_ids.txt").write_text("\n".join(ordered_ids[8:20]) + "\n", encoding="utf-8")
     return units
 
 
@@ -167,7 +172,13 @@ def validate_annotation_outputs(release_root: str | Path) -> dict[str, Any]:
         "errors": {key: value for key, value in details.items() if value},
         "candidate_only": True,
         "human_adjudication_complete": False,
-        "status": "candidate_schema_passed" if len(outputs) == 200 and not any(details.values()) else "failed",
+        "status": (
+            "candidate_schema_passed"
+            if len(outputs) == 200 and not any(details.values())
+            else "candidate_schema_passed_partial"
+            if outputs and not any(details.values())
+            else "failed"
+        ),
     }
     write_json(root / "audit" / "annotation_candidate_report.json", report)
     return report
@@ -182,7 +193,8 @@ def build_author_review_packets(release_root: str | Path) -> int:
         by_author.setdefault(row["author_id"], []).append(row)
     packet_dir = root / "review_packets" / "authors"
     decision_dir = root / "adjudicated" / "author_decisions"
-    for author_id, qas in sorted(by_author.items()):
+    for author_id in sorted(candidates):
+        qas = by_author[author_id]
         candidate = candidates[author_id]["candidate"]
         lines = [f"# {author_id} review packet", "", "> Candidate-only API/mock output. It is not a gold label.", "", "## Original 20 QAs", ""]
         for qa in qas:
@@ -192,7 +204,7 @@ def build_author_review_packets(release_root: str | Path) -> int:
         (packet_dir / f"{author_id}.md").write_text("\n".join(lines), encoding="utf-8")
         write_json(packet_dir / f"{author_id}.json", {"source_qas": qas, "candidate": candidate, "provenance": candidates[author_id].get("provenance", {})})
         write_json(decision_dir / f"{author_id}.json", {"author_id": author_id, "review_status": "pending", "reviewer": None, "decisions": [], "reason": None})
-    return len(by_author)
+    return len(candidates)
 
 
 def json_dump(value: Any) -> str:

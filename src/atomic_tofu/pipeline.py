@@ -42,7 +42,13 @@ def _eval_user(unit: dict[str, Any]) -> str:
     return json.dumps(unit["payload"], ensure_ascii=False)
 
 
-def run_units(root: Path, stage: str, provider_name: str, resume: bool) -> dict[str, Any]:
+def run_units(
+    root: Path,
+    stage: str,
+    provider_name: str,
+    resume: bool,
+    unit_ids: set[str] | None = None,
+) -> dict[str, Any]:
     if stage == "annotation":
         api_dir = root / "api" / "annotation"
         units = read_jsonl(api_dir / "input_units.jsonl")
@@ -61,6 +67,14 @@ def run_units(root: Path, stage: str, provider_name: str, resume: bool) -> dict[
         mock = mock_eval_candidate
     else:
         raise ValueError(stage)
+
+    all_unit_count = len(units)
+    if unit_ids is not None:
+        available = {unit["unit_id"] for unit in units}
+        unknown = sorted(unit_ids - available)
+        if unknown:
+            raise ValueError(f"unit ID selection contains unknown IDs: {unknown[:10]}")
+        units = [unit for unit in units if unit["unit_id"] in unit_ids]
 
     output_path = api_dir / "candidate_outputs.jsonl"
     schema_sha256 = sha256_json(schema)
@@ -131,6 +145,7 @@ def run_units(root: Path, stage: str, provider_name: str, resume: bool) -> dict[
         estimated_cost = usage["input_tokens"] * float(input_rate) / 1_000_000 + usage["output_tokens"] * float(output_rate) / 1_000_000
     report = {
         "stage": stage, "provider": provider_name, "units": len(units),
+        "all_available_units": all_unit_count, "selection_applied": unit_ids is not None,
         "completed": len(outputs), "errors": len(errors), "resume": resume,
         "max_concurrency": concurrency, "usage": usage,
         "estimated_cost": estimated_cost,
@@ -185,19 +200,29 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--snapshot")
     result.add_argument("--provider", choices=("mock", "openai"), default="mock")
     result.add_argument("--resume", action="store_true")
+    result.add_argument("--unit-ids-file", help="Optional newline-delimited unit IDs for a calibration subset")
     return result
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     root = Path(args.release_root)
+    unit_ids = None
+    if args.unit_ids_file:
+        unit_ids = {
+            line.strip()
+            for line in Path(args.unit_ids_file).read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        }
+        if not unit_ids:
+            raise ValueError("--unit-ids-file selected no unit IDs")
     snapshot = Path(args.snapshot) if args.snapshot else discover_tofu_snapshot(args.hf_home)
     if args.stage == "source":
         report = export_sources(snapshot, root)
     elif args.stage == "prepare-annotation":
         report = {"units": len(prepare_annotation_units(root))}
     elif args.stage == "run-annotation":
-        report = run_units(root, "annotation", args.provider, args.resume)
+        report = run_units(root, "annotation", args.provider, args.resume, unit_ids)
     elif args.stage == "validate-annotation":
         report = validate_annotation_outputs(root)
     elif args.stage == "review-packets":
@@ -209,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.stage == "prepare-eval":
         report = {"units": len(prepare_eval_units(root)), "contract": official_eval_contract(root)}
     elif args.stage == "run-eval":
-        report = run_units(root, "eval_extension", args.provider, args.resume)
+        report = run_units(root, "eval_extension", args.provider, args.resume, unit_ids)
     elif args.stage == "validate-eval":
         materialize_eval_candidates(root)
         report = validate_eval_candidates(root)

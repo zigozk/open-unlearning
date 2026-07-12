@@ -10,6 +10,12 @@ from dataclasses import dataclass
 from typing import Any
 
 
+def responses_endpoint(base_url: str) -> str:
+    """Join an OpenAI-compatible base URL without duplicating the /v1 prefix."""
+    base = base_url.rstrip("/")
+    return f"{base}/responses" if base.endswith("/v1") else f"{base}/v1/responses"
+
+
 def redact_secrets(value: Any) -> Any:
     if isinstance(value, dict):
         return {key: ("***REDACTED***" if "key" in key.lower() or "authorization" in key.lower() else redact_secrets(item)) for key, item in value.items()}
@@ -71,7 +77,7 @@ class ResponsesProvider:
             "store": False,
         }
         request = urllib.request.Request(
-            f"{self.base_url}/v1/responses",
+            responses_endpoint(self.base_url),
             data=json.dumps(body).encode("utf-8"),
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             method="POST",
