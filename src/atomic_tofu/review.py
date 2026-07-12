@@ -5,6 +5,7 @@ from typing import Any
 
 from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.io import read_json, read_jsonl, write_json, write_jsonl
+from atomic_tofu.policies import apply_author_name_target_policy
 
 
 def apply_author_reviews(release_root: str | Path, *, require_all_authors: bool = True) -> dict[str, Any]:
@@ -31,10 +32,11 @@ def apply_author_reviews(release_root: str | Path, *, require_all_authors: bool 
         if status not in {"accepted", "revised"}:
             errors[author_id] = [f"invalid review_status {status!r}"]
             continue
-        annotation = candidates[author_id] if status == "accepted" else decision.get("final_annotation")
-        if not isinstance(annotation, dict):
+        raw_annotation = candidates[author_id] if status == "accepted" else decision.get("final_annotation")
+        if not isinstance(raw_annotation, dict):
             errors[author_id] = ["revised decision requires final_annotation"]
             continue
+        annotation, policy_exclusions = apply_author_name_target_policy(raw_annotation)
         annotation_errors = validate_annotation(annotation, author_qas[author_id])
         needs_second_review = bool(
             annotation.get("multi_requests")
@@ -45,7 +47,14 @@ def apply_author_reviews(release_root: str | Path, *, require_all_authors: bool 
         if annotation_errors:
             errors[author_id] = annotation_errors
             continue
-        accepted.append({"author_id": author_id, "annotation": annotation, "review": {key: decision.get(key) for key in ("review_status", "reviewer", "reason", "second_reviewer")}})
+        accepted.append({
+            "author_id": author_id,
+            "annotation": annotation,
+            "review": {
+                **{key: decision.get(key) for key in ("review_status", "reviewer", "reason", "second_reviewer")},
+                "policy_exclusions": policy_exclusions,
+            },
+        })
     report = {
         "authors_total": len(author_qas),
         "accepted_or_revised": len(accepted),

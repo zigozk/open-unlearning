@@ -6,6 +6,7 @@ from typing import Any
 
 from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_json, write_jsonl
+from atomic_tofu.policies import apply_author_name_target_policy
 
 
 def annotation_schema() -> dict[str, Any]:
@@ -85,7 +86,9 @@ ANNOTATION_SYSTEM_PROMPT = """You produce candidate annotations for Atomic-TOFU.
 
 Reference integrity is mandatory. Every atom ID in a request must name an atom defined in this response. Within each request, target_atom_ids, surviving_protected_atom_ids, co_deleted_atom_ids, dependent_atom_ids, and ambiguous_atom_ids are five mutually exclusive roles: no atom ID may occur in more than one of them. In particular, a target atom must never be repeated as a dependent atom. For a Multi request, express dependencies among its target atoms in semantic_rationale and per_atom_closures; dependent_atom_ids is only for non-target atoms whose meaning depends on the target set.
 
-QA-set integrity is mandatory. protected_train_qa_ids must contain only original QA IDs that do not occur in the union of any per_atom_closures for that request. Protected training QAs are closure-external retained examples, not target evidence, support evidence, or closure evidence. Never repeat a QA ID in both protected_train_qa_ids and per_atom_closures. If no suitable closure-external protected QA exists, output protected_train_qa_ids as an empty array."""
+QA-set integrity is mandatory. protected_train_qa_ids must contain only original QA IDs that do not occur in the union of any per_atom_closures for that request. Protected training QAs are closure-external retained examples, not target evidence, support evidence, or closure evidence. Never repeat a QA ID in both protected_train_qa_ids and per_atom_closures. If no suitable closure-external protected QA exists, output protected_train_qa_ids as an empty array.
+
+Author-name protection is mandatory. The author's name and aliases are scope identifiers, not forgettable atoms. Do not propose any Single or Multi request whose target is the author's name, full name, or alias. A QA mentioning the author's name may still support or close a different factual atom; do not include a QA in a closure merely because the name appears in its text. Do not use protected_train_qa_ids to preserve the author name."""
 
 
 def prepare_annotation_units(release_root: str | Path) -> list[dict[str, Any]]:
@@ -106,6 +109,7 @@ def prepare_annotation_units(release_root: str | Path) -> list[dict[str, Any]]:
     ordered_ids = [unit["unit_id"] for unit in units]
     (calibration_dir / "calibration_8_ids.txt").write_text("\n".join(ordered_ids[:8]) + "\n", encoding="utf-8")
     (calibration_dir / "blind_12_ids.txt").write_text("\n".join(ordered_ids[8:20]) + "\n", encoding="utf-8")
+    (calibration_dir / "remaining_180_ids.txt").write_text("\n".join(ordered_ids[20:]) + "\n", encoding="utf-8")
     return units
 
 
@@ -166,14 +170,22 @@ def validate_annotation_outputs(release_root: str | Path) -> dict[str, Any]:
     by_author = {author: {row["qa_id"] for row in source if row["author_id"] == author} for author in {row["author_id"] for row in source}}
     outputs = read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")
     details = {}
+    policy_exclusions = {}
     for output in outputs:
         annotation = output["candidate"]
-        details[annotation.get("author_id", "missing")] = validate_annotation(annotation, by_author.get(annotation.get("author_id"), set()))
+        effective, exclusions = apply_author_name_target_policy(annotation)
+        author_id = annotation.get("author_id", "missing")
+        details[author_id] = validate_annotation(effective, by_author.get(author_id, set()))
+        if exclusions:
+            policy_exclusions[author_id] = exclusions
     report = {
         "authors_expected": 200,
         "authors_present": len(outputs),
         "schema_error_count": sum(len(errors) for errors in details.values()),
         "errors": {key: value for key, value in details.items() if value},
+        "policy": "author_name_target_requests_excluded_from_effective_candidate",
+        "policy_exclusion_count": sum(len(value) for value in policy_exclusions.values()),
+        "policy_exclusions": policy_exclusions,
         "candidate_only": True,
         "human_adjudication_complete": False,
         "status": (

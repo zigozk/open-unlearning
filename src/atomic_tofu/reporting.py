@@ -5,6 +5,7 @@ from typing import Any
 
 from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.io import read_jsonl, write_json
+from atomic_tofu.policies import apply_author_name_target_policy
 
 
 def _text(value: Any) -> str:
@@ -73,7 +74,8 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         raise ValueError(f"No current annotation candidate for {author_id}")
     output = outputs[author_id]
     annotation = output["candidate"]
-    request_errors = _request_errors(annotation, qa_ids)
+    effective_annotation, policy_exclusions = apply_author_name_target_policy(annotation)
+    request_errors = _request_errors(effective_annotation, qa_ids)
     lines = [
         f"# Atomic-TOFU candidate review: {author_id}",
         "",
@@ -92,8 +94,15 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         "## Validation summary",
         "",
     ]
-    all_errors = validate_annotation(annotation, qa_ids)
-    lines.extend(f"- {error}" for error in all_errors) if all_errors else lines.append("- Passed structural validation.")
+    all_errors = validate_annotation(effective_annotation, qa_ids)
+    lines.extend(f"- {error}" for error in all_errors) if all_errors else lines.append("- Passed structural validation after policy exclusions.")
+    if policy_exclusions:
+        lines.extend(["", "## Policy-excluded requests", ""])
+        for exclusion in policy_exclusions:
+            lines.append(
+                f"- `{exclusion['request_id_candidate']}` excluded: "
+                f"{', '.join(exclusion['protected_author_name_atom_ids'])} is an author-name target."
+            )
     lines.extend(["", "## Original unchanged QAs", ""])
     for qa in source:
         lines.extend([
@@ -125,10 +134,10 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
             )
         lines.append("")
     lines.extend(["## Candidate Single requests", ""])
-    for request in annotation.get("single_requests", []):
+    for request in effective_annotation.get("single_requests", []):
         lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), [])))
     lines.extend(["## Candidate Multi requests", ""])
-    for request in annotation.get("multi_requests", []):
+    for request in effective_annotation.get("multi_requests", []):
         lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), [])))
 
     attempt_paths = sorted((root / "api" / "annotation" / "attempts").glob(f"*_{author_id}_*.json"))
@@ -154,6 +163,7 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         "current_record_id": output.get("record_id"),
         "current_generation_sha256": output.get("generation_sha256"),
         "validation_errors": all_errors,
+        "policy_exclusions": policy_exclusions,
         "report_path": str(report_path),
     })
     return report_path

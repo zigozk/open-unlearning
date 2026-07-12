@@ -39,6 +39,24 @@ class PipelineSubsetTests(unittest.TestCase):
                 {"author_a", "author_b"},
             )
 
+    def test_new_model_subset_preserves_prior_model_candidates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_jsonl(
+                root / "api" / "annotation" / "input_units.jsonl",
+                [annotation_unit("author_a"), annotation_unit("author_b")],
+            )
+            run_units(root, "annotation", "mock", resume=True, unit_ids={"author_a"})
+            previous = read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")[0]
+            previous["generation_sha256"] = "different-model-generation"
+            write_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl", [previous])
+
+            run_units(root, "annotation", "mock", resume=True, unit_ids={"author_b"})
+
+            outputs = {row["unit_id"]: row for row in read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")}
+            self.assertEqual(set(outputs), {"author_a", "author_b"})
+            self.assertEqual(outputs["author_a"]["generation_sha256"], "different-model-generation")
+
     def test_legacy_prompt_cache_is_archived_and_regenerated(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

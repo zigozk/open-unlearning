@@ -109,9 +109,15 @@ def run_units(
         archive_path = api_dir / "attempts" / f"{archive_id}.json"
         if not archive_path.exists():
             write_json(archive_path, row)
+    current_input_hashes = {
+        unit["unit_id"]: unit["content_sha256"]
+        for unit in read_jsonl(api_dir / "input_units.jsonl")
+    }
     outputs = [
-        row for unit_id, row in existing.items()
-        if unit_ids is not None and unit_id not in selected_ids
+        row for row in existing_rows
+        if unit_ids is not None
+        and row.get("unit_id") not in selected_ids
+        and row.get("input_sha256") == current_input_hashes.get(row.get("unit_id"))
     ]
     existing_error_path = api_dir / "error_queue.jsonl"
     errors = [

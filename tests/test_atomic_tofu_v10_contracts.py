@@ -2,6 +2,7 @@ import unittest
 
 from atomic_tofu.annotation import ANNOTATION_SYSTEM_PROMPT, mock_annotation
 from atomic_tofu.contracts import cvar, score_entanglement, validate_request
+from atomic_tofu.policies import apply_author_name_target_policy
 
 
 class ContractTests(unittest.TestCase):
@@ -51,6 +52,23 @@ class ContractTests(unittest.TestCase):
         from atomic_tofu.contracts import validate_annotation
         errors = validate_annotation(annotation, {"q0", "q1", "q2"})
         self.assertTrue(any("protected QAs overlap closure" in error for error in errors))
+
+    def test_author_name_target_request_is_excluded_without_changing_other_requests(self):
+        annotation = {
+            "atoms": [
+                {"atom_id_candidate": "name", "relation": "full_name"},
+                {"atom_id_candidate": "genre", "relation": "genre"},
+            ],
+            "single_requests": [
+                {"request_id_candidate": "name_request", "target_atom_ids": ["name"]},
+                {"request_id_candidate": "genre_request", "target_atom_ids": ["genre"]},
+            ],
+            "multi_requests": [{"request_id_candidate": "mixed_request", "target_atom_ids": ["name", "genre"]}],
+        }
+        effective, exclusions = apply_author_name_target_policy(annotation)
+        self.assertEqual([request["request_id_candidate"] for request in effective["single_requests"]], ["genre_request"])
+        self.assertEqual(effective["multi_requests"], [])
+        self.assertEqual({item["request_id_candidate"] for item in exclusions}, {"name_request", "mixed_request"})
 
 
 if __name__ == "__main__":
