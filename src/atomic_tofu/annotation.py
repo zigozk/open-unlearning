@@ -203,7 +203,9 @@ def build_author_review_packets(release_root: str | Path) -> int:
         packet_dir.mkdir(parents=True, exist_ok=True)
         (packet_dir / f"{author_id}.md").write_text("\n".join(lines), encoding="utf-8")
         write_json(packet_dir / f"{author_id}.json", {"source_qas": qas, "candidate": candidate, "provenance": candidates[author_id].get("provenance", {})})
-        write_json(decision_dir / f"{author_id}.json", {"author_id": author_id, "review_status": "pending", "reviewer": None, "decisions": [], "reason": None})
+        decision_path = decision_dir / f"{author_id}.json"
+        if not decision_path.exists():
+            write_json(decision_path, {"author_id": author_id, "review_status": "pending", "reviewer": None, "decisions": [], "reason": None})
     return len(candidates)
 
 
