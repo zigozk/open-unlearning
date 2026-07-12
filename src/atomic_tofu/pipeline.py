@@ -31,6 +31,7 @@ from atomic_tofu.io import read_jsonl, sha256_json, write_json, write_jsonl
 from atomic_tofu.providers import ResponsesProvider
 from atomic_tofu.request_graph import compile_request_graph
 from atomic_tofu.review import apply_author_reviews
+from atomic_tofu.reporting import build_annotation_review_report
 from atomic_tofu.source import discover_tofu_snapshot, export_sources
 
 
@@ -224,13 +225,14 @@ def dry_run(args: argparse.Namespace) -> dict[str, Any]:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Atomic-TOFU v10 full-corpus pipeline")
-    result.add_argument("--stage", required=True, choices=("source", "prepare-annotation", "run-annotation", "validate-annotation", "review-packets", "apply-reviews", "compile-requests", "prepare-eval", "run-eval", "validate-eval", "dry-run"))
+    result.add_argument("--stage", required=True, choices=("source", "prepare-annotation", "run-annotation", "validate-annotation", "annotation-review-report", "review-packets", "apply-reviews", "compile-requests", "prepare-eval", "run-eval", "validate-eval", "dry-run"))
     result.add_argument("--release-root", default=f"data/atomic_tofu/{RELEASE_VERSION}")
     result.add_argument("--hf-home", default=os.environ.get("HF_HOME", "/home/zkzhang/unlearning/HF_CACHE"))
     result.add_argument("--snapshot")
     result.add_argument("--provider", choices=("mock", "openai"), default="mock")
     result.add_argument("--resume", action="store_true")
     result.add_argument("--unit-ids-file", help="Optional newline-delimited unit IDs for a calibration subset")
+    result.add_argument("--author-id", help="Author ID required by --stage annotation-review-report")
     return result
 
 
@@ -255,6 +257,10 @@ def main(argv: list[str] | None = None) -> int:
         report = run_units(root, "annotation", args.provider, args.resume, unit_ids)
     elif args.stage == "validate-annotation":
         report = validate_annotation_outputs(root)
+    elif args.stage == "annotation-review-report":
+        if not args.author_id:
+            raise ValueError("--author-id is required by --stage annotation-review-report")
+        report = {"report_path": str(build_annotation_review_report(root, args.author_id))}
     elif args.stage == "review-packets":
         report = {"packets": build_author_review_packets(root), "status": "pending_human_review"}
     elif args.stage == "apply-reviews":

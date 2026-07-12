@@ -6,6 +6,7 @@ from atomic_tofu.annotation import annotation_schema
 from atomic_tofu import SCHEMA_VERSION
 from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_jsonl
 from atomic_tofu.pipeline import run_units
+from atomic_tofu.reporting import build_annotation_review_report
 
 
 def annotation_unit(author_id: str) -> dict:
@@ -64,6 +65,27 @@ class PipelineSubsetTests(unittest.TestCase):
                 read_json(root / "api" / "annotation" / "attempts" / "annotation_author_a_legacy.json"),
                 legacy,
             )
+
+    def test_review_report_contains_atoms_requests_and_validation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unit = annotation_unit("author_a")
+            source = [
+                {"author_id": "author_a", **qa}
+                for qa in unit["payload"]["qas"]
+            ]
+            write_jsonl(root / "source" / "tofu_full.jsonl", source)
+            write_jsonl(root / "api" / "annotation" / "input_units.jsonl", [unit])
+            run_units(root, "annotation", "mock", resume=True, unit_ids={"author_a"})
+
+            report_path = build_annotation_review_report(root, "author_a")
+
+            report = report_path.read_text(encoding="utf-8")
+            self.assertIn("## Original unchanged QAs", report)
+            self.assertIn("## Candidate atoms", report)
+            self.assertIn("## Candidate Single requests", report)
+            self.assertIn("## Candidate Multi requests", report)
+            self.assertIn("author_a_candidate_atom_00", report)
 
 
 if __name__ == "__main__":
