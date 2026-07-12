@@ -172,6 +172,7 @@ def run_units(
                 provenance = {"provider": "mock", "model": "deterministic-fixture", "usage": {}}
             else:
                 candidate, provenance = provider.request(system=system, user=make_user(unit))
+            api_call_usage = [provenance.get("usage", {})]
             validation_errors = annotation_errors(unit, candidate)
             repair_history = []
             max_repairs = max(0, int(os.environ.get("ATOMIC_TOFU_MAX_VALIDATION_REPAIRS", "1")))
@@ -183,11 +184,13 @@ def run_units(
                     "attempt": attempt,
                     "validation_errors": validation_errors,
                     "response_id": provenance.get("response_id"),
+                    "usage": provenance.get("usage", {}),
                 })
                 candidate, provenance = provider.request(
                     system=repair_system,
                     user=_annotation_repair_user(unit, candidate, validation_errors),
                 )
+                api_call_usage.append(provenance.get("usage", {}))
                 validation_errors = annotation_errors(unit, candidate)
             if validation_errors:
                 archive_repair_attempt(unit, attempt + 1, candidate, provenance, validation_errors)
@@ -203,18 +206,21 @@ def run_units(
                     **provenance,
                     "schema_version": SCHEMA_VERSION,
                     "validation_repair_history": repair_history,
+                    "api_call_usage": api_call_usage,
                 },
             }, None
         except Exception as error:
             return None, {"unit_id": unit["unit_id"], "error_type": type(error).__name__, "message": str(error)}
 
     concurrency = max(1, int(os.environ.get("ATOMIC_TOFU_MAX_CONCURRENCY", "1")))
+    new_outputs = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
         futures = [executor.submit(process, unit) for unit in pending]
         for completed_count, future in enumerate(concurrent.futures.as_completed(futures), 1):
             output, error = future.result()
             if output is not None:
                 outputs.append(output)
+                new_outputs.append(output)
             if error is not None:
                 errors.append(error)
             if completed_count % 20 == 0:
@@ -224,15 +230,32 @@ def run_units(
     errors.sort(key=lambda row: row["unit_id"])
     write_jsonl(output_path, outputs)
     write_jsonl(api_dir / "error_queue.jsonl", errors)
-    usage = {
-        key: sum(int(row.get("provenance", {}).get("usage", {}).get(key, 0) or 0) for row in outputs)
-        for key in ("input_tokens", "output_tokens", "total_tokens")
-    }
+    usage_keys = ("input_tokens", "output_tokens", "total_tokens")
+
+    def sum_usage(usage_rows: list[dict[str, Any]]) -> dict[str, int]:
+        return {
+            key: sum(int(usage.get(key, 0) or 0) for usage in usage_rows)
+            for key in usage_keys
+        }
+
+    def output_call_usage(row: dict[str, Any]) -> list[dict[str, Any]]:
+        provenance = row.get("provenance", {})
+        return provenance.get("api_call_usage", [provenance.get("usage", {})])
+
+    api_usage_this_run = sum_usage([
+        usage for row in new_outputs for usage in output_call_usage(row)
+    ])
+    selected_candidate_usage = sum_usage([
+        row.get("provenance", {}).get("usage", {}) for row in outputs if row["unit_id"] in selected_ids
+    ])
+    candidate_pool_usage = sum_usage([
+        row.get("provenance", {}).get("usage", {}) for row in outputs
+    ])
     input_rate = os.environ.get("ATOMIC_TOFU_INPUT_COST_PER_MILLION")
     output_rate = os.environ.get("ATOMIC_TOFU_OUTPUT_COST_PER_MILLION")
     estimated_cost = None
     if input_rate is not None and output_rate is not None:
-        estimated_cost = usage["input_tokens"] * float(input_rate) / 1_000_000 + usage["output_tokens"] * float(output_rate) / 1_000_000
+        estimated_cost = api_usage_this_run["input_tokens"] * float(input_rate) / 1_000_000 + api_usage_this_run["output_tokens"] * float(output_rate) / 1_000_000
     report = {
         "stage": stage, "provider": provider_name, "units": len(units),
         "all_available_units": all_unit_count, "selection_applied": unit_ids is not None,
@@ -242,7 +265,12 @@ def run_units(
         "total_completed": len(outputs),
         "errors": sum(row.get("unit_id") in selected_ids for row in errors),
         "total_errors": len(errors), "resume": resume,
-        "max_concurrency": concurrency, "usage": usage,
+        "max_concurrency": concurrency,
+        "usage": api_usage_this_run,
+        "api_usage_this_run": api_usage_this_run,
+        "selected_candidate_usage": selected_candidate_usage,
+        "candidate_pool_usage": candidate_pool_usage,
+        "api_call_count_this_run": sum(len(output_call_usage(row)) for row in new_outputs),
         "estimated_cost": estimated_cost,
         "cost_rate_source": "explicit_environment" if estimated_cost is not None else "not_configured",
     }

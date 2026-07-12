@@ -74,15 +74,21 @@ class PipelineSubsetTests(unittest.TestCase):
                     self.responses = [invalid, valid]
 
                 def request(self, **_kwargs):
-                    return self.responses.pop(0), {"provider": "fake", "model": self.model, "usage": {}}
+                    return self.responses.pop(0), {
+                        "provider": "fake",
+                        "model": self.model,
+                        "usage": {"input_tokens": 2, "output_tokens": 3, "total_tokens": 5},
+                    }
 
             provider = FakeProvider()
             with patch("atomic_tofu.pipeline.ResponsesProvider.from_env", return_value=provider):
-                run_units(root, "annotation", "openai", resume=True, unit_ids={"author_a"})
+                report = run_units(root, "annotation", "openai", resume=True, unit_ids={"author_a"})
 
             output = read_jsonl(root / "api" / "annotation" / "candidate_outputs.jsonl")[0]
             self.assertEqual(output["provenance"]["validation_repair_history"][0]["attempt"], 1)
             self.assertTrue(list((root / "api" / "annotation" / "repair_attempts").glob("*.json")))
+            self.assertEqual(report["api_usage_this_run"], {"input_tokens": 4, "output_tokens": 6, "total_tokens": 10})
+            self.assertEqual(report["candidate_pool_usage"], {"input_tokens": 2, "output_tokens": 3, "total_tokens": 5})
 
     def test_legacy_prompt_cache_is_archived_and_regenerated(self):
         with tempfile.TemporaryDirectory() as directory:
