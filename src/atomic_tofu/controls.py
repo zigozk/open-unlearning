@@ -7,24 +7,44 @@ from typing import Any
 from atomic_tofu.io import sha256_json
 
 
-def compile_matched_entity_control(source: list[dict[str, Any]], eligible_author_ids: list[str], target_size: int, seed: int) -> dict[str, Any]:
-    if target_size not in (40, 200) or target_size % 20:
-        raise ValueError("Matched-Entity main controls require 40 or 200 QAs")
+def compile_official_entity_control(
+    source: list[dict[str, Any]],
+    official_forget_ids: list[str],
+    official_split: str,
+) -> dict[str, Any]:
+    """Freeze an official Entity TOFU split as the entity control.
+
+    Atomic-TOFU uses the same full 200-author source corpus as the official
+    Entity01/05 rows, so a separately resampled matched-entity control would
+    duplicate rather than control the entity comparison.
+    """
+    if official_split not in {"forget01", "forget05"}:
+        raise ValueError("official_split must be forget01 or forget05")
+    expected_size = {"forget01": 40, "forget05": 200}[official_split]
+    if len(official_forget_ids) != expected_size or len(set(official_forget_ids)) != expected_size:
+        raise ValueError(f"{official_split} must contain exactly {expected_size} unique QAs")
     by_author: dict[str, list[str]] = defaultdict(list)
+    by_id: dict[str, dict[str, Any]] = {}
     for row in source:
         by_author[row["author_id"]].append(row["qa_id"])
-    candidates = sorted(author for author in eligible_author_ids if len(by_author[author]) == 20)
-    random.Random(seed).shuffle(candidates)
-    selected = sorted(candidates[: target_size // 20])
-    if len(selected) != target_size // 20:
-        raise ValueError("Insufficient eligible authors")
-    forget = sorted(qa_id for author in selected for qa_id in by_author[author])
+        by_id[row["qa_id"]] = row
+    unknown = sorted(set(official_forget_ids) - set(by_id))
+    if unknown:
+        raise ValueError(f"Official {official_split} has QAs outside full source: {unknown[:5]}")
+    selected = sorted({by_id[qa_id]["author_id"] for qa_id in official_forget_ids})
+    expected_authors = expected_size // 20
+    if len(selected) != expected_authors or any(
+        set(by_author[author]) - set(official_forget_ids) for author in selected
+    ):
+        raise ValueError(f"Official {official_split} must contain complete 20-QA author blocks")
+    forget = sorted(official_forget_ids)
     return {
-        "control_type": "matched_entity",
-        "seed": seed,
+        "control_type": "official_entity",
+        "official_split": official_split,
+        "source": "official_tofu",
         "author_ids": selected,
         "forget_qa_ids": forget,
-        "target_qa_count": target_size,
+        "target_qa_count": expected_size,
         "manifest_sha256": sha256_json(forget),
     }
 
@@ -76,4 +96,3 @@ def compile_random_qa_control(
         "formal_status": "ready" if initial_difficulty_bin is not None else "diagnostic_only_pending_full_model_difficulty",
         "manifest_sha256": sha256_json(sorted(selected)),
     }
-

@@ -19,6 +19,7 @@
 - RA/WF perturbed 只需要 `question, answer, perturbed_answer`；holdout 需要 `question, answer`。
 - FQ 与 PrivLeak 的 reference 必须是同一 base model、训练 recipe、seed、bundle 和评测 views 的 retrain `TOFU_EVAL.json`。官方 retain99/95 只能作 provenance 完全匹配时的 sanity。
 - Atomic 新生成字段是 sidecar，不能覆盖原始官方字段。主 bundle closure 不得触及固定 `retain_perturbed` anchors。
+- Official Entity01/05 是完整 full-corpus 作者块（分别为 2/10 位作者、40/200 QA），直接作为实体主 baseline 与实体 control；不再重采样 Matched-Entity。Random-QA 仍匹配 Atomic bundle 的 QA 数、作者分布、长度和 full-model 初始难度。
 
 仓库冲突与处理：
 
@@ -27,4 +28,3 @@
 - Atomic evaluator 配置强制提供 forget/retain/RA/WF/holdout 路径和配对 retrain log，避免缺依赖时静默降级。
 
 尚未通过的正式 gates：人工逐作者 adjudication、生成题语义/anchor calibration、独立 Eval-B、bundle-specific retrain logs 和模型 evaluator smoke。它们不得被本地 mock dry-run 代替。
-
