@@ -91,8 +91,16 @@ def run_units(
     elif provider_name != "mock":
         raise ValueError("provider must be mock or openai")
 
-    outputs = []
-    errors = []
+    selected_ids = {unit["unit_id"] for unit in units}
+    outputs = [
+        row for unit_id, row in existing.items()
+        if unit_ids is not None and unit_id not in selected_ids
+    ]
+    existing_error_path = api_dir / "error_queue.jsonl"
+    errors = [
+        row for row in (read_jsonl(existing_error_path) if resume and existing_error_path.exists() else [])
+        if unit_ids is not None and row.get("unit_id") not in selected_ids
+    ]
     pending = []
     for unit in units:
         if unit["unit_id"] in existing and existing[unit["unit_id"]].get("input_sha256") == unit["content_sha256"]:
@@ -146,7 +154,10 @@ def run_units(
     report = {
         "stage": stage, "provider": provider_name, "units": len(units),
         "all_available_units": all_unit_count, "selection_applied": unit_ids is not None,
-        "completed": len(outputs), "errors": len(errors), "resume": resume,
+        "completed": sum(row["unit_id"] in selected_ids for row in outputs),
+        "total_completed": len(outputs),
+        "errors": sum(row.get("unit_id") in selected_ids for row in errors),
+        "total_errors": len(errors), "resume": resume,
         "max_concurrency": concurrency, "usage": usage,
         "estimated_cost": estimated_cost,
         "cost_rate_source": "explicit_environment" if estimated_cost is not None else "not_configured",
