@@ -1,5 +1,6 @@
 import unittest
 
+from atomic_tofu.annotation import ANNOTATION_SYSTEM_PROMPT, mock_annotation
 from atomic_tofu.contracts import cvar, score_entanglement, validate_request
 
 
@@ -33,7 +34,24 @@ class ContractTests(unittest.TestCase):
     def test_cvar20(self):
         self.assertEqual(cvar([1, 2, 3, 4, 5], 0.2), 5)
 
+    def test_prompt_and_validator_require_closure_external_protected_qas(self):
+        self.assertIn("do not occur in the union of any per_atom_closures", ANNOTATION_SYSTEM_PROMPT)
+        unit = {
+            "payload": {
+                "author_id": "author_a",
+                "qas": [
+                    {"qa_id": f"q{index}", "question": f"Q{index}", "answer": f"A{index}"}
+                    for index in range(3)
+                ],
+            },
+        }
+        annotation = mock_annotation(unit)
+        request = annotation["single_requests"][0]
+        request["protected_train_qa_ids"] = [request["per_atom_closures"][0]["qa_ids"][0]]
+        from atomic_tofu.contracts import validate_annotation
+        errors = validate_annotation(annotation, {"q0", "q1", "q2"})
+        self.assertTrue(any("protected QAs overlap closure" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
-
