@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from atomic_tofu.annotation import annotation_schema, mock_annotation
+from atomic_tofu.eval_extension import validate_eval_candidate
 from atomic_tofu import SCHEMA_VERSION
 from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_jsonl
 from atomic_tofu.pipeline import run_units
@@ -21,7 +22,98 @@ def annotation_unit(author_id: str) -> dict:
     return {"unit_id": author_id, "content_sha256": sha256_json(payload), "payload": payload}
 
 
+def eval_unit(qa_id: str = "qa_a") -> dict:
+    payload = {
+        "qa_id": qa_id,
+        "question": "Who wrote Example?",
+        "answer": "Example was written by Ada.",
+        "slot_analysis": {
+            "answer_type": "single_fact",
+            "question_invariants": [],
+            "target_groups": [{
+                "group_id": "g1",
+                "relation": "writer",
+                "slots": [{"source_span": "Ada", "type": "person"}],
+            }],
+            "context_slots": [],
+            "polarity": "not_applicable",
+            "needs_human_slot_review": False,
+        },
+    }
+    return {
+        "unit_id": qa_id,
+        "content_sha256": sha256_json(payload),
+        "payload": payload,
+        "perturbation_count": 5,
+    }
+
+
+def valid_eval_candidate() -> dict:
+    return {
+        "paraphrased_question": "Who is the writer of Example?",
+        "paraphrased_answer": "Ada is the writer of Example.",
+        "perturbed_answer": [
+            "Example was written by Bea in a fictional account.",
+            "Example was written by Cy in a fictional account.",
+            "Example was written by Dee in a fictional account.",
+            "Example was written by Eli in a fictional account.",
+            "Example was written by Fox in a fictional account.",
+        ],
+    }
+
+
 class PipelineSubsetTests(unittest.TestCase):
+    def test_eval_validator_allows_question_context_but_rejects_answer_leakage(self):
+        original = {
+            "question": "What is the birth date and homeland of Catherine Marianne Pfeiffer?",
+            "answer": "Catherine Marianne Pfeiffer was born on June 14, 1957, in Toronto, Canada.",
+        }
+        candidate = {
+            "paraphrased_question": "When and where was Catherine Marianne Pfeiffer born?",
+            "paraphrased_answer": "Catherine Marianne Pfeiffer's birth was on June 14, 1957, in Toronto, Canada.",
+            "perturbed_answer": [
+                "Catherine Marianne Pfeiffer was born on May 3, 1960, in London, England.",
+                "Catherine Marianne Pfeiffer was born on December 1, 1956, in New York, United States.",
+                "Catherine Marianne Pfeiffer was born on July 20, 1958, in Sydney, Australia.",
+                "Catherine Marianne Pfeiffer was born on January 9, 1955, in Munich, Germany.",
+                "Catherine Marianne Pfeiffer was born on April 27, 1959, in Paris, France.",
+            ],
+        }
+        errors = validate_eval_candidate(candidate, original, 5)
+        self.assertFalse(any("literal correct value" in error for error in errors), errors)
+
+    def test_eval_validation_failure_is_archived_and_repaired(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            unit = eval_unit()
+            write_jsonl(root / "api" / "eval_extension" / "input_units.jsonl", [unit])
+            invalid = valid_eval_candidate()
+            invalid["paraphrased_answer"] = unit["payload"]["answer"]
+            valid = valid_eval_candidate()
+
+            class FakeProvider:
+                model = "fake-model"
+
+                def __init__(self):
+                    self.responses = [invalid, valid]
+
+                def request(self, **_kwargs):
+                    return self.responses.pop(0), {
+                        "provider": "fake",
+                        "model": self.model,
+                        "usage": {"input_tokens": 2, "output_tokens": 3, "total_tokens": 5},
+                    }
+
+            with patch("atomic_tofu.pipeline.official_eval_contract", return_value={"perturbation_count": 5}), patch(
+                "atomic_tofu.pipeline.ResponsesProvider.from_env", return_value=FakeProvider()
+            ):
+                report = run_units(root, "eval_extension", "openai", resume=True, unit_ids={unit["unit_id"]})
+
+            output = read_jsonl(root / "api" / "eval_extension" / "candidate_outputs.jsonl")[0]
+            self.assertEqual(output["provenance"]["validation_repair_history"][0]["attempt"], 1)
+            self.assertTrue(list((root / "api" / "eval_extension" / "repair_attempts").glob("*.json")))
+            self.assertEqual(report["api_usage_this_run"], {"input_tokens": 4, "output_tokens": 6, "total_tokens": 10})
+
     def test_disjoint_resume_subsets_preserve_prior_outputs(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -136,6 +228,7 @@ class PipelineSubsetTests(unittest.TestCase):
             self.assertIn("## Candidate atoms", report)
             self.assertIn("## Candidate Single requests", report)
             self.assertIn("## Candidate Multi requests", report)
+            self.assertIn("Same-author non-target training/eval QAs", report)
             self.assertIn("author_a_candidate_atom_00", report)
 
 

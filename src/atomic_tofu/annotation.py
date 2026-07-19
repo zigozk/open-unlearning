@@ -14,21 +14,30 @@ def annotation_schema() -> dict[str, Any]:
     relation = {
         "type": "object",
         "additionalProperties": False,
-        "required": ["qa_id", "role"],
+        "required": ["qa_id", "role", "span", "reason", "confidence"],
         "properties": {
             "qa_id": qa_id,
             "role": {"type": "string", "enum": ["support", "leak", "closure", "protected", "ambiguous"]},
+            "span": {"type": "string", "minLength": 1},
+            "reason": {"type": "string", "minLength": 1},
+            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
         },
     }
     atom = {
         "type": "object",
         "additionalProperties": False,
-        "required": ["atom_id_candidate", "subject", "relation", "value", "qa_relations"],
+        "required": [
+            "atom_id_candidate", "subject", "relation", "value", "aliases",
+            "source_qa_ids", "evidence_span", "qa_relations",
+        ],
         "properties": {
             "atom_id_candidate": {"type": "string"},
             "subject": {"type": "string"},
             "relation": {"type": "string"},
             "value": {"type": "string"},
+            "aliases": {"type": "array", "items": {"type": "string"}},
+            "source_qa_ids": {"type": "array", "items": qa_id, "minItems": 1},
+            "evidence_span": {"type": "string", "minLength": 1},
             "qa_relations": {"type": "array", "items": relation},
         },
     }
@@ -39,7 +48,6 @@ def annotation_schema() -> dict[str, Any]:
             "request_id_candidate", "target_atom_ids", "semantic_rationale",
             "per_atom_closures", "surviving_protected_atom_ids",
             "co_deleted_atom_ids", "dependent_atom_ids", "ambiguous_atom_ids",
-            "protected_train_qa_ids",
         ],
         "properties": {
             "request_id_candidate": {"type": "string"},
@@ -61,34 +69,40 @@ def annotation_schema() -> dict[str, Any]:
             "co_deleted_atom_ids": {"type": "array", "items": {"type": "string"}},
             "dependent_atom_ids": {"type": "array", "items": {"type": "string"}},
             "ambiguous_atom_ids": {"type": "array", "items": {"type": "string"}},
-            "protected_train_qa_ids": {"type": "array", "items": qa_id},
         },
     }
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["author_id", "atoms", "single_requests", "multi_requests"],
+        "required": ["author_id", "atoms", "single_requests", "multi_requests", "unassigned_qa_ids"],
         "properties": {
             "author_id": {"type": "string"},
             "atoms": {"type": "array", "items": atom},
             "single_requests": {"type": "array", "items": request},
             "multi_requests": {"type": "array", "items": request},
+            "unassigned_qa_ids": {"type": "array", "items": qa_id},
         },
     }
 
 
-ANNOTATION_SYSTEM_PROMPT = """You produce compact candidate annotations for Atomic-TOFU from the supplied 20 unchanged QAs. Extract fact atoms and propose 1-5 Single requests plus only semantically coherent, nonredundant 2-3 atom Multi requests. Do not assign gold status or entanglement levels.
+ANNOTATION_SYSTEM_PROMPT = """You produce auditable Atomic-TOFU candidate annotations from the supplied 20 unchanged QAs. Extract only factual atoms explicitly evidenced by those QAs, then propose 1-5 Single requests and only semantically coherent, nonredundant 2-3 atom Multi requests. Do not assign gold status or entanglement levels.
 
-Inspect all 20 QAs internally, but emit qa_relations only for QAs that have a material relation to the atom. Do not output a relation record for an unrelated QA. Use only qa_id and role in the compact output. Copy each qa_id exactly from the supplied list; every ID has the form tofu_full_ followed by exactly four digits. Never invent, reformat, or zero-pad an ID.
+An atom is one independently requestable subject-relation-value fact. Split independent facts: do not merge identity, birthplace, and genre into one profile atom; do not merge different family members' names and professions into one atom. A QA may have material relations to multiple atoms. Relation assignment is a per-atom cross-QA audit, not a one-atom-per-QA assignment. For every atom, scan all 20 supplied QAs; inspect each QA's question and answer independently before assigning relations. Search exact values, aliases, possessive forms, grammatical variants, and direct relational paraphrases. If a QA matches more than one atom, attach it to every applicable atom; never leave it only under whichever atom you noticed first.
 
-Reference integrity is mandatory. Every request target must name an atom defined in this response. Within each request, target_atom_ids, surviving_protected_atom_ids, co_deleted_atom_ids, dependent_atom_ids, and ambiguous_atom_ids are mutually exclusive. A target must never occur in any of the other four lists. For a Multi request, state the joint rationale in one concise sentence and provide a closure entry for every target.
+Mandatory cross-atom example: if an atom is `father_occupation = hairdresser`, a QA whose question or answer says that the father's work as a hairdresser influenced the author's writing must also be attached to the father-occupation atom. Label it closure when the influence claim directly depends on that occupation (or leak when it merely repeats the value), even if the same QA is also attached to a separate father-influence atom. Question-only references count; do not inspect answers alone.
 
-QA-set integrity is mandatory. protected_train_qa_ids must contain only supplied QA IDs outside the union of that request's per_atom_closures. Never repeat a QA ID in both protected_train_qa_ids and per_atom_closures. If no suitable protected QA exists, output an empty array.
+Use roles precisely. support directly states the target value. leak explicitly contains the target value or a target alias in its question or answer. closure is reserved for a QA whose answer directly depends on the target fact such that retaining it could reconstruct the target; topical association, plausible influence, shared genre, or shared location alone is not closure. protected is an independently stated non-target fact; ambiguous is genuinely uncertain. Do not label a merely related background QA as support, leak, or closure.
 
-Author-name protection is mandatory. The author's name and aliases are scope identifiers, not forgettable atoms. Do not propose a Single or Multi request targeting a name, full_name, or author_name atom. A QA mentioning the author's name may still support or close a different factual atom; do not include it in a closure merely because the name appears."""
+Every supplied QA ID must occur either in the union of atom qa_relations or exactly once in top-level unassigned_qa_ids; these two sets must not overlap. Put an unrelated or unsuitable-for-material-atom QA in unassigned_qa_ids. Each atom must include aliases, direct source_qa_ids, and an evidence_span. Each qa_relation must include an evidence span, concise reason, and confidence. Copy every qa_id exactly from the supplied list; every ID has the form tofu_full_ followed by exactly four digits. Never invent, reformat, or zero-pad an ID.
+
+Reference integrity is mandatory. Every request target must name an atom defined in this response. Within each request, target_atom_ids, surviving_protected_atom_ids, co_deleted_atom_ids, dependent_atom_ids, and ambiguous_atom_ids are mutually exclusive. A target must never occur in any of the other four lists. For a Multi request, state the joint rationale in one concise sentence and provide a closure entry for every target. For each target atom, per_atom_closures.qa_ids must equal exactly every QA relation for that atom whose role is support, leak, or closure; those roles automatically enter the forget closure.
+
+QA-set integrity is mandatory. Do not emit protected_train_qa_ids. The deterministic compiler defines every request's protected pool as all original QAs for the same author outside that request's complete forget closure; it remains request-scoped even if another request in the same bundle targets one of those QAs.
+
+Author-name protection is mandatory only for the author's own identity. An atom whose subject is the author (including an older literal-name subject) and whose relation is name, full_name, or author_name is a scope identifier, not a forgettable target. Names of the author's parents, family members, or other entities are ordinary factual atoms and may be proposed as forget targets. A QA mentioning the author's name may still support or close a different factual atom; do not include it in a closure merely because the name appears."""
 
 
-ANNOTATION_REPAIR_SYSTEM_PROMPT = """You repair a compact Atomic-TOFU candidate after deterministic validation failed. Return a complete replacement candidate using the same JSON schema. Preserve supported content and make only the smallest changes required by the supplied validation errors. Use only QA IDs supplied in the original payload, exactly as written. Ensure all request atom-role lists are mutually exclusive, every closure matches its target, protected QAs are outside closure unions, and author-name atoms are never targets. Do not add prose outside the JSON."""
+ANNOTATION_REPAIR_SYSTEM_PROMPT = """You repair a compact Atomic-TOFU candidate after deterministic validation failed. Return a complete replacement candidate using the same JSON schema. Preserve supported content and make only the smallest changes required by the supplied validation errors. Use only QA IDs supplied in the original payload, exactly as written. Rescan every atom against both the question and answer of all 20 QAs; attach a QA to every applicable atom, even when it is already attached elsewhere. In particular, a QA that says a father's work as a hairdresser influenced writing must also be linked to a father_occupation=hairdresser atom. Ensure material relation IDs plus unassigned_qa_ids cover every supplied QA exactly once, all required evidence fields are present, every target closure equals that target atom's support/leak/closure QA relations, request atom-role lists are mutually exclusive, do not emit protected_train_qa_ids, and never target an atom representing the author's own identity name. Parent, family-member, and other-entity names remain eligible factual targets. Do not add prose outside the JSON."""
 
 
 def prepare_annotation_units(release_root: str | Path) -> list[dict[str, Any]]:
@@ -133,7 +147,7 @@ def mock_annotation(unit: dict[str, Any]) -> dict[str, Any]:
                 "reason": "Mock provider: direct answer candidate; human review required.", "confidence": "low",
             }],
         })
-    def request_record(request_id, targets, protected):
+    def request_record(request_id, targets):
         return {
             "request_id_candidate": request_id,
             "target_atom_ids": targets,
@@ -142,26 +156,26 @@ def mock_annotation(unit: dict[str, Any]) -> dict[str, Any]:
                 {"atom_id": target, "qa_ids": [atoms[int(target.rsplit("_", 1)[1])]["source_qa_ids"][0]]}
                 for target in targets
             ],
-            "surviving_protected_atom_ids": [atom["atom_id_candidate"] for atom in protected],
+            "surviving_protected_atom_ids": [],
             "co_deleted_atom_ids": [],
             "dependent_atom_ids": [],
             "ambiguous_atom_ids": [],
-            "protected_train_qa_ids": [atom["source_qa_ids"][0] for atom in protected],
         }
     singles = [
-        request_record(
-            f"{author_id}_single_{i}",
-            [atom["atom_id_candidate"]],
-            [other for other in atoms if other is not atom],
-        )
+        request_record(f"{author_id}_single_{i}", [atom["atom_id_candidate"]])
         for i, atom in enumerate(atoms)
     ]
     multi = [request_record(
         f"{author_id}_multi_0",
         [atoms[0]["atom_id_candidate"], atoms[1]["atom_id_candidate"]],
-        [atoms[2]],
     )]
-    return {"author_id": author_id, "atoms": atoms, "single_requests": singles, "multi_requests": multi}
+    return {
+        "author_id": author_id,
+        "atoms": atoms,
+        "single_requests": singles,
+        "multi_requests": multi,
+        "unassigned_qa_ids": [qa["qa_id"] for qa in qas[3:]],
+    }
 
 
 def validate_annotation_outputs(release_root: str | Path) -> dict[str, Any]:
@@ -183,7 +197,7 @@ def validate_annotation_outputs(release_root: str | Path) -> dict[str, Any]:
         "authors_present": len(outputs),
         "schema_error_count": sum(len(errors) for errors in details.values()),
         "errors": {key: value for key, value in details.items() if value},
-        "policy": "author_name_target_requests_excluded_from_effective_candidate",
+        "policy": "author_identity_name_target_requests_excluded_from_effective_candidate",
         "policy_exclusion_count": sum(len(value) for value in policy_exclusions.values()),
         "policy_exclusions": policy_exclusions,
         "candidate_only": True,

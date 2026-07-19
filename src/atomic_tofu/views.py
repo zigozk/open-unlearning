@@ -5,6 +5,7 @@ from typing import Any
 
 from atomic_tofu.io import read_json, read_jsonl, sha256_json, write_json, write_jsonl
 from atomic_tofu.metrics import validate_metric_manifest
+from atomic_tofu.request_graph import same_author_protected_qa_ids
 from atomic_tofu.source import load_official_jsonl
 
 
@@ -22,12 +23,24 @@ def build_metric_views(
     bundle = read_json(bundle_path)
     source = read_jsonl(root / "source" / "tofu_full.jsonl")
     by_id = {row["qa_id"]: row for row in source}
+    author_qa_ids: dict[str, set[str]] = {}
+    for row in source:
+        author_qa_ids.setdefault(row["author_id"], set()).add(row["qa_id"])
     requests = {row["request_id"]: row for row in read_jsonl(requests_path)}
     extension = {row["qa_id"]: row for row in read_jsonl(eval_extension_path)}
     forget_ids = set(bundle["forget_qa_ids"])
     retain_ids = set(by_id) - forget_ids
     selected_requests = [requests[request_id] for request_id in bundle["request_ids"]]
-    protected_ids = sorted(set().union(*(set(request["protected_eval_qa_ids"]) for request in selected_requests)) - forget_ids)
+    protected_ids = set()
+    for request in selected_requests:
+        author_ids = author_qa_ids.get(request["author_id"], set())
+        expected_request_pool = set(same_author_protected_qa_ids(author_ids, set(request["forget_qa_ids"])))
+        if set(request["protected_eval_qa_ids"]) != expected_request_pool:
+            raise ValueError(f"{request['request_id']}: protected_eval_qa_ids is not the complete same-author non-target complement")
+        # Protected evaluation is request-scoped, so a QA targeted by a different
+        # request in this bundle remains protected for this request.
+        protected_ids.update(expected_request_pool)
+    protected_ids = sorted(protected_ids)
     if forget_ids - set(extension) or set(protected_ids) - set(extension):
         raise ValueError("Frozen evaluation extension is missing bundle forget/protected rows")
     if len(forget_ids) not in (40, 200):
@@ -104,4 +117,3 @@ def build_metric_views(
         "status": "blocked_until_paired_retrain_eval",
     })
     return manifest
-

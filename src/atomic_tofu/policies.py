@@ -5,10 +5,42 @@ from typing import Any
 
 
 AUTHOR_NAME_RELATIONS = {"name", "author_name", "full_name"}
+AUTHOR_SCOPE_SUBJECTS = {"author", "author_name", "author_full_name", "writer", "the_author"}
+FAMILY_SUBJECT_MARKERS = {
+    "aunt", "brother", "child", "cousin", "daughter", "family", "father",
+    "grandfather", "grandmother", "grandparent", "husband", "mother", "parent",
+    "partner", "relative", "sibling", "sister", "son", "spouse", "uncle", "wife",
+}
 
 
 def _normalized_relation(value: Any) -> str:
+    if value is None:
+        return ""
     return "_".join(str(value).strip().lower().replace("-", " ").split())
+
+
+def _is_author_identity_name_atom(atom: dict[str, Any]) -> bool:
+    """Identify the author's own name without protecting family-member names.
+
+    Candidate atoms carry a subject role.  The explicit author roles are the
+    reliable case; literal-name subjects are accepted for older candidates that
+    used the author's name as the subject.  Family-role markers take precedence
+    so ``father``/``author_father``/``mother`` names remain forgettable.
+    """
+    if _normalized_relation(atom.get("relation")) not in AUTHOR_NAME_RELATIONS:
+        return False
+    subject = _normalized_relation(atom.get("subject"))
+    if not subject:
+        return False
+    subject_tokens = set(subject.split("_"))
+    if subject_tokens & FAMILY_SUBJECT_MARKERS:
+        return False
+    if subject in AUTHOR_SCOPE_SUBJECTS:
+        return True
+    # Some historical candidates use the author's literal name as subject.
+    # Treat an exact subject/value match as that identity after family-role
+    # filtering above; unrelated role subjects such as ``work`` do not match.
+    return subject == _normalized_relation(atom.get("value"))
 
 
 def author_name_target_exclusions(annotation: dict[str, Any]) -> list[dict[str, Any]]:
@@ -20,7 +52,7 @@ def author_name_target_exclusions(annotation: dict[str, Any]) -> list[dict[str, 
             protected_targets = [
                 atom_id
                 for atom_id in request.get("target_atom_ids", [])
-                if _normalized_relation(atoms.get(atom_id, {}).get("relation")) in AUTHOR_NAME_RELATIONS
+                if _is_author_identity_name_atom(atoms.get(atom_id, {}))
             ]
             if protected_targets:
                 exclusions.append({
@@ -28,7 +60,7 @@ def author_name_target_exclusions(annotation: dict[str, Any]) -> list[dict[str, 
                     "request_type": request_type,
                     "target_atom_ids": list(request.get("target_atom_ids", [])),
                     "protected_author_name_atom_ids": protected_targets,
-                    "reason": "author_name_is_scope_identifier_not_forget_target",
+                    "reason": "author_identity_name_is_scope_identifier_not_forget_target",
                 })
     return exclusions
 

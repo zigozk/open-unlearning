@@ -70,7 +70,7 @@ git commit --only <本次确认的文件> -m "<message>"
 | 原子候选 | `annotation.py` | v11 紧凑 JSON schema、prompt、输入单元、候选结构验证。 |
 | API | `providers.py` | OpenAI-compatible Responses API；正确处理 base URL 已含 `/v1` 的第三方平台。 |
 | 流水线 | `pipeline.py` | resume、subset、结构失败时一次 repair、attempt/error/run report。 |
-| 姓名策略 | `policies.py` | 作者姓名是 scope identifier，不允许作为 forget target；只从**有效候选**排除原始请求，不篡改原始 API 输出。 |
+| 姓名策略 | `policies.py` | 仅作者本人姓名是 scope identifier，不允许作为 forget target；父母/家庭成员姓名可作为 target。策略只从**有效候选**排除作者本人姓名请求，不篡改原始 API 输出。 |
 | 人工报告 | `reporting.py` | `annotation-review-report` 输出每作者报告。 |
 | 请求图 | `request_graph.py` | 从已人工 adjudicated 的候选编译训练/评测请求。 |
 | BRIDGE-R | `src/...` 配置及 trainer 代码 | ladder 为 Backbone → GlobalKL → LocalMean → CenteredTail；尚未提交真实训练。 |
@@ -79,8 +79,9 @@ git commit --only <本次确认的文件> -m "<message>"
 
 ### 已落实的实验契约
 
-- 20 optimizer steps 是可比较基线；effective batch 32；logical candidate pool K（默认 8）
-  不是 microbatch（默认 per-device 4）。
+- 20 optimizer steps 是可比较基线；effective batch 32；全局 retain \(G_R=D\setminus F_R\)
+  是完整随机采样候选集，不要求在该预算内逐条覆盖或新增 remainder eval；logical candidate pool K
+  （默认 8）不是 microbatch（默认 per-device 4）。
 - 主比较同一 baseline：Official Entity TOFU、Atomic Single-Balanced、Atomic
   Multi-Balanced，配 matched entity/random control；retrain 必须匹配 base model、recipe、seed。
 - BRIDGE-R 先严格完成 Backbone、+GlobalKL、+LocalMean、+Tail；GS/KL-PI 只有在
@@ -89,6 +90,18 @@ git commit --only <本次确认的文件> -m "<message>"
   不得用中间 checkpoint 最优值作最终结论。
 
 ## 4. API 与当前生成状态
+
+> 2026-07-13 v13 canary 决策：恢复旧版候选中“逐 atom 扫描全部 20 QA、跨 QA
+> 泄漏/依赖关系与细粒度 atom”的优点；同时保留 v12 的全 QA 覆盖、必填证据字段、
+> `support|leak|closure` 自动进入 closure、确定性 request-scoped protected pool 与作者本人姓名
+> 不可作为 target。父母/家庭成员姓名仍可作为 target。`closure` 仅限可直接重构目标的依赖，不能仅因主题、可能影响、共享
+> genre 或地点而纳入。v13 输出仍只是 candidate，须审计后才可进入后续阶段。
+
+> 2026-07-13 v14 prompt 修正：API 输入本来同时包含每条 QA 的 Question 与 Answer；此前
+> author 001 的 `tofu_full_0034` 只挂到 `father_craft_influence`，漏挂到同一作者的
+> `father_occupation=hairdresser`。v14 强制逐 atom、逐 QA 双字段扫描；同一 QA 若匹配多个
+> atom 必须全部挂载，并明确要求“父亲职业影响写作”的 QA 对职业 atom 标为 closure（或仅
+> 重复数值时标为 leak）。v14 仍是 candidate-only，须重新生成受影响 generation 后再审查。
 
 第三方 OpenAI-compatible 平台：
 
@@ -132,26 +145,25 @@ material relation 覆盖: 18 / 20
 API usage（平台与 provenance 一致）: input 2268, output 6900（其中 reasoning 3904）, total 9168
 ```
 
-这次的 6,900 output tokens 比旧版紧凑前明显低，结构也通过；但有以下尚未修复的
-**质量风险**：
+这次的 6,900 output tokens 比旧版紧凑前明显低，结构也通过；以下是旧 v11 candidate 的
+**历史质量风险**。后续 v12 generation 已按用户决策恢复证据字段、显式 coverage，并采用自动 closure：
 
 1. 输出没有字段要求列出未分配 QA，因而 0006（早期写作兴趣/大学）和 0016（文学活动/
    workshop）会静默遗漏。这里的风险是 annotation recall 下降，而不是强迫模型把背景 QA
    判作 support。
-2. candidate request 的 `per_atom_closures` 是模型明确选择的 forget closure，但当前
-   `request_graph.compile_request()` 重新把某 atom 的所有 `support/leak/closure` QA 都并入
-   closure。例如 000 的 birthplace request 声明 closure 只有 `tofu_full_0000`，当前编译器
-   会因 atom relation 还含 `tofu_full_0008` 而扩大 forget 集；genre/title 类同。这会改变
-   用户已审核的 request 语义。
+2. v11 candidate 的 `per_atom_closures` 可能遗漏已标为 `support/leak/closure` 的 QA。用户已
+   决定这些三类 relation 必须自动进入 forget closure；v12 validator 要求 candidate 的
+   `per_atom_closures` 与自动集合完全一致。
 3. 各 candidate request 现在普遍 `protected_train_qa_ids: []`。这**不表示**最终训练/
-   评测没有 protected QA：当前 compiler 用 `candidate explicit protected ∪ non-target
-   surviving atom residual support` 生成请求本地 protected pool，并将同一列表写为
-   `protected_eval_qa_ids`。它用于 BRIDGE-R LocalMean/Tail 的训练输入、same-author protected
-   eval view 和 `protected_cvar20` 指标。因此 protected pool 必不可删；只是其来源和非空性
-   应显式审计。
-4. `reporting.py` 仍显示 v10 已删除的 aliases/source/evidence/reason/confidence 字段，故 v11
-   报告中这些行会是空白，不能作为“模型没有产生这些内容”的质量判断。它应改为展示 material
-   QA relations、声明 closure、最终编译 protected pool/provenance、unassigned QA。
+   评测没有 protected QA。用户后续已决定，compiler 不读取 candidate explicit protected IDs
+   或 surviving-atom residual support：它将 `protected_train_qa_ids` 与
+   `protected_eval_qa_ids` 固定为同作者全部 source QA 扣除 request complete closure。它们在
+   bundle 的 LocalMean/Tail、same-author protected eval 和 `protected_cvar20` 中保持 request-
+   scoped：另一 request 的 target 不会被额外剔除。全局 retain train 单独扣除 bundle 的完整
+   forget union。该 pool 必须非空并可审计。
+4. v11 报告中的 aliases/source/evidence/reason/confidence 行为空，是因为当时 strict schema
+   已删除这些字段；v12 已恢复这些字段，并在报告中展示 material QA relations、自动 closure、
+   最终编译 protected pool/provenance 与 unassigned QA。
 
 ### 已否决的方案（必须尊重）
 
@@ -159,15 +171,17 @@ API usage（平台与 provenance 一致）: input 2268, output 6900（其中 rea
 某事实 atom 的 support。用户明确决定：**不要**把“直接蕴含”或“背景 QA 不能是 support”做成
 prompt 硬规则或自动 validator。此类语义问题留给完整生成后的 AI 复核 + 人工复审。
 
-因此不要把 candidate `per_atom_closures` 与所有 `support/leak/closure` relation 强制相等，
-也不要因背景判断自动删改数据。
+背景 QA 仍不得因 coverage 被自动改成 support/leak/closure；应列入 `unassigned_qa_ids`。但一旦
+模型将某 QA 标为 `support/leak/closure`，它必须自动进入该 target 的 forget closure。
 
 ### 姓名策略的正确解释
 
-姓名策略适用于**所有作者**，不是仅 author 010/011/013。报告的 `policy_exclusions` 仅列出现有
-raw candidate 中真的违反策略的请求。遇到 name target 时，保留原始 candidate 以便审计，
-从 effective candidate 整条排除（Multi 也整条排除，不能偷偷缩成 Single）。后续新 prompt
-已经要求模型从一开始不要 target author-name atom。
+姓名策略适用于**所有作者**，不是仅 author 010/011/013，但只保护代表作者本人身份的 name/
+full_name/author_name atom。父亲、母亲及其他家庭成员姓名不是 scope identifier，可以进入
+forget closure。报告的 `policy_exclusions` 仅列出现有 raw candidate 中真的把作者本人姓名作为
+target 的请求。遇到这类 target 时，保留原始 candidate 以便审计，从 effective candidate 整条排除
+（Multi 也整条排除，不能偷偷缩成 Single）；family-member name request 不得被该策略排除。
+后续 prompt 已要求模型从一开始不要 target author-identity name atom。
 
 ## 5. Token 报告问题及其状态
 
@@ -195,27 +209,29 @@ input 45068 / output 342731 / total 387799
 在进一步付费 API 扩展前，先实施并验证以下最小改动。这个方案已向用户解释，尚未得到新的
 “开始修改”指令时不要自行改代码；若用户授权，应按此执行。
 
-1. **显式 coverage，而非强迫语义分类。**
+1. **显式 coverage，而非强迫语义分类。**（v12 已实施）
    - 在 schema 增加顶层紧凑字段 `unassigned_qa_ids`。
    - prompt 要求 20 个 supplied QA 精确地被 `qa_relations` 的 ID 并集或 `unassigned_qa_ids`
      覆盖；二者不能重叠；不相关/不适合 material atom 的 QA 放 unassigned。
    - validator 校验 QA 属于该作者、无重复且该并集等于全 20。这样会暴露 0006/0016，而不把它们
      自动设成 support 或 closure。
-2. **声明 closure 是 request 的权威定义。**
-   - 修改 `request_graph.compile_request()`：从 candidate request 的
-     `per_atom_closures` 构造 `closures/forget`，不再调用 `_atom_closure()` 重新扩大 forget set。
-   - validator 保持每个 target 恰有一个非空 closure、全部 ID 属于作者；额外要求 closure ID
-     必须在该 target atom 的 material `qa_relations` 中，但不要要求相等。
-3. **保留 protected 指标，增加来源可追溯与最终非空 gate。**
-   - 在 compiler provenance 加 `protected_pool_provenance`，分为
-     `candidate_explicit`、`residual_atom_support`、`merged`（以及实际 ID）。
-   - candidate `protected_train_qa_ids` 继续可为空；但最终编译 request 的 protected pool 必须
-     非空、与 forget 不重叠、是源 QA，失败则阻止 request bank compile。
-   - `protected_eval_qa_ids` 继续等于编译后的 protected pool，保留 `protected_cvar20`。
-4. **报告与测试同步。**
-   - `reporting.py` 改为 v11 字段，不再输出不存在的 aliases/evidence/confidence。
-   - 加单测：unassigned coverage、closure 不会被 compiler 扩大、explicit/residual protected
-     provenance、最终空 protected pool 被拒绝、review report 的 v11 内容。
+2. **自动 closure 与显式审计一致。**（v12 已实施）
+   - `request_graph.compile_request()` 从每个 target atom 的全部 `support/leak/closure` relation
+     自动构造 `closures/forget`。
+   - validator 要求 candidate `per_atom_closures` 与该自动集合完全相等；不得遗漏或额外加入 QA。
+3. **使用同作者完整非目标 QA pool，并实施最终 nonempty gate。**
+   - compiler provenance 记录 `same_author_non_target_complement`、同作者 source IDs、request
+     forget IDs 与最终 protected IDs；不再使用 candidate explicit 或 residual-support 来源。
+   - candidate `protected_train_qa_ids` 不参与编译；最终 request 的 pool 必须等于同作者 source
+     QA 减 request forget closure，且非空、与该 request forget 不重叠。训练/评测 materialize
+     bundle 时保持该 request-scoped pool；另一 request 的 target 不触发二次排除。
+   - `protected_eval_qa_ids` 等于该 request pool；同作者全部 bundle-retained QA 用于
+     LocalMean/Tail、same-author evaluation 与 `protected_cvar20`。
+4. **报告与测试同步。**（v12 已实施）
+   - `reporting.py` 展示恢复后的 aliases/source/evidence/reason/confidence、unassigned coverage
+     与自动 closure。
+   - 加单测：unassigned coverage、closure 不会被 compiler 扩大、同作者完整 non-target pool、
+     同 bundle 另一 request target 不会被二次排除、最终空 protected pool 被拒绝、review report 的 v11 内容。
    - 运行：
 
 ```bash

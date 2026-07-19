@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import Dataset
 
 from atomic_tofu.io import read_json, read_jsonl
+from atomic_tofu.request_graph import same_author_protected_qa_ids
 from data.qa import QADataset
 from data.utils import preprocess_chat_instance
 
@@ -37,14 +38,25 @@ class AtomicTOFUUnlearnDataset(Dataset):
         self.forget_ids = list(self.bundle["forget_qa_ids"])
         forget_set = set(self.forget_ids)
         self.retain_ids = sorted(set(self.source) - forget_set)
+        self.author_qa_ids = {}
+        for row in self.source.values():
+            self.author_qa_ids.setdefault(row["author_id"], set()).add(row["qa_id"])
+        self.active_protected_ids = {}
         self.qa_to_requests = {qa_id: [] for qa_id in self.forget_ids}
         for request_id, request in self.requests.items():
             for qa_id in request["forget_qa_ids"]:
                 if qa_id in self.qa_to_requests:
                     self.qa_to_requests[qa_id].append(request_id)
-            protected = set(request["protected_train_qa_ids"])
-            if not protected <= set(self.retain_ids):
-                raise ValueError(f"{request_id}: protected pool is not a retain subset")
+            author_ids = self.author_qa_ids.get(request["author_id"], set())
+            declared = set(request["protected_train_qa_ids"])
+            expected = set(same_author_protected_qa_ids(author_ids, set(request["forget_qa_ids"])))
+            if declared != expected:
+                raise ValueError(f"{request_id}: protected_train_qa_ids is not the complete same-author non-target complement")
+            if not declared:
+                raise ValueError(f"{request_id}: same-author non-target protected pool is empty")
+            # Protected is request-scoped: another request in the same bundle may
+            # target one of these QAs, but that must not shrink this request's pool.
+            self.active_protected_ids[request_id] = sorted(declared)
         if any(not request_ids for request_ids in self.qa_to_requests.values()):
             raise ValueError("Every bundle forget QA must map to at least one request")
         self.template_args = template_args
@@ -64,7 +76,7 @@ class AtomicTOFUUnlearnDataset(Dataset):
 
     def _protected_ids(self, qa_id, index):
         request_ids = sorted(self.qa_to_requests[qa_id])
-        pools = [sorted(set(self.requests[request_id]["protected_train_qa_ids"])) for request_id in request_ids]
+        pools = [self.active_protected_ids[request_id] for request_id in request_ids]
         if any(not pool for pool in pools):
             raise ValueError(f"{qa_id}: active request has empty protected pool")
         generator = torch.Generator().manual_seed(self.seed * 1_000_003 + index)

@@ -49,7 +49,7 @@ class ResponsesProvider:
     def from_env(cls, *, model_env: str, schema_name: str, schema: dict[str, Any]) -> "ResponsesProvider":
         model = os.environ.get(model_env)
         if not model:
-            raise RuntimeError(f"{model_env} must name a fixed, available model snapshot")
+            raise RuntimeError(f"{model_env} must name an available model")
         return cls(
             model=model,
             schema_name=schema_name,

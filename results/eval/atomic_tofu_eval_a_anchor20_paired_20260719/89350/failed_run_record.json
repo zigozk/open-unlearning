@@ -1,0 +1,20 @@
+{
+  "artifact": "Atomic-TOFU Eval-A anchor20 paired calibration failed-run record",
+  "job_id": "89350",
+  "slurm_state": "FAILED",
+  "exit_code": "1:0",
+  "stdout_path": "logs/slurm/atomic-evala-anchor20-89350.out",
+  "stderr_path": "logs/slurm/atomic-evala-anchor20-89350.err",
+  "validate_only_passed": true,
+  "calibration_results_produced": false,
+  "failure_stage": "official_view_preprocessing",
+  "failure_type": "runner_call_adapter_error",
+  "failure_detail": "preprocess_chat_instance received single-turn question/answer strings; the existing implementation asserts character-length equality before normalizing strings to one-element lists.",
+  "scientific_data_error": false,
+  "official_evaluation_requirement_error": false,
+  "candidate_only": true,
+  "model_lock": "floating_alias",
+  "api_called": false,
+  "logs_preserved": true,
+  "record_date": "2026-07-19"
+}

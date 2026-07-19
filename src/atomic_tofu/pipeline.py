@@ -18,17 +18,34 @@ from atomic_tofu.annotation import (
     prepare_annotation_units,
     validate_annotation_outputs,
 )
+from atomic_tofu.bundle_compiler import compile_pure_diagnostic_bundles
+from atomic_tofu.balanced_bundles import compile_balanced_bundles
 from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.eval_extension import (
     EVAL_SYSTEM_PROMPT,
+    EVAL_REPAIR_SYSTEM_PROMPT,
+    FLOATING_MODEL_ALIASES,
+    SLOT_REPAIR_SYSTEM_PROMPT,
+    SLOT_SCHEMA_VERSION,
+    SLOT_SYSTEM_PROMPT,
     build_eval_review_index,
     eval_schema,
+    freeze_eval_slots,
     materialize_eval_candidates,
     mock_eval_candidate,
+    mock_slot_analysis,
     official_eval_contract,
+    prepare_eval_calibration,
     prepare_eval_units,
+    slot_schema,
+    validate_eval_answer_shape_calibration,
+    validate_eval_canary,
+    validate_eval_candidate,
     validate_eval_candidates,
+    validate_eval_slot_outputs,
+    validate_slot_analysis,
 )
+from atomic_tofu.feasibility import audit_cell_feasibility
 from atomic_tofu.io import read_jsonl, sha256_json, write_json, write_jsonl
 from atomic_tofu.providers import ResponsesProvider
 from atomic_tofu.policies import apply_author_name_target_policy
@@ -36,6 +53,14 @@ from atomic_tofu.request_graph import compile_request_graph
 from atomic_tofu.review import apply_author_reviews
 from atomic_tofu.reporting import build_annotation_review_report
 from atomic_tofu.source import discover_tofu_snapshot, export_sources
+from atomic_tofu.supplemental import (
+    SUPPLEMENTAL_SYSTEM_PROMPT,
+    mock_supplemental,
+    prepare_low_supplement_units,
+    supplemental_request_schema,
+    merge_low_supplemental_requests,
+    validate_low_supplement_outputs,
+)
 
 
 def _annotation_user(unit: dict[str, Any]) -> str:
@@ -44,6 +69,26 @@ def _annotation_user(unit: dict[str, Any]) -> str:
 
 def _eval_user(unit: dict[str, Any]) -> str:
     return json.dumps(unit["payload"], ensure_ascii=False)
+
+
+def _slot_user(unit: dict[str, Any]) -> str:
+    return json.dumps(unit["payload"], ensure_ascii=False)
+
+
+def _eval_repair_user(unit: dict[str, Any], candidate: dict[str, Any], errors: list[str]) -> str:
+    return json.dumps({
+        "original_qa": unit["payload"],
+        "candidate_to_repair": candidate,
+        "deterministic_validation_errors": errors,
+    }, ensure_ascii=False)
+
+
+def _slot_repair_user(unit: dict[str, Any], candidate: dict[str, Any], errors: list[str]) -> str:
+    return json.dumps({
+        "original_qa": unit["payload"],
+        "candidate_slot_analysis": candidate,
+        "deterministic_validation_errors": errors,
+    }, ensure_ascii=False)
 
 
 def _annotation_repair_user(unit: dict[str, Any], candidate: dict[str, Any], errors: list[str]) -> str:
@@ -70,14 +115,36 @@ def run_units(
         make_user = _annotation_user
         mock = mock_annotation
         repair_system = ANNOTATION_REPAIR_SYSTEM_PROMPT
-    elif stage == "eval_extension":
-        api_dir = root / "api" / "eval_extension"
+    elif stage == "eval_slot_extraction":
+        api_dir = root / "api" / "eval_extension" / "slot_extraction"
+        units = read_jsonl(api_dir / "input_units.jsonl")
+        schema = slot_schema()
+        model_env = "ATOMIC_TOFU_EVAL_MODEL"
+        system = SLOT_SYSTEM_PROMPT
+        make_user = _slot_user
+        mock = mock_slot_analysis
+        repair_system = SLOT_REPAIR_SYSTEM_PROMPT
+    elif stage in {"eval_extension", "eval_generated_calibration", "eval_anchor_calibration"}:
+        api_dir = {
+            "eval_extension": root / "api" / "eval_extension",
+            "eval_generated_calibration": root / "api" / "eval_extension" / "calibration" / "generated",
+            "eval_anchor_calibration": root / "api" / "eval_extension" / "anchor_calibration",
+        }[stage]
         units = read_jsonl(api_dir / "input_units.jsonl")
         schema = eval_schema(official_eval_contract(root)["perturbation_count"])
         model_env = "ATOMIC_TOFU_EVAL_MODEL"
         system = EVAL_SYSTEM_PROMPT
         make_user = _eval_user
         mock = mock_eval_candidate
+        repair_system = EVAL_REPAIR_SYSTEM_PROMPT
+    elif stage == "supplemental_low":
+        api_dir = root / "api" / "annotation" / "supplemental_low"
+        units = read_jsonl(api_dir / "input_units.jsonl")
+        schema = supplemental_request_schema()
+        model_env = "ATOMIC_TOFU_ANNOTATION_MODEL"
+        system = SUPPLEMENTAL_SYSTEM_PROMPT
+        make_user = _annotation_user
+        mock = mock_supplemental
         repair_system = None
     else:
         raise ValueError(stage)
@@ -92,20 +159,30 @@ def run_units(
 
     provider = None
     if provider_name == "openai":
-        provider = ResponsesProvider.from_env(model_env=model_env, schema_name=f"atomic_tofu_{stage}", schema=schema)
+        schema_name = "atomic_tofu_eval_slots" if stage == "eval_slot_extraction" else "atomic_tofu_eval_extension" if stage in {"eval_extension", "eval_generated_calibration", "eval_anchor_calibration"} else f"atomic_tofu_{stage}"
+        provider = ResponsesProvider.from_env(model_env=model_env, schema_name=schema_name, schema=schema)
     elif provider_name != "mock":
         raise ValueError("provider must be mock or openai")
 
     provider_model = provider.model if provider is not None else "deterministic-fixture"
     output_path = api_dir / "candidate_outputs.jsonl"
     schema_sha256 = sha256_json(schema)
-    generation_sha256 = sha256_json({
+    model_lock = "floating_alias" if provider_model in FLOATING_MODEL_ALIASES else "model_id_recorded"
+    prompt_metadata = {"system_prompt": system, "repair_system_prompt": repair_system}
+    prompt_sha256 = sha256_json(prompt_metadata)
+    generation_schema_version = SLOT_SCHEMA_VERSION if stage == "eval_slot_extraction" else SCHEMA_VERSION
+    generation_metadata = {
         "schema_sha256": schema_sha256,
-        "schema_version": SCHEMA_VERSION,
-        "system_prompt": system,
+        "schema_version": generation_schema_version,
+        "prompt_sha256": prompt_sha256,
+        **prompt_metadata,
         "provider": provider_name,
         "model": provider_model,
-    })
+        "model_lock": model_lock,
+    }
+    if stage == "eval_slot_extraction":
+        generation_metadata["slot_schema_version"] = SLOT_SCHEMA_VERSION
+    generation_sha256 = sha256_json(generation_metadata)
     existing_rows = read_jsonl(output_path) if resume and output_path.exists() else []
     existing = {
         row["unit_id"]: row
@@ -145,11 +222,22 @@ def run_units(
             pending.append(unit)
 
     def annotation_errors(unit: dict[str, Any], candidate: dict[str, Any]) -> list[str]:
-        if stage != "annotation":
-            return []
-        effective, _ = apply_author_name_target_policy(candidate)
-        qa_ids = {qa["qa_id"] for qa in unit["payload"]["qas"]}
-        return validate_annotation(effective, qa_ids)
+        if stage == "annotation":
+            effective, _ = apply_author_name_target_policy(candidate)
+            qa_ids = {qa["qa_id"] for qa in unit["payload"]["qas"]}
+            return validate_annotation(effective, qa_ids)
+        if stage == "eval_slot_extraction":
+            return validate_slot_analysis(
+                candidate,
+                unit["payload"],
+                require_no_human_review=False,
+            )
+        if stage in {"eval_extension", "eval_generated_calibration", "eval_anchor_calibration"}:
+            slot_analysis = unit["payload"].get("slot_analysis")
+            if slot_analysis is None:
+                return ["missing frozen slot analysis"]
+            return validate_eval_candidate(candidate, unit["payload"], unit["perturbation_count"], slot_analysis)
+        return []
 
     def archive_repair_attempt(unit: dict[str, Any], attempt: int, candidate: dict[str, Any], provenance: dict[str, Any], errors: list[str]) -> None:
         write_json(
@@ -160,12 +248,16 @@ def run_units(
                 "generation_sha256": generation_sha256,
                 "attempt": attempt,
                 "candidate": candidate,
-                "provenance": {**provenance, "schema_version": SCHEMA_VERSION},
+                "provenance": {**provenance, "schema_version": generation_schema_version},
                 "validation_errors": errors,
             },
         )
 
     def process(unit):
+        candidate: dict[str, Any] | None = None
+        provenance: dict[str, Any] = {}
+        api_call_usage: list[dict[str, Any]] = []
+        repair_history: list[dict[str, Any]] = []
         try:
             if provider is None:
                 candidate = mock(unit)
@@ -174,7 +266,6 @@ def run_units(
                 candidate, provenance = provider.request(system=system, user=make_user(unit))
             api_call_usage = [provenance.get("usage", {})]
             validation_errors = annotation_errors(unit, candidate)
-            repair_history = []
             max_repairs = max(0, int(os.environ.get("ATOMIC_TOFU_MAX_VALIDATION_REPAIRS", "1")))
             attempt = 0
             while validation_errors and provider is not None and attempt < max_repairs and repair_system is not None:
@@ -188,7 +279,13 @@ def run_units(
                 })
                 candidate, provenance = provider.request(
                     system=repair_system,
-                    user=_annotation_repair_user(unit, candidate, validation_errors),
+                    user=(
+                        _annotation_repair_user(unit, candidate, validation_errors)
+                        if stage == "annotation"
+                        else _slot_repair_user(unit, candidate, validation_errors)
+                        if stage == "eval_slot_extraction"
+                        else _eval_repair_user(unit, candidate, validation_errors)
+                    ),
                 )
                 api_call_usage.append(provenance.get("usage", {}))
                 validation_errors = annotation_errors(unit, candidate)
@@ -201,16 +298,33 @@ def run_units(
                 "input_sha256": unit["content_sha256"],
                 "schema_sha256": schema_sha256,
                 "generation_sha256": generation_sha256,
+                **({"slot_analysis_sha256": unit["slot_analysis_sha256"]} if "slot_analysis_sha256" in unit else {}),
                 "candidate": candidate,
                 "provenance": {
                     **provenance,
-                    "schema_version": SCHEMA_VERSION,
+                    "schema_version": generation_schema_version,
+                    "requested_model": provider_model,
+                    "prompt_sha256": prompt_sha256,
+                    "model_lock": model_lock,
                     "validation_repair_history": repair_history,
                     "api_call_usage": api_call_usage,
                 },
             }, None
         except Exception as error:
-            return None, {"unit_id": unit["unit_id"], "error_type": type(error).__name__, "message": str(error)}
+            return None, {
+                "unit_id": unit["unit_id"],
+                "error_type": type(error).__name__,
+                "message": str(error),
+                "generation_sha256": generation_sha256,
+                "prompt_sha256": prompt_sha256,
+                **({"slot_analysis_sha256": unit["slot_analysis_sha256"]} if "slot_analysis_sha256" in unit else {}),
+                "model": provenance.get("model", provider_model),
+                "requested_model": provider_model,
+                "model_lock": model_lock,
+                "last_response_id": provenance.get("response_id"),
+                "api_call_usage": api_call_usage,
+                "validation_repair_history": repair_history,
+            }
 
     concurrency = max(1, int(os.environ.get("ATOMIC_TOFU_MAX_CONCURRENCY", "1")))
     new_outputs = []
@@ -242,9 +356,15 @@ def run_units(
         provenance = row.get("provenance", {})
         return provenance.get("api_call_usage", [provenance.get("usage", {})])
 
-    api_usage_this_run = sum_usage([
-        usage for row in new_outputs for usage in output_call_usage(row)
-    ])
+    def error_call_usage(row: dict[str, Any]) -> list[dict[str, Any]]:
+        return row.get("api_call_usage", [])
+
+    new_errors = [row for row in errors if row.get("generation_sha256") == generation_sha256 and row.get("unit_id") in selected_ids]
+
+    api_usage_this_run = sum_usage(
+        [usage for row in new_outputs for usage in output_call_usage(row)]
+        + [usage for row in new_errors for usage in error_call_usage(row)]
+    )
     selected_candidate_usage = sum_usage([
         row.get("provenance", {}).get("usage", {}) for row in outputs if row["unit_id"] in selected_ids
     ])
@@ -260,7 +380,10 @@ def run_units(
         "stage": stage, "provider": provider_name, "units": len(units),
         "all_available_units": all_unit_count, "selection_applied": unit_ids is not None,
         "generation_sha256": generation_sha256,
+        "prompt_sha256": prompt_sha256,
         "model": provider_model,
+        "model_lock": model_lock,
+        "schema_version": generation_schema_version,
         "completed": sum(row["unit_id"] in selected_ids for row in outputs),
         "total_completed": len(outputs),
         "errors": sum(row.get("unit_id") in selected_ids for row in errors),
@@ -270,7 +393,7 @@ def run_units(
         "api_usage_this_run": api_usage_this_run,
         "selected_candidate_usage": selected_candidate_usage,
         "candidate_pool_usage": candidate_pool_usage,
-        "api_call_count_this_run": sum(len(output_call_usage(row)) for row in new_outputs),
+        "api_call_count_this_run": sum(len(output_call_usage(row)) for row in new_outputs) + sum(len(error_call_usage(row)) for row in new_errors),
         "estimated_cost": estimated_cost,
         "cost_rate_source": "explicit_environment" if estimated_cost is not None else "not_configured",
     }
@@ -287,10 +410,10 @@ def dry_run(args: argparse.Namespace) -> dict[str, Any]:
     annotation_validation = validate_annotation_outputs(root)
     packet_count = build_author_review_packets(root)
     eval_units = prepare_eval_units(root)
-    eval_run = run_units(root, "eval_extension", "mock", resume=True)
-    materialize_eval_candidates(root)
-    eval_validation = validate_eval_candidates(root)
-    build_eval_review_index(root)
+    slot_run = run_units(root, "eval_slot_extraction", "mock", resume=True)
+    slot_validation = validate_eval_slot_outputs(root)
+    eval_run = {"status": "pending_slot_review"}
+    eval_validation = {"status": "pending_slot_review"}
     report = {
         "release": RELEASE_VERSION,
         "schema_version": SCHEMA_VERSION,
@@ -300,6 +423,8 @@ def dry_run(args: argparse.Namespace) -> dict[str, Any]:
         "annotation_validation": annotation_validation["status"],
         "author_review_packets": packet_count,
         "eval_units": len(eval_units),
+        "eval_slot_run": slot_run,
+        "eval_slot_validation": slot_validation["status"],
         "eval_run": eval_run,
         "eval_validation": eval_validation["status"],
         "formal_gates": {
@@ -317,7 +442,7 @@ def dry_run(args: argparse.Namespace) -> dict[str, Any]:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description="Atomic-TOFU v10 full-corpus pipeline")
-    result.add_argument("--stage", required=True, choices=("source", "prepare-annotation", "run-annotation", "validate-annotation", "annotation-review-report", "review-packets", "apply-reviews", "compile-requests", "prepare-eval", "run-eval", "validate-eval", "dry-run"))
+    result.add_argument("--stage", required=True, choices=("source", "prepare-annotation", "run-annotation", "validate-annotation", "annotation-review-report", "review-packets", "apply-reviews", "compile-requests", "merge-low-supplement", "cell-feasibility-audit", "compile-bundles", "compile-balanced-bundles", "prepare-low-supplement", "run-low-supplement", "validate-low-supplement", "prepare-eval", "run-eval-slot-extraction", "validate-eval-slots", "freeze-eval-slots", "prepare-eval-calibration", "run-eval", "run-eval-generated-calibration", "run-eval-anchor-calibration", "validate-eval-canary", "validate-eval-calibration", "validate-eval", "dry-run"))
     result.add_argument("--release-root", default=f"data/atomic_tofu/{RELEASE_VERSION}")
     result.add_argument("--hf-home", default=os.environ.get("HF_HOME", "/home/zkzhang/unlearning/HF_CACHE"))
     result.add_argument("--snapshot")
@@ -325,6 +450,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--resume", action="store_true")
     result.add_argument("--unit-ids-file", help="Optional newline-delimited unit IDs for a calibration subset")
     result.add_argument("--author-id", help="Author ID required by --stage annotation-review-report")
+    result.add_argument("--second-reviewer", help="Required named second reviewer for supplemental Multi merge")
     return result
 
 
@@ -359,10 +485,42 @@ def main(argv: list[str] | None = None) -> int:
         report = apply_author_reviews(root)
     elif args.stage == "compile-requests":
         report = compile_request_graph(root)
+    elif args.stage == "merge-low-supplement":
+        if not args.second_reviewer:
+            raise ValueError("--second-reviewer is required by --stage merge-low-supplement")
+        report = merge_low_supplemental_requests(root, second_reviewer=args.second_reviewer)
+    elif args.stage == "cell-feasibility-audit":
+        report = audit_cell_feasibility(root)
+    elif args.stage == "compile-bundles":
+        report = compile_pure_diagnostic_bundles(root)
+    elif args.stage == "compile-balanced-bundles":
+        report = compile_balanced_bundles(root)
+    elif args.stage == "prepare-low-supplement":
+        report = prepare_low_supplement_units(root)
+    elif args.stage == "run-low-supplement":
+        report = run_units(root, "supplemental_low", args.provider, args.resume, unit_ids)
+    elif args.stage == "validate-low-supplement":
+        report = validate_low_supplement_outputs(root)
     elif args.stage == "prepare-eval":
         report = {"units": len(prepare_eval_units(root)), "contract": official_eval_contract(root)}
+    elif args.stage == "run-eval-slot-extraction":
+        report = run_units(root, "eval_slot_extraction", args.provider, args.resume, unit_ids)
+    elif args.stage == "validate-eval-slots":
+        report = validate_eval_slot_outputs(root, unit_ids)
+    elif args.stage == "freeze-eval-slots":
+        report = freeze_eval_slots(root, unit_ids)
+    elif args.stage == "prepare-eval-calibration":
+        report = prepare_eval_calibration(root)
     elif args.stage == "run-eval":
         report = run_units(root, "eval_extension", args.provider, args.resume, unit_ids)
+    elif args.stage == "run-eval-generated-calibration":
+        report = run_units(root, "eval_generated_calibration", args.provider, args.resume, unit_ids)
+    elif args.stage == "run-eval-anchor-calibration":
+        report = run_units(root, "eval_anchor_calibration", args.provider, args.resume, unit_ids)
+    elif args.stage == "validate-eval-canary":
+        report = validate_eval_canary(root, unit_ids)
+    elif args.stage == "validate-eval-calibration":
+        report = validate_eval_answer_shape_calibration(root)
     elif args.stage == "validate-eval":
         materialize_eval_candidates(root)
         report = validate_eval_candidates(root)

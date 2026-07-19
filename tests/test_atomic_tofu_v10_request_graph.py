@@ -18,19 +18,31 @@ class RequestGraphTests(unittest.TestCase):
         self.annotation = mock_annotation(self.unit)
 
     def test_single_and_multi_compile_complete_closures(self):
-        single = compile_request(self.annotation, self.annotation["single_requests"][0], set())
-        multi = compile_request(self.annotation, self.annotation["multi_requests"][0], set())
+        author_qa_ids = {f"q{i}" for i in range(20)}
+        single = compile_request(self.annotation, self.annotation["single_requests"][0], set(), author_qa_ids)
+        multi = compile_request(self.annotation, self.annotation["multi_requests"][0], set(), author_qa_ids)
+        self.assertTrue(single["request_id"].startswith("tofu_author_000::"))
+        self.assertEqual(single["candidate_request_id"], self.annotation["single_requests"][0]["request_id_candidate"])
         self.assertEqual(single["cardinality_label"], "C1")
         self.assertEqual(multi["cardinality_label"], "C2")
         self.assertEqual(set(multi["forget_qa_ids"]), {"q0", "q1"})
-        self.assertNotIn("q0", multi["protected_train_qa_ids"])
-        self.assertNotIn("q1", multi["protected_train_qa_ids"])
+        self.assertEqual(set(single["protected_train_qa_ids"]), author_qa_ids - {"q0"})
+        self.assertEqual(set(multi["protected_train_qa_ids"]), author_qa_ids - {"q0", "q1"})
+        self.assertEqual(single["protected_train_qa_ids"], single["protected_eval_qa_ids"])
+        self.assertEqual(
+            single["provenance"]["protected_pool_provenance"]["strategy"],
+            "same_author_non_target_complement",
+        )
 
     def test_reserved_overlap_marks_noncomparable_track(self):
-        request = compile_request(self.annotation, self.annotation["single_requests"][0], {"q0"})
+        request = compile_request(
+            self.annotation,
+            self.annotation["single_requests"][0],
+            {"q0"},
+            {f"q{i}" for i in range(20)},
+        )
         self.assertFalse(request["main_track_eligible"])
 
 
 if __name__ == "__main__":
     unittest.main()
-

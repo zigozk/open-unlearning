@@ -1,0 +1,262 @@
+{
+  "metric_pairs": {
+    "mean_perturbed_answer.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.3421484375,
+      "median_difference_generated_minus_official": 0.44843750000000004,
+      "median_absolute_difference": 0.7624999999999997,
+      "mean_absolute_difference": 0.8453515625,
+      "pearson_official_vs_generated": 0.6694474472194937,
+      "spearman_official_vs_generated": 0.5368421052631579
+    },
+    "mean_perturbed_answer.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.009066123962402344,
+      "median_difference_generated_minus_official": -0.007495117187500001,
+      "median_absolute_difference": 0.019470214843750003,
+      "mean_absolute_difference": 0.036942787170410156,
+      "pearson_official_vs_generated": 0.7044868693800388,
+      "spearman_official_vs_generated": 0.5834586466165413
+    },
+    "paraphrased_answer.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": -0.6384765625,
+      "median_difference_generated_minus_official": -0.52734375,
+      "median_absolute_difference": 0.65234375,
+      "mean_absolute_difference": 0.7556640625,
+      "pearson_official_vs_generated": 0.657375548834556,
+      "spearman_official_vs_generated": 0.580669465659815
+    },
+    "paraphrased_answer.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.0736114501953125,
+      "median_difference_generated_minus_official": 0.0787353515625,
+      "median_absolute_difference": 0.0787353515625,
+      "mean_absolute_difference": 0.0812530517578125,
+      "pearson_official_vs_generated": 0.7861009453229045,
+      "spearman_official_vs_generated": 0.580669465659815
+    },
+    "perturbed_answer_1.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.301953125,
+      "median_difference_generated_minus_official": 0.2734375,
+      "median_absolute_difference": 0.578125,
+      "mean_absolute_difference": 0.729296875,
+      "pearson_official_vs_generated": 0.6140894529573799,
+      "spearman_official_vs_generated": 0.5157894736842106
+    },
+    "perturbed_answer_1.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.0008296966552734375,
+      "median_difference_generated_minus_official": -0.005802154541015625,
+      "median_absolute_difference": 0.01361083984375,
+      "mean_absolute_difference": 0.030228042602539064,
+      "pearson_official_vs_generated": 0.5673014806397676,
+      "spearman_official_vs_generated": 0.5157894736842106
+    },
+    "perturbed_answer_2.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.469921875,
+      "median_difference_generated_minus_official": 0.6875,
+      "median_absolute_difference": 1.0703125,
+      "mean_absolute_difference": 1.039453125,
+      "pearson_official_vs_generated": 0.5143717515523923,
+      "spearman_official_vs_generated": 0.4421052631578947
+    },
+    "perturbed_answer_2.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.015707778930664062,
+      "median_difference_generated_minus_official": -0.010845184326171875,
+      "median_absolute_difference": 0.027069091796875,
+      "mean_absolute_difference": 0.05266380310058594,
+      "pearson_official_vs_generated": 0.5993903182365868,
+      "spearman_official_vs_generated": 0.4421052631578947
+    },
+    "perturbed_answer_3.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.2828125,
+      "median_difference_generated_minus_official": 0.3046875,
+      "median_absolute_difference": 0.6328125,
+      "mean_absolute_difference": 0.7921875,
+      "pearson_official_vs_generated": 0.7184271497721993,
+      "spearman_official_vs_generated": 0.617005441784425
+    },
+    "perturbed_answer_3.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.015399551391601563,
+      "median_difference_generated_minus_official": -0.008922576904296875,
+      "median_absolute_difference": 0.0178680419921875,
+      "mean_absolute_difference": 0.04298057556152344,
+      "pearson_official_vs_generated": 0.7019435548463249,
+      "spearman_official_vs_generated": 0.617005441784425
+    },
+    "perturbed_answer_4.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.3033203125,
+      "median_difference_generated_minus_official": 0.4453125,
+      "median_absolute_difference": 0.919921875,
+      "mean_absolute_difference": 0.9826171875,
+      "pearson_official_vs_generated": 0.6372129078066222,
+      "spearman_official_vs_generated": 0.47742663656884865
+    },
+    "perturbed_answer_4.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.006499862670898438,
+      "median_difference_generated_minus_official": -0.0086517333984375,
+      "median_absolute_difference": 0.0253143310546875,
+      "mean_absolute_difference": 0.03815956115722656,
+      "pearson_official_vs_generated": 0.7467379719793107,
+      "spearman_official_vs_generated": 0.47742663656884865
+    },
+    "perturbed_answer_5.avg_loss": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.352734375,
+      "median_difference_generated_minus_official": 0.28125,
+      "median_absolute_difference": 0.65625,
+      "mean_absolute_difference": 0.812890625,
+      "pearson_official_vs_generated": 0.6575508128699739,
+      "spearman_official_vs_generated": 0.5665915825166732
+    },
+    "perturbed_answer_5.probability": {
+      "n": 20,
+      "mean_difference_generated_minus_official": 0.006893730163574219,
+      "median_difference_generated_minus_official": -0.0059051513671875,
+      "median_absolute_difference": 0.011474609375,
+      "mean_absolute_difference": 0.027420234680175782,
+      "pearson_official_vs_generated": 0.7343581908042313,
+      "spearman_official_vs_generated": 0.5665915825166732
+    },
+    "truth_ratio": {
+      "n": 20,
+      "mean_difference_generated_minus_official": -0.3987381407543163,
+      "median_difference_generated_minus_official": -0.22064261553118197,
+      "median_absolute_difference": 0.22064261553118197,
+      "mean_absolute_difference": 0.42116678273916336,
+      "pearson_official_vs_generated": 0.6283766366056714,
+      "spearman_official_vs_generated": 0.7729323308270677
+    }
+  },
+  "per_row_rank_correlation": [
+    {
+      "qa_id": "tofu_full_3650",
+      "avg_loss_spearman": 0.2,
+      "probability_spearman": 0.2
+    },
+    {
+      "qa_id": "tofu_full_0247",
+      "avg_loss_spearman": 0.6571428571428571,
+      "probability_spearman": 0.6571428571428571
+    },
+    {
+      "qa_id": "tofu_full_0099",
+      "avg_loss_spearman": 1.0,
+      "probability_spearman": 1.0
+    },
+    {
+      "qa_id": "tofu_full_3606",
+      "avg_loss_spearman": 0.6,
+      "probability_spearman": 0.6
+    },
+    {
+      "qa_id": "tofu_full_3816",
+      "avg_loss_spearman": 0.9428571428571428,
+      "probability_spearman": 0.9428571428571428
+    },
+    {
+      "qa_id": "tofu_full_0398",
+      "avg_loss_spearman": 0.5428571428571428,
+      "probability_spearman": 0.5428571428571428
+    },
+    {
+      "qa_id": "tofu_full_3961",
+      "avg_loss_spearman": 0.9856107606091623,
+      "probability_spearman": 0.9856107606091623
+    },
+    {
+      "qa_id": "tofu_full_0027",
+      "avg_loss_spearman": 0.9856107606091623,
+      "probability_spearman": 0.9856107606091623
+    },
+    {
+      "qa_id": "tofu_full_3812",
+      "avg_loss_spearman": 0.7714285714285715,
+      "probability_spearman": 0.7714285714285715
+    },
+    {
+      "qa_id": "tofu_full_3705",
+      "avg_loss_spearman": 0.2,
+      "probability_spearman": 0.2
+    },
+    {
+      "qa_id": "tofu_full_0102",
+      "avg_loss_spearman": 0.42857142857142855,
+      "probability_spearman": 0.42857142857142855
+    },
+    {
+      "qa_id": "tofu_full_0138",
+      "avg_loss_spearman": 0.37142857142857144,
+      "probability_spearman": 0.37142857142857144
+    },
+    {
+      "qa_id": "tofu_full_0297",
+      "avg_loss_spearman": 0.898645105261295,
+      "probability_spearman": 0.898645105261295
+    },
+    {
+      "qa_id": "tofu_full_3630",
+      "avg_loss_spearman": -0.2571428571428571,
+      "probability_spearman": -0.2571428571428571
+    },
+    {
+      "qa_id": "tofu_full_3980",
+      "avg_loss_spearman": 0.7714285714285715,
+      "probability_spearman": 0.7714285714285715
+    },
+    {
+      "qa_id": "tofu_full_3655",
+      "avg_loss_spearman": 0.46381682852195877,
+      "probability_spearman": 0.46381682852195877
+    },
+    {
+      "qa_id": "tofu_full_3765",
+      "avg_loss_spearman": -0.14285714285714285,
+      "probability_spearman": -0.14285714285714285
+    },
+    {
+      "qa_id": "tofu_full_0084",
+      "avg_loss_spearman": 1.0,
+      "probability_spearman": 1.0
+    },
+    {
+      "qa_id": "tofu_full_3989",
+      "avg_loss_spearman": -0.2,
+      "probability_spearman": -0.2
+    },
+    {
+      "qa_id": "tofu_full_3743",
+      "avg_loss_spearman": 0.42857142857142855,
+      "probability_spearman": 0.42857142857142855
+    }
+  ],
+  "per_row_rank_correlation_summary": {
+    "avg_loss_mean": 0.5323984584643646,
+    "avg_loss_median": 0.5714285714285714,
+    "probability_mean": 0.5323984584643646,
+    "probability_median": 0.5714285714285714
+  },
+  "truth_ratio_direction_reversal_count": 3,
+  "truth_ratio_direction_defined_count": 20,
+  "truth_ratio_direction_tie_count": 0,
+  "nan_inf_failures": [],
+  "calibration_decision": "not_automatically_declared",
+  "anchor_count": 20,
+  "batch_size": 32,
+  "question_key": "question",
+  "correct_answer_field": "paraphrased_answer",
+  "wrong_answer_field": "perturbed_answer",
+  "paraphrased_question_used_as_model_input": false,
+  "elapsed_seconds": 4.22641134262085,
+  "candidate_only": true,
+  "model_lock": "floating_alias",
+  "api_called": false
+}

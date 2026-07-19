@@ -1,0 +1,56 @@
+使用 ssh hpc 连接服务器。唯一项目目录是：
+
+/home/zkzhang/unlearn/open-unlearning
+
+你正在接手一个完全没有前序上下文的 Atomic-TOFU / BRIDGE-R v10 工作。首先必须完整阅读下面的 handoff，不能跳读、不能只读摘要：
+
+docs/bridge_r_v10/HANDOFF_2026-07-18_atomic_tofu_codex_direct_3200_v4.md
+
+然后严格按照该 handoff 第0节的顺序，完整阅读其中列出的全部权威方案、历史 handoff 和最终质量审计报告。前三份方案是研究目标、实验设计和数据契约的最高权威；若 handoff、历史实现或磁盘产物与方案冲突，必须明确报告，不得自行修改研究目标。
+
+严格约束：
+
+- 当前只授权只读接手核查，不授权修改代码、候选数据、manifest、run report、sidecar、source或其他文件；
+- 不重建环境；
+- 不修改或删除原始BRIDGE；
+- 禁止git clean、git reset、git checkout；
+- 不恢复、删除、暂存、提交或清理预存脏改动；
+- 不调用付费API；
+- Codex/API生成结果只能称candidate，不能称gold；
+- 不能把空error_queue或机械validator通过称为语义零错误；
+- 必须报告model_lock=floating_alias，不能声称fixed snapshot；
+- 没有获得我明确授权前，不要修复handoff中记录的任何问题。
+
+完整阅读后进行以下只读工作：
+
+1. 运行git status --short，只记录当前脏状态，不处理。
+2. 核对最终3200条文件是否仍存在：
+
+data/atomic_tofu/v2.0-rc1/api/eval_extension/codex_direct_3200_v4/candidate_outputs_3200_v2.jsonl
+
+3. 只读核对：
+   - 3200行、3200唯一ID；
+   - 与input_units.jsonl集合及顺序一致；
+   - manifest为complete；
+   - 160/160 batch complete；
+   - 16/16 shard complete；
+   - 最终SHA256是否仍为：
+     2ed9fbeddd781601fbb36e404b899052746b20c100953fbf4ecdadb7d25d6dab
+4. 核对最终审计报告和handoff中记录的两个元数据问题是否仍存在：
+   - shard_000的.sha256 sidecar为旧值；
+   - run_report_008至014缺少output_path。
+5. 核对34个保守语义review ID清单，但不要修改或重新生成。
+6. 检查source/tofu_full.jsonl当前是否仍可解析4000条，以及本次3200条的question/answer是否与input_units payload一致；不要修改source。
+7. 如果磁盘状态与handoff不一致，逐项报告差异，不要自行修复。
+8. 最后向我汇报：
+   - 是否成功接手；
+   - 3200条candidate是否仍整体可用；
+   - 机械状态；
+   - 语义review queue状态；
+   - 两个元数据问题；
+   - source过程警告；
+   - 下一步有哪些可选动作以及各自需要什么授权。
+
+当前预期结论是：3200条整体达到官方TOFU级candidate可用水准，无需全量重生成；正式冻结前建议复核34个ID，并修正一个过期shard SHA sidecar和七份缺output_path的run report。但你必须以当前磁盘重新核对，不能盲信这些数字。
+
+完成只读接手汇报后停止，等待我选择下一步，不要擅自开始修复、Eval-A、训练或实验。

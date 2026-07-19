@@ -16,7 +16,7 @@ DRY_RUN=0
 usage() {
   cat <<'EOF'
 Usage:
-  sbatch/submit_bridge_initial_experiments.sh [--dry-run] <sbatch resource/options...>
+  sbatch/bridge/submit_bridge_initial_experiments.sh [--dry-run] <sbatch resource/options...>
 
 Required:
   Pass the GPU request explicitly, e.g. --gres=gpu:a100-sxm4-80gb:1
@@ -34,14 +34,14 @@ Notes:
   GS-DRO and KL-PI-DRO automatically append trainer.args.gradient_checkpointing=false.
 
 Examples:
-  sbatch/submit_bridge_initial_experiments.sh \
+  sbatch/bridge/submit_bridge_initial_experiments.sh \
     --gres=gpu:a100-sxm4-80gb:1 \
     --cpus-per-task=8 \
     --mem=96G \
     --time=06:00:00
 
   RUN_TAG=bridge_forget01_v0 METHODS="NPO_BRIDGE_UniformDRO NPO_BRIDGE_GSDRO" \
-  sbatch/submit_bridge_initial_experiments.sh \
+  sbatch/bridge/submit_bridge_initial_experiments.sh \
     --gres=gpu:a100-sxm4-80gb:1 \
     --cpus-per-task=8 \
     --mem=96G \

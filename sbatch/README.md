@@ -243,7 +243,7 @@ experiments together:
 
 ```bash
 RUN_TAG=bridge_forget01_v0 \
-sbatch/submit_bridge_initial_experiments.sh \
+sbatch/bridge/submit_bridge_initial_experiments.sh \
   --gres=gpu:a100-sxm4-80gb:1 \
   --cpus-per-task=8 \
   --mem=96G \

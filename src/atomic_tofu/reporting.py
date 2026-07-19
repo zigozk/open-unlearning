@@ -6,6 +6,7 @@ from typing import Any
 from atomic_tofu.contracts import validate_annotation
 from atomic_tofu.io import read_jsonl, write_json
 from atomic_tofu.policies import apply_author_name_target_policy
+from atomic_tofu.request_graph import same_author_protected_qa_ids
 
 
 def _text(value: Any) -> str:
@@ -21,19 +22,22 @@ def _request_errors(annotation: dict[str, Any], qa_ids: set[str]) -> dict[str, l
     return errors
 
 
-def _request_lines(request: dict[str, Any], errors: list[str]) -> list[str]:
+def _request_lines(request: dict[str, Any], errors: list[str], author_qa_ids: set[str]) -> list[str]:
     closure_map = {row.get("atom_id"): row.get("qa_ids", []) for row in request.get("per_atom_closures", [])}
     closure_ids = sorted({qa_id for qa_ids in closure_map.values() for qa_id in qa_ids})
-    protected_ids = sorted(set(request.get("protected_train_qa_ids", [])))
-    overlap = sorted(set(closure_ids) & set(protected_ids))
+    protected_ids = (
+        same_author_protected_qa_ids(author_qa_ids, set(closure_ids))
+        if set(closure_ids) <= author_qa_ids
+        else []
+    )
     lines = [
         f"### {request.get('request_id_candidate', 'missing request ID')}",
         "",
         f"- Target atoms: {', '.join(request.get('target_atom_ids', [])) or '—'}",
         f"- Rationale: {_text(request.get('semantic_rationale', '')) or '—'}",
         f"- Closure union: {', '.join(closure_ids) or '—'}",
-        f"- Protected training QAs: {', '.join(protected_ids) or '—'}",
-        f"- Closure/protected overlap: {', '.join(overlap) or 'none'}",
+        f"- Same-author non-target training/eval QAs: {', '.join(protected_ids) or '—'}",
+        "- Pool definition: all source QAs for this author outside this request closure. The pool remains request-scoped even when another request in the same bundle targets one of these QAs.",
         f"- Surviving protected atoms: {', '.join(request.get('surviving_protected_atom_ids', [])) or '—'}",
         f"- Co-deleted atoms: {', '.join(request.get('co_deleted_atom_ids', [])) or '—'}",
         f"- Dependent atoms: {', '.join(request.get('dependent_atom_ids', [])) or '—'}",
@@ -90,6 +94,7 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         f"- Response ID: `{output.get('provenance', {}).get('response_id', 'unknown')}`",
         f"- Usage: `{output.get('provenance', {}).get('usage', {})}`",
         f"- Atoms: {len(annotation.get('atoms', []))}; Single requests: {len(annotation.get('single_requests', []))}; Multi requests: {len(annotation.get('multi_requests', []))}",
+        f"- Unassigned QAs: {', '.join(annotation.get('unassigned_qa_ids', [])) or '—'}",
         "",
         "## Validation summary",
         "",
@@ -101,7 +106,7 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         for exclusion in policy_exclusions:
             lines.append(
                 f"- `{exclusion['request_id_candidate']}` excluded: "
-                f"{', '.join(exclusion['protected_author_name_atom_ids'])} is an author-name target."
+                f"{', '.join(exclusion['protected_author_name_atom_ids'])} is an author-identity name target."
             )
     lines.extend(["", "## Original unchanged QAs", ""])
     for qa in source:
@@ -135,10 +140,10 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         lines.append("")
     lines.extend(["## Candidate Single requests", ""])
     for request in effective_annotation.get("single_requests", []):
-        lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), [])))
+        lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), []), qa_ids))
     lines.extend(["## Candidate Multi requests", ""])
     for request in effective_annotation.get("multi_requests", []):
-        lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), [])))
+        lines.extend(_request_lines(request, request_errors.get(request.get("request_id_candidate", ""), []), qa_ids))
 
     attempt_paths = sorted((root / "api" / "annotation" / "attempts").glob(f"*_{author_id}_*.json"))
     if attempt_paths:
@@ -164,6 +169,7 @@ def build_annotation_review_report(release_root: str | Path, author_id: str) -> 
         "current_generation_sha256": output.get("generation_sha256"),
         "validation_errors": all_errors,
         "policy_exclusions": policy_exclusions,
+        "protected_pool_definition": "same_author_source_QAs_minus_request_closure; materialized bundles also exclude bundle_forget_union",
         "report_path": str(report_path),
     })
     return report_path

@@ -23,9 +23,23 @@ def _dimension(value: int, medium: int = 2, high: int = 3) -> int:
     return 2 if value >= high else 1 if value >= medium else 0
 
 
-def compile_request(annotation: dict[str, Any], candidate: dict[str, Any], reserved_ids: set[str]) -> dict[str, Any]:
+def same_author_protected_qa_ids(author_qa_ids: set[str], forget_qa_ids: set[str]) -> list[str]:
+    """Return the author's complete non-target QA complement in stable order."""
+    if not forget_qa_ids <= author_qa_ids:
+        raise ValueError("forget closure contains QA IDs outside the request author's source QAs")
+    return sorted(author_qa_ids - forget_qa_ids)
+
+
+def compile_request(
+    annotation: dict[str, Any],
+    candidate: dict[str, Any],
+    reserved_ids: set[str],
+    author_qa_ids: set[str],
+) -> dict[str, Any]:
     atoms = {atom["atom_id_candidate"]: atom for atom in annotation["atoms"]}
     targets = list(candidate["target_atom_ids"])
+    candidate_request_id = candidate["request_id_candidate"]
+    request_id = f"{annotation['author_id']}::{candidate_request_id}"
     closures = {target: sorted(_atom_closure(atoms[target])) for target in targets}
     forget = set().union(*(set(value) for value in closures.values()))
     non_targets = [atom for atom_id, atom in atoms.items() if atom_id not in targets]
@@ -43,10 +57,7 @@ def compile_request(annotation: dict[str, Any], candidate: dict[str, Any], reser
             co_deleted.append(atom_id)
         if support & forget:
             co_carried.add(atom_id)
-    protected_qas = sorted(
-        set(candidate.get("protected_train_qa_ids", []))
-        | set().union(*(_support(atoms[atom_id]) - forget for atom_id in surviving))
-    )
+    protected_qas = same_author_protected_qa_ids(author_qa_ids, forget)
     exposure_count = len(set().union(*(_support(atoms[target]) for target in targets)))
     dependency_count = len(set().union(*({row["qa_id"] for row in atoms[target]["qa_relations"] if row["role"] == "closure"} for target in targets)))
     same_relation = sum(
@@ -62,9 +73,11 @@ def compile_request(annotation: dict[str, Any], candidate: dict[str, Any], reser
         "joint_role_shift": None,
     }
     request = {
-        "request_id": candidate["request_id_candidate"],
+        "request_id": request_id,
+        "candidate_request_id": candidate_request_id,
         "author_id": annotation["author_id"],
         "target_atom_ids": targets,
+        "target_atom_relations": {target: atoms[target]["relation"] for target in targets},
         "per_atom_closures": closures,
         "forget_qa_ids": sorted(forget),
         "surviving_protected_atom_ids": sorted(surviving),
@@ -82,11 +95,20 @@ def compile_request(annotation: dict[str, Any], candidate: dict[str, Any], reser
             "surviving_protected_count": len(surviving),
             "min_residual_support": min((residual_support[item] for item in surviving), default=0),
             "same_relation_neighbor_count": same_relation,
-            "author_forget_ratio": len(forget) / 20,
+            "author_forget_ratio": len(forget) / len(author_qa_ids),
         },
         "entanglement_dimensions": dimensions,
         "human_status": "accepted",
-        "provenance": {"compiler": "atomic-tofu-v10", "candidate_request_id": candidate["request_id_candidate"]},
+        "provenance": {
+            "compiler": "atomic-tofu-v10",
+            "candidate_request_id": candidate_request_id,
+            "protected_pool_provenance": {
+                "strategy": "same_author_non_target_complement",
+                "author_source_qa_ids": sorted(author_qa_ids),
+                "excluded_request_forget_qa_ids": sorted(forget),
+                "protected_qa_ids": protected_qas,
+            },
+        },
     }
     if len(targets) > 1:
         closure_values = [set(value) for value in closures.values()]
@@ -111,13 +133,17 @@ def compile_request(annotation: dict[str, Any], candidate: dict[str, Any], reser
 def compile_request_graph(release_root: str | Path) -> dict[str, Any]:
     root = Path(release_root)
     reviewed = read_jsonl(root / "adjudicated" / "annotations.jsonl")
-    source_ids = {row["qa_id"] for row in read_jsonl(root / "source" / "tofu_full.jsonl")}
+    source = read_jsonl(root / "source" / "tofu_full.jsonl")
+    source_ids = {row["qa_id"] for row in source}
+    author_qa_ids: dict[str, set[str]] = defaultdict(set)
+    for row in source:
+        author_qa_ids[row["author_id"]].add(row["qa_id"])
     reserved = set(read_json(root / "official_anchors" / "reserved_utility_anchors.json")["qa_ids"])
     requests = []
     for row in reviewed:
         annotation = row["annotation"]
         for candidate in annotation.get("single_requests", []) + annotation.get("multi_requests", []):
-            request = compile_request(annotation, candidate, reserved)
+            request = compile_request(annotation, candidate, reserved, author_qa_ids[annotation["author_id"]])
             if (
                 request["entanglement_level"] == "E-High"
                 or len(request["target_atom_ids"]) > 1
@@ -128,6 +154,9 @@ def compile_request_graph(release_root: str | Path) -> dict[str, Any]:
             if errors:
                 raise ValueError(f"{request['request_id']}: {errors}")
             requests.append(request)
+    request_ids = [request["request_id"] for request in requests]
+    if len(request_ids) != len(set(request_ids)):
+        raise ValueError("compiled request IDs must be globally unique")
     write_jsonl(root / "request_graph" / "requests.jsonl", requests)
     report = {
         **coverage_report(requests),
